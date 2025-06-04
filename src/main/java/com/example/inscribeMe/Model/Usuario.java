@@ -2,6 +2,8 @@ package com.example.inscribeMe.Model;
 
 import java.util.List;
 
+import com.example.inscribeMe.Model.Curso.Rol;
+
 import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
