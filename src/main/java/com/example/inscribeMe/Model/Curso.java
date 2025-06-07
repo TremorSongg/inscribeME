@@ -39,7 +39,7 @@ public class Curso {
     @JoinColumn(name = "instructor_id")
     private Usuario instructor;
 
-    @OneToMany(mappedBy =  "curos", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy =  "cursos", cascade = CascadeType.ALL)
     private List<Inscripcion> inscripciones;
 
     public enum Rol{
