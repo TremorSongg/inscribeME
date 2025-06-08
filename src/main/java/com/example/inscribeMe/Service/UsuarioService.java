@@ -1,62 +1,43 @@
 package com.example.inscribeMe.Service;
 
+import com.example.inscribeMe.Model.Usuario;
+import com.example.inscribeMe.Repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.example.inscribeMe.Model.Usuario;
-import com.example.inscribeMe.Repository.UsuarioRepository;
-
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
-    
-    @Autowired
-    private UsuarioRepository usuarioRepository;
 
-    //obtener todos los usuarios
-    public List<Usuario> obteneUsuarios() {
+    private final UsuarioRepository usuarioRepository;
+
+    public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
 
-    //buscar usuario por id
-    public Optional<Usuario> buscarPorId(Long id) {
+    public Optional<Usuario> obtenerPorId(Long id) {
         return usuarioRepository.findById(id);
     }
 
-    //buscar usuario por email
-    public Optional<Usuario> bucarPorCorreo(String correo){
-        return usuarioRepository.findByCorreo(correo);
-    }
-
-    //guardar usuario
-    public Usuario guardar (Usuario usuario){
+    public Usuario crearUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
     }
 
-    //actualizar un usuario
-    public Usuario actualizar (Long id, Usuario usuarioActualizado){
-        Optional<Usuario> optionalUsuario = usuarioRepository.findById(id);
-        if(optionalUsuario.isPresent()){
-            Usuario usuarioExistente = optionalUsuario.get();
-            usuarioExistente.setNombre(usuarioActualizado.getNombre());
-            usuarioExistente.setCorreo(usuarioActualizado.getCorreo());
-            usuarioExistente.setPassword(usuarioActualizado.getPassword());
-            return usuarioRepository.save(usuarioExistente);
-        } else {
-            return null;
-        }
-
-    }
-
-
-    //eliminar un usuario
-    public void eliminar(Long id){
+    public void eliminarUsuario(Long id) {
         usuarioRepository.deleteById(id);
     }
 
-    //autentificar usuario
-    public Optional<Usuario> autenticar (String correo, String password){
-        return usuarioRepository.findByCorreo(correo).filter(u -> u.getPassword().equals(password));
+    public Usuario actualizarUsuario(Long id, Usuario datosActualizados) {
+        return usuarioRepository.findById(id).map(u -> {
+            u.setNombre(datosActualizados.getNombre());
+            u.setEmail(datosActualizados.getEmail());
+            u.setContraseña(datosActualizados.getContraseña());
+            u.setTelefono(datosActualizados.getTelefono());
+            u.setRol(datosActualizados.getRol());
+            return usuarioRepository.save(u);
+        }).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 }

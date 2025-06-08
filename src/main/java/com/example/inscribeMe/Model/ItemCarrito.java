@@ -1,31 +1,27 @@
 package com.example.inscribeMe.Model;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Inscripcion {
+public class ItemCarrito {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate fechaInscripcion;
-
-    @Enumerated(EnumType.STRING)
-    private EstadoInscripcion estado;
-
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @JoinColumn(name = "carrito_id")
+    private Carrito carrito;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
     private Curso curso;
+
+    private int cantidad;
 }

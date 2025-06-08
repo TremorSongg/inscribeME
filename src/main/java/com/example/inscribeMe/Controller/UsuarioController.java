@@ -1,58 +1,42 @@
 package com.example.inscribeMe.Controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.example.inscribeMe.Service.UsuarioService;
 import com.example.inscribeMe.Model.Usuario;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.example.inscribeMe.Service.UsuarioService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
-
-
+import java.util.List;
 
 @RestController
-@RequestMapping("/v1/usuarios")
-@CrossOrigin
+@RequestMapping("/api/usuarios")
+@RequiredArgsConstructor
 public class UsuarioController {
-    
-    @Autowired
-    private UsuarioService serv;
 
-    @PostMapping("/registrar")
-    public Usuario registrar(@RequestBody Usuario u) {
-        return serv.guardar(u);
+    private final UsuarioService usuarioService;
+
+    @GetMapping
+    public List<Usuario> listarUsuarios() {
+        return usuarioService.listarUsuarios();
     }
 
-    @PostMapping("/login")
-    public Map<String,String> login (@RequestBody Usuario u ) {
-        Optional<Usuario> user = serv.autenticar(u.getCorreo(), u.getPassword());
-        Map<String, String> response = new HashMap<>();
-        if (user.isPresent()){
-            response.put("result", "OK");
-            //convierte id a string
-            response.put("id", String.valueOf(user.get().getId()));
-            response.put("nombre", user.get().getNombre());
-            response.put("correo", user.get().getCorreo());
-        } else {
-            response.put("result", "Error");
-        }
-        return response;
+    @GetMapping("/{id}")
+    public Usuario obtenerUsuario(@PathVariable Long id) {
+        return usuarioService.obtenerPorId(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
-    @GetMapping("/listar")
-    public List<Usuario> listarUsuario() {
-        return serv.obteneUsuarios();
+    @PostMapping
+    public Usuario crearUsuario(@RequestBody Usuario usuario) {
+        return usuarioService.crearUsuario(usuario);
     }
-    
-    
-    
+
+    @PutMapping("/{id}")
+    public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        return usuarioService.actualizarUsuario(id, usuario);
+    }
+
+    @DeleteMapping("/{id}")
+    public void eliminarUsuario(@PathVariable Long id) {
+        usuarioService.eliminarUsuario(id);
+    }
 }

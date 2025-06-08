@@ -2,52 +2,42 @@ package com.example.inscribeMe.Model;
 
 import java.util.List;
 
-import com.example.inscribeMe.Model.Curso.Rol;
-
-import jakarta.persistence.*;
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
-@Table(name = "usuarios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Usuario {
-    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String nombre;
-
-    @Column(unique = true, nullable = false)
-    private String correo;
-
-    private String password;
-
+    private String email;
+    private String contraseña;
     private String telefono;
 
     @Enumerated(EnumType.STRING)
-    private Rol rol; //Esto da error, yo creo que
-    // podría hacerse la generación de rol en una clase aparte del modelo
+    private Rol rol;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Inscripcion> inscripciones;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notificacion> notificaciones;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
-    private List<Pago> pagos;
-
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Compra> historialCompras;
 }
+
+

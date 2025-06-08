@@ -1,6 +1,7 @@
 package com.example.inscribeMe.Model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,22 +11,22 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Inscripcion {
+public class Compra {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate fechaInscripcion;
-
-    @Enumerated(EnumType.STRING)
-    private EstadoInscripcion estado;
-
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    @ManyToOne
-    @JoinColumn(name = "curso_id")
-    private Curso curso;
+    private LocalDateTime fecha;
+
+    @Enumerated(EnumType.STRING)
+    private EstadoCompra estado;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "compra_id") // FK en la tabla ItemCompra
+    private List<ItemCompra> items;
 }

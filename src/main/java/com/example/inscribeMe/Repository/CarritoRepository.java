@@ -1,15 +1,12 @@
 package com.example.inscribeMe.Repository;
 
-import java.util.List;
+import com.example.inscribeMe.Model.Carrito;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import com.example.inscribeMe.Model.CarritoCurso;
-
-public interface CarritoRepository extends JpaRepository<CarritoCurso, Integer> {
-    List<CarritoCurso> findByUsuarioId(int usuarioId);
-    void deleteByUsuarioId(int usuarioId);
-    Optional<CarritoCurso> findByUsuarioIdAndCursoId(int usuarioId, int cursoId);
-  
-
+@Repository
+public interface CarritoRepository extends JpaRepository<Carrito, Long> {
+    Optional<Carrito> findByUsuarioId(Long usuarioId);
 }
