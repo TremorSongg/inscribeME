@@ -1,5 +1,6 @@
 package com.example.inscribeMe.Controller;
 
+import com.example.inscribeMe.DTO.InscripcionDTO;
 import com.example.inscribeMe.Model.Inscripcion;
 import com.example.inscribeMe.Service.InscripcionService;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +45,14 @@ public class InscripcionController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         inscripcionService.eliminar(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<InscripcionDTO>> getInscripcionesPorUsuario(@PathVariable Long usuarioId) {
+        List<InscripcionDTO> inscripciones = inscripcionService.obtenerInscripcionesPorUsuario(usuarioId);
+        if (inscripciones.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(inscripciones);
     }
 }

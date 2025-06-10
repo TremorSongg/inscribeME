@@ -13,13 +13,15 @@
     <input type="checkbox" id="authToggle" class="auth-toggle" aria-hidden="true">
 
     <div class="auth-signup">
-      <form id="registerForm">
-        <label for="authToggle" class="auth-form-label" aria-hidden="true">Registro</label>
-        <input id="regName" type="text" class="auth-form-input" placeholder="Nombre de usuario" required>
-        <input id="regEmail" type="email" class="auth-form-input" placeholder="Correo electrónico" required>
-        <input id="regPassword" type="password" class="auth-form-input" placeholder="Contraseña" required>
-        <button type="button" class="auth-form-button" onclick="register()">Registrarse</button>
-      </form>
+        <form id="registerForm">
+          <label for="authToggle" class="auth-form-label" aria-hidden="true">Registro</label>
+          <input id="regName" type="text" class="auth-form-input" placeholder="Nombre de usuario" required>
+          <input id="regEmail" type="email" class="auth-form-input" placeholder="Correo electrónico" required>
+          <input id="regPassword" type="password" class="auth-form-input" placeholder="Contraseña" required>
+
+          <input id="regTelefono" type="tel" class="auth-form-input" placeholder="Teléfono (Opcional)">
+          <button type="button" class="auth-form-button" onclick="register()">Registrarse</button>
+        </form>
     </div>
 
     <div class="auth-login">

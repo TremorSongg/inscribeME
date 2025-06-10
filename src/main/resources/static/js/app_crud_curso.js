@@ -1,101 +1,148 @@
-// Aqui se define la lógica para manejar el CRUD de cursos
-// src/main/resources/static/js/app_crud_curso.js
 const API_URL = '/api/cursos';
 
-// Esta funcion sirve para cargar los cursos al iniciar la página
-document.addEventListener('DOMContentLoaded', () => {
-  cargarCursos();
-
-  const form = document.getElementById('curso-form');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const id = document.getElementById('curso-id').value;
-    const nombre = document.getElementById('nombre').value.trim();
-    const descripcion = document.getElementById('descripcion').value.trim();
-    const precio = parseFloat(document.getElementById('precio').value);
-    const cupos = parseInt(document.getElementById('cupos').value);
-
-    const curso = { nombre, descripcion, precio, cupos };
-
+// ▼▼▼ 1. FUNCIÓN NUEVA PARA CARGAR LOS INSTRUCTORES ▼▼▼
+async function cargarInstructores() {
     try {
-      if (id) {
-        await fetch(`${API_URL}/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(curso)
-        });
-      } else {
-        await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(curso)
-        });
-      }
+        const response = await fetch('/api/usuarios/instructores');
+        if (!response.ok) throw new Error('No se pudo cargar la lista de instructores.');
 
-      form.reset();
-      document.getElementById('curso-id').value = '';
-      cargarCursos();
-    } catch (err) {
-      console.error('Error al guardar curso:', err);
-      alert('Error al guardar el curso. Revisa la consola.');
+        const instructores = await response.json();
+        const select = document.getElementById('instructor');
+        
+        select.innerHTML = '<option value="" disabled selected>Selecciona un instructor</option>'; // Opción por defecto
+        
+        instructores.forEach(instructor => {
+            const option = document.createElement('option');
+            option.value = instructor.id;
+            option.textContent = instructor.nombre; // Asumiendo que el Usuario tiene un campo 'nombre'
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        const select = document.getElementById('instructor');
+        select.innerHTML = '<option value="" disabled selected>Error al cargar instructores</option>';
     }
-  });
+}
+
+
+// ▼▼▼ 2. MODIFICACIÓN EN DOMCONTENTLOADED ▼▼▼
+document.addEventListener('DOMContentLoaded', () => {
+    cargarCursos();
+    cargarInstructores(); // Se añade la llamada para llenar el menú de instructores
+
+    const form = document.getElementById('curso-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        // Lectura de todos los campos del formulario
+        const id = document.getElementById('curso-id').value;
+        const nombre = document.getElementById('nombre').value.trim();
+        const descripcion = document.getElementById('descripcion').value.trim();
+        const precio = parseFloat(document.getElementById('precio').value);
+        const cupoTotal = parseInt(document.getElementById('cupoTotal').value);
+        const fechaInicio = document.getElementById('fechaInicio').value;
+        const fechaFin = document.getElementById('fechaFin').value;
+        
+        // ▼▼▼ 3. LÓGICA NUEVA PARA OBTENER Y ENVIAR EL INSTRUCTOR ▼▼▼
+        const instructorId = document.getElementById('instructor').value;
+
+        // Construimos el objeto curso completo
+        const curso = { 
+            nombre, 
+            descripcion, 
+            precio, 
+            cupoTotal,
+            cupoDisponible: id ? undefined : cupoTotal,
+            fechaInicio,
+            fechaFin,
+            // Estructura clave para que Spring Boot asocie por ID
+            instructor: {
+                id: instructorId 
+            }
+        };
+
+        try {
+            if (id) {
+                await fetch(`${API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(curso)
+                });
+            } else {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(curso)
+                });
+            }
+            form.reset();
+            document.getElementById('curso-id').value = '';
+            cargarCursos();
+        } catch (err) {
+            console.error('Error al guardar curso:', err);
+            alert('Error al guardar el curso. Revisa la consola para más detalles.');
+        }
+    });
 });
 
-// Esta función carga los cursos desde la API y los muestra en una tabla (td)
 async function cargarCursos() {
-  try {
-    const res = await fetch(API_URL);
-    const cursos = await res.json();
-    const tabla = document.getElementById('tabla-cursos');
-    tabla.innerHTML = '';
+    try {
+        const res = await fetch(API_URL);
+        const cursos = await res.json();
+        const tabla = document.getElementById('tabla-cursos');
+        tabla.innerHTML = '';
 
-    cursos.forEach(curso => {
-      const fila = document.createElement('tr');
-      fila.innerHTML = `
-        <td>${curso.id}</td>
-        <td>${curso.nombre}</td>
-        <td>${curso.descripcion || '-'}</td>
-        <td>$${curso.precio.toLocaleString()}</td>
-        <td>${curso.cupos}</td>
-        <td>
-          <button class="btn btn-editar btn-sm" onclick="editarCurso(${curso.id})">Editar</button>
-          <button class="btn btn-eliminar btn-sm" onclick="eliminarCurso(${curso.id})">Eliminar</button>
-        </td>
-      `;
-      tabla.appendChild(fila);
-    });
-  } catch (err) {
-    console.error('Error al cargar cursos:', err);
-  }
+        cursos.forEach(curso => {
+            const fila = document.createElement('tr');
+            // Añadimos la columna del instructor para que se vea en la tabla de admin
+            fila.innerHTML = `
+                <td>${curso.id}</td>
+                <td>${curso.nombre}</td>
+                <td>${curso.descripcion || '-'}</td>
+                <td>$${curso.precio.toLocaleString()}</td>
+                <td>${curso.cupoDisponible} / ${curso.cupoTotal}</td>
+                <td>${curso.instructor ? curso.instructor.nombre : 'N/A'}</td>
+                <td>
+                    <button class="btn btn-editar btn-sm" onclick="editarCurso(${curso.id})">Editar</button>
+                    <button class="btn btn-eliminar btn-sm" onclick="eliminarCurso(${curso.id})">Eliminar</button>
+                </td>
+            `;
+            tabla.appendChild(fila);
+        });
+    } catch (err) {
+        console.error('Error al cargar cursos:', err);
+    }
 }
 
-// Esta función edita un curso específico al hacer clic en el botón "Editar",
-// toma los datos del curso y los coloca en el formulario para que el usuario pueda modificarlos
 async function editarCurso(id) {
-  try {
-    const res = await fetch(`${API_URL}/${id}`);
-    const curso = await res.json();
+    try {
+        const res = await fetch(`${API_URL}/${id}`);
+        const curso = await res.json();
 
-    document.getElementById('curso-id').value = curso.id;
-    document.getElementById('nombre').value = curso.nombre;
-    document.getElementById('descripcion').value = curso.descripcion || '';
-    document.getElementById('precio').value = curso.precio;
-    document.getElementById('cupos').value = curso.cupos;
-  } catch (err) {
-    console.error('Error al obtener curso:', err);
-  }
+        document.getElementById('curso-id').value = curso.id;
+        document.getElementById('nombre').value = curso.nombre;
+        document.getElementById('descripcion').value = curso.descripcion || '';
+        document.getElementById('precio').value = curso.precio;
+        document.getElementById('cupoTotal').value = curso.cupoTotal;
+        document.getElementById('fechaInicio').value = curso.fechaInicio;
+        document.getElementById('fechaFin').value = curso.fechaFin;
+        
+        // También pre-seleccionamos el instructor al editar
+        if (curso.instructor) {
+            document.getElementById('instructor').value = curso.instructor.id;
+        }
+
+    } catch (err) {
+        console.error('Error al obtener curso:', err);
+    }
 }
 
-// Esta función elimina un curso específico al hacer clic en el botón "Eliminar", muestra una confirmación antes de eliminarlos
 async function eliminarCurso(id) {
-  if (!confirm('¿Estás seguro de eliminar este curso?')) return;
-
-  try {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    cargarCursos();
-  } catch (err) {
-    console.error('Error al eliminar curso:', err);
-  }
+    if (!confirm('¿Estás seguro de eliminar este curso?')) return;
+    try {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        cargarCursos();
+    } catch (err) {
+        console.error('Error al eliminar curso:', err);
+    }
 }

@@ -3,14 +3,18 @@ package com.example.inscribeMe.Controller;
 import com.example.inscribeMe.Model.Usuario;
 import com.example.inscribeMe.Service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*") // Permite solicitudes desde cualquier origen
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -31,21 +35,29 @@ public class UsuarioController {
         return usuarioService.crearUsuario(usuario);
     }
 
-    //login que no me funciona:c
-    // @PostMapping("/login")
-    // public Map<String, String> login(@RequestBody Usuario u) {
-    //     Optional<Usuario> user = usuarioService.autenticar(u.getEmail(), u.getPassword());
-    //     Map<String, String> response = new HashMap<>();
-    //     if (user.isPresent()) {
-    //         response.put("result", "OK");
-    //         response.put("id", String.valueOf(user.get().getId())); // Convertir ID a String
-    //         response.put("nombre", user.get().getNombre());
-    //         response.put("email", user.get().getEmail());
-    //     } else {
-    //         response.put("result", "Error");
-    //     }
-    //     return response;
-    // }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        return usuarioService.autenticar(email, password)
+                .map(usuario -> {
+                    // Si la autenticación es exitosa, preparamos una respuesta OK.
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("result", "OK");
+                    response.put("id", usuario.getId());
+                    response.put("nombre", usuario.getNombre());
+                    response.put("email", usuario.getEmail());
+                    return ResponseEntity.ok(response);
+                })
+                .orElseGet(() -> {
+                    // Si falla, preparamos una respuesta de error.
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("result", "FAIL");
+                    response.put("message", "Credenciales inválidas");
+                    return ResponseEntity.status(401).body(response); // 401 Unauthorized
+                });
+    }
 
     @PutMapping("/{id}")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
@@ -55,5 +67,10 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public void eliminarUsuario(@PathVariable Long id) {
         usuarioService.eliminarUsuario(id);
+    }
+
+    @GetMapping("/instructores")
+    public List<Usuario> getInstructores() {
+        return usuarioService.obtenerInstructores();
     }
 }

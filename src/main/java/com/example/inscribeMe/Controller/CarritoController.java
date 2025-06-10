@@ -1,55 +1,72 @@
 package com.example.inscribeMe.Controller;
 
-import com.example.inscribeMe.Model.Carrito;
+import com.example.inscribeMe.DTO.CarritoDTO;
+import com.example.inscribeMe.Model.Compra;
 import com.example.inscribeMe.Service.CarritoService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/carrito")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class CarritoController {
 
     private final CarritoService carritoService;
 
-    public CarritoController(CarritoService carritoService) {
-        this.carritoService = carritoService;
-    }
-
-    @GetMapping
-    public List<Carrito> listar() {
-        return carritoService.obtenerTodos();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Carrito> obtener(@PathVariable Long id) {
-        return carritoService.obtenerPorId(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
+    // Obtener el contenido del carrito de un usuario
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Carrito> obtenerPorUsuario(@PathVariable Long usuarioId) {
-        return carritoService.obtenerPorUsuarioId(usuarioId)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<CarritoDTO> getCarritoByUsuarioId(@PathVariable Long usuarioId) {
+        CarritoDTO carritoDTO = carritoService.obtenerContenidoCarrito(usuarioId);
+        return ResponseEntity.ok(carritoDTO);
     }
 
-    @PostMapping
-    public Carrito crear(@RequestBody Carrito carrito) {
-        return carritoService.crear(carrito);
+    // Agregar un curso al carrito
+    @PostMapping("/agregar")
+    public ResponseEntity<?> addItemToCart(@RequestBody Map<String, Long> payload) {
+        Long usuarioId = payload.get("usuarioId");
+        Long cursoId = payload.get("cursoId");
+        try {
+            carritoService.agregarCursoAlCarrito(usuarioId, cursoId);
+            return ResponseEntity.ok().body(Map.of("message", "Curso agregado al carrito exitosamente"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @PutMapping("/{id}")
-    public Carrito actualizar(@PathVariable Long id, @RequestBody Carrito carrito) {
-        return carritoService.actualizar(id, carrito);
+    // Eliminar un item del carrito
+    @DeleteMapping("/item/{cursoId}")
+    public ResponseEntity<?> removeItemFromCart(@PathVariable Long cursoId, @RequestParam Long usuarioId) {
+         try {
+            carritoService.eliminarItemDelCarrito(usuarioId, cursoId);
+            return ResponseEntity.ok().body(Map.of("message", "Item eliminado del carrito"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        carritoService.eliminar(id);
-        return ResponseEntity.noContent().build();
+    // Vaciar el carrito completo
+    @DeleteMapping("/vaciar")
+    public ResponseEntity<?> clearCart(@RequestParam Long usuarioId) {
+        try {
+            carritoService.vaciarCarrito(usuarioId);
+            return ResponseEntity.ok().body(Map.of("message", "El carrito ha sido vaciado"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+    
+    // Finalizar compra
+    @PostMapping("/comprar")
+    public ResponseEntity<?> checkout(@RequestParam Long usuarioId) {
+        try {
+            Compra compra = carritoService.realizarCompra(usuarioId);
+            return ResponseEntity.ok(compra);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }

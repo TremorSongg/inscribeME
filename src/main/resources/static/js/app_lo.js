@@ -4,6 +4,8 @@ function register() {
     const nombre = document.getElementById("regName").value;
     const email = document.getElementById("regEmail").value;
     const password = document.getElementById("regPassword").value;
+    // ▼▼▼ LÍNEA NUEVA A AGREGAR ▼▼▼
+    const telefono = document.getElementById("regTelefono").value; 
 
     fetch("http://localhost:8080/api/usuarios/registrar", {
         method: "POST",
@@ -11,26 +13,28 @@ function register() {
         body: JSON.stringify({
             nombre: nombre,
             email: email,
-            password: password
+            password: password,
+            // ▼▼▼ LÍNEA NUEVA A AGREGAR ▼▼▼
+            telefono: telefono 
         })
     })
     .then(res => {
+        // ... (el resto de tu función sigue igual)
         if (!res.ok) {
             throw new Error('Error en la respuesta del servidor');
         }
         return res.json();
     })
     .then(data => {
-        // Mostrar mensaje de éxito
         alert(`Usuario registrado con ID: ${data.id}`);
-        
-        // Cambiar automáticamente al formulario de login después del registro
         document.getElementById('chk').checked = false;
         
-        // Limpiar los campos del formulario de registro
+        // Limpiar todos los campos, incluyendo el nuevo
         document.getElementById("regName").value = "";
         document.getElementById("regEmail").value = "";
         document.getElementById("regPassword").value = "";
+        // ▼▼▼ LÍNEA NUEVA A AGREGAR ▼▼▼
+        document.getElementById("regTelefono").value = "";
     })
     .catch(error => {
         console.error('Error:', error);

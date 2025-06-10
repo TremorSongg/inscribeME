@@ -72,29 +72,44 @@
   <form id="curso-form" class="card p-4 shadow mb-4">
     <input type="hidden" id="curso-id">
     <div class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label">Nombre</label>
-        <input type="text" id="nombre" class="form-control" required>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Precio</label>
-        <input type="number" id="precio" class="form-control" required>
-      </div>
-      <div class="col-md-3">
-        <label class="form-label">Cupos</label>
-        <input type="number" id="cupos" class="form-control" required>
-      </div>
-      <div class="col-md-12">
-  <label class="form-label">Descripción</label>
-  <textarea id="descripcion" class="form-control" rows="3"></textarea>
-</div>
+        <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" id="nombre" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Precio</label>
+            <input type="number" id="precio" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Cupos Totales</label>
+            <input type="number" id="cupoTotal" class="form-control" required>
+        </div>
+        <div class="col-md-12">
+            <label class="form-label">Descripción</label>
+            <textarea id="descripcion" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="row g-3">
+    <div class="col-12">
+        <label for="instructor" class="form-label">Instructor Asignado</label>
+        <select id="instructor" class="form-select" required>
+            <option value="" disabled selected>Cargando instructores...</option>
+        </select>
+    </div>
 
-    </div>
+        <div class="col-md-6">
+            <label class="form-label">Fecha de Inicio</label>
+            <input type="date" id="fechaInicio" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Fecha de Fin</label>
+            <input type="date" id="fechaFin" class="form-control" required>
+        </div>
+        </div>
     <div class="mt-4 text-end">
-      <button type="submit" class="btn btn-success btn-animado">Guardar</button>
-      <button type="reset" class="btn btn-secondary btn-animado">Limpiar</button>
+        <button type="submit" class="btn btn-success btn-animado">Guardar</button>
+        <button type="reset" class="btn btn-secondary btn-animado">Limpiar</button>
     </div>
-  </form>
+</form>
 
   <!-- Tabla -->
   <div class="table-responsive">

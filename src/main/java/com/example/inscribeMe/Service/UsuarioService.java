@@ -15,6 +15,11 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
+    public List<Usuario> obtenerInstructores() {
+        // Asumo que tu enum Rol tiene un valor INSTRUCTOR
+        return usuarioRepository.findByRol(Rol.INSTRUCTOR);
+    }
+
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }

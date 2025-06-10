@@ -2,6 +2,7 @@ package com.example.inscribeMe.Model;
 
 import java.time.LocalDate;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,7 @@ public class Curso {
 
     private String nombre;
     private String descripcion;
+    private double precio;
     private int cupoTotal;
     private int cupoDisponible;
 
@@ -30,5 +32,6 @@ public class Curso {
     private Usuario instructor;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Inscripcion> inscripciones;
 }

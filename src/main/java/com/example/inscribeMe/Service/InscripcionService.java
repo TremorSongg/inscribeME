@@ -1,11 +1,13 @@
 package com.example.inscribeMe.Service;
 
+import com.example.inscribeMe.DTO.InscripcionDTO;
 import com.example.inscribeMe.Model.Inscripcion;
 import com.example.inscribeMe.Repository.InscripcionRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class InscripcionService {
@@ -35,5 +37,29 @@ public class InscripcionService {
 
     public void eliminar(Long id) {
         inscripcionRepository.deleteById(id);
+    }
+
+    public List<InscripcionDTO> obtenerInscripcionesPorUsuario(Long usuarioId) {
+        return inscripcionRepository.findByUsuarioId(usuarioId).stream()
+                .map(inscripcion -> {
+                    // ▼▼▼ CORRECCIÓN AQUÍ: Se define la variable instructorName ▼▼▼
+                    // Manejo por si un curso no tuviera instructor asignado
+                    String instructorName = (inscripcion.getCurso().getInstructor() != null)
+                            ? inscripcion.getCurso().getInstructor().getNombre()
+                            : "No asignado";
+                    // ▲▲▲ FIN DE LA CORRECIÓN ▲▲▲
+
+                    return InscripcionDTO.builder()
+                            .cursoId(inscripcion.getCurso().getId())
+                            .nombreCurso(inscripcion.getCurso().getNombre())
+                            .descripcionCurso(inscripcion.getCurso().getDescripcion())
+                            .fechaInicioCurso(inscripcion.getCurso().getFechaInicio())
+                            .fechaFinCurso(inscripcion.getCurso().getFechaFin())
+                            .fechaInscripcion(inscripcion.getFechaInscripcion())
+                            .estado(inscripcion.getEstado())
+                            .nombreInstructor(instructorName) // Ahora la variable existe
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

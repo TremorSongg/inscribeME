@@ -1,6 +1,7 @@
 package com.example.inscribeMe.Model;
 
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,9 +24,11 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
+    @JsonBackReference
     private Curso curso;
 }
