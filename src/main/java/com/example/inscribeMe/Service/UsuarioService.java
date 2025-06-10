@@ -34,10 +34,15 @@ public class UsuarioService {
         return usuarioRepository.findById(id).map(u -> {
             u.setNombre(datosActualizados.getNombre());
             u.setEmail(datosActualizados.getEmail());
-            u.setContraseña(datosActualizados.getContraseña());
+            u.setPassword(datosActualizados.getPassword());
             u.setTelefono(datosActualizados.getTelefono());
             u.setRol(datosActualizados.getRol());
             return usuarioRepository.save(u);
         }).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    //Metodo que autentifica a los usuarios 
+    public Optional<Usuario> autenticar(String email, String password){
+        return usuarioRepository.findByEmail(email).filter(u -> u.getPassword().equals(password));
     }
 }
