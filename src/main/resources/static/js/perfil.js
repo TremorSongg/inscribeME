@@ -53,12 +53,13 @@ function renderizarPerfilCompleto() {
 function filtrarCalendarioPorCurso(cursoId) {
     const inscripcionSeleccionada = todasMisInscripciones.find(ins => ins.cursoId === cursoId);
     if (inscripcionSeleccionada) {
-        inicializarCalendario([inscripcionSeleccionada]);
+        // Llamamos a inicializar con un array de una sola inscripción y el segundo parámetro en 'true' para activar el filtro
+        inicializarCalendario([inscripcionSeleccionada], true);
     }
 }
 
-// Inicializa o reinicia el calendario con las inscripciones dadas
-function inicializarCalendario(inscripciones) {
+// Inicializa o reinicia el calendario
+function inicializarCalendario(inscripciones, isFiltered = false) {
     const contenedorCalendario = document.getElementById('calendario-cursos');
     if (!contenedorCalendario) return;
 
@@ -68,11 +69,11 @@ function inicializarCalendario(inscripciones) {
 
     const fechasInicio = new Set(inscripciones.map(ins => ins.fechaInicioCurso));
     const fechasFin = new Set(inscripciones.map(ins => ins.fechaFinCurso));
-    const todasLasFechas = [...fechasInicio, ...fechasFin];
-
-    fp_instance = flatpickr(contenedorCalendario, {
-        inline: true,
-        enable: todasLasFechas.length > 0 ? todasLasFechas : [""],
+    
+    // Configuramos las opciones base de Flatpickr
+    const config = {
+        inline: true, // Calendario siempre visible
+        locale: 'es', // Opcional: para idioma español (requiere script de localización)
         onDayCreate: function(dObj, dStr, fp, dayElem) {
             const fecha = dayElem.dateObj.toISOString().slice(0, 10);
             if (fechasInicio.has(fecha)) {
@@ -84,10 +85,22 @@ function inicializarCalendario(inscripciones) {
                 dayElem.setAttribute('title', 'Fin de curso');
             }
         }
-    });
+    };
+    
+    // ▼▼▼ LÓGICA MODIFICADA AQUÍ ▼▼▼
+    // Solo restringimos las fechas visibles si estamos en modo 'filtrado'
+    if (isFiltered) {
+        const todasLasFechasFiltradas = [...fechasInicio, ...fechasFin];
+        config.enable = todasLasFechasFiltradas.length > 0 ? todasLasFechasFiltradas : [""];
+    }
+    // Si no estamos en modo filtrado, 'enable' no se define, por lo que se muestra el calendario completo y neutral.
+    // ▲▲▲ FIN DE LA MODIFICACIÓN ▲▲▲
+
+    fp_instance = flatpickr(contenedorCalendario, config);
 }
 
-// Carga las inscripciones del usuario y las muestra
+
+// Carga las inscripciones del usuario desde la API
 async function cargarInscripciones() {
     try {
         const usuarioId = sessionStorage.getItem("userId");
@@ -95,20 +108,18 @@ async function cargarInscripciones() {
 
         const response = await fetch(`/api/inscripciones/usuario/${usuarioId}`);
         
-        if (response.status === 204) {
-            todasMisInscripciones = [];
-            renderizarInscripciones([]);
-            inicializarCalendario([]);
-            return;
+        let inscripciones = [];
+        if (response.ok && response.status !== 204) {
+            inscripciones = await response.json();
         }
-        if (!response.ok) throw new Error("Error al cargar el historial de inscripciones");
-
-        const inscripciones = await response.json();
         
-        todasMisInscripciones = inscripciones;
-        
+        todasMisInscripciones = inscripciones; // Guardamos la lista completa
         renderizarInscripciones(inscripciones);
-        inicializarCalendario(inscripciones);
+        
+        // ▼▼▼ CAMBIO CLAVE: Inicializamos el calendario VACÍO ▼▼▼
+        // Esto crea el calendario en un estado neutral, sin fechas coloreadas.
+        inicializarCalendario([]);
+        // ▲▲▲ FIN DEL CAMBIO ▲▲▲
 
     } catch (error) {
         console.error("Error:", error);
@@ -143,8 +154,7 @@ function renderizarInscripciones(inscripciones) {
                     <li class="list-group-item"><b>Inscrito el:</b> ${new Date(ins.fechaInscripcion).toLocaleDateString()}</li>
                     <li class="list-group-item"><b>Inicio del curso:</b> ${new Date(ins.fechaInicioCurso + 'T00:00:00').toLocaleDateString()}</li>
                     <li class="list-group-item"><b>Fin del curso:</b> ${new Date(ins.fechaFinCurso + 'T00:00:00').toLocaleDateString()}</li>
-                    
-                    <li class="list-group-item"><b>Instructor:</b> ${ins.nombreInstructor}</li>
+                    <li class="list-group-item"><b>Instructor:</b> ${ins.nombreInstructor || 'No asignado'}</li>
                 </ul>
             </div>
         </div>
@@ -162,7 +172,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const resetButton = document.getElementById('reset-calendario-btn');
     if (resetButton) {
         resetButton.addEventListener('click', () => {
-            inicializarCalendario(todasMisInscripciones);
+            // Llama a inicializar el calendario con la lista completa y sin filtro
+            inicializarCalendario(todasMisInscripciones, false);
         });
     }
     

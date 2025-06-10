@@ -1,15 +1,29 @@
 document.getElementById('form-reporte').addEventListener('submit', async (e) => {
     e.preventDefault();
     
+    // Obtenemos el ID del usuario desde la sesión del navegador
+    const usuarioId = sessionStorage.getItem('userId');
+    
+    // Verificamos si el usuario ha iniciado sesión
+    if (!usuarioId) {
+        Swal.fire('Error', 'Debes iniciar sesión para poder enviar un reporte.', 'error');
+        return; // Detenemos la función si no hay sesión
+    }
+    
+    const mensaje = document.getElementById('mensaje').value;
+
+    // Verificamos que el mensaje no esté vacío
+    if (!mensaje.trim()) {
+        Swal.fire('Atención', 'Por favor, escribe el detalle de tu reporte.', 'warning');
+        return;
+    }
+
     const datos = {
-        // no se le da un número directamente porque puede confundir,
-        //  mejor asegurarse de que es un número con esta línea
-        usuarioId: parseInt(document.getElementById('usuarioId').value),
-        mensaje: document.getElementById('mensaje').value
+        usuarioId: parseInt(usuarioId),
+        mensaje: mensaje
     };
 
     try {
-        // Mostrar alerta de carga mientras carga el reporte
         Swal.fire({
             title: 'Enviando reporte',
             html: 'Por favor espera...',
@@ -18,7 +32,7 @@ document.getElementById('form-reporte').addEventListener('submit', async (e) => 
                 Swal.showLoading();
             }
         });
-        //hace petición POST en la ruta para crear y se define formato JSON
+
         const response = await fetch('/api/reportes/crear', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -29,11 +43,10 @@ document.getElementById('form-reporte').addEventListener('submit', async (e) => 
             Swal.fire({
                 icon: 'success',
                 title: '¡Reporte enviado!',
-                text: 'Tu reporte ha sido enviado correctamente',
-                showConfirmButton: true,
-                timer: 3000
+                text: 'Gracias por tu ayuda. Tu reporte ha sido enviado correctamente.',
+                showConfirmButton: true
             }).then(() => {
-                // Redirigir después de cerrar la alerta
+                // Redirigimos al usuario a la página de notificaciones para que vea la confirmación
                 window.location.href = "notificaciones.html";
             });
         } else {
@@ -42,7 +55,6 @@ document.getElementById('form-reporte').addEventListener('submit', async (e) => 
                 icon: 'error',
                 title: 'Error al enviar',
                 text: error || 'Ocurrió un error al enviar el reporte',
-                confirmButtonText: 'Entendido'
             });
         }
     } catch (error) {
@@ -50,8 +62,7 @@ document.getElementById('form-reporte').addEventListener('submit', async (e) => 
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',
-            text: 'No se pudo conectar con el servidor',
-            confirmButtonText: 'Entendido'
+            text: 'No se pudo conectar con el servidor. Inténtalo más tarde.',
         });
     }
 });

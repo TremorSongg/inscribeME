@@ -1,5 +1,6 @@
 package com.example.inscribeMe.Controller;
 
+import com.example.inscribeMe.DTO.CursoDTO;
 import com.example.inscribeMe.Model.Curso;
 import com.example.inscribeMe.Service.CursoService;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class CursoController {
     }
 
     @GetMapping
-    public List<Curso> listar() {
-        return cursoService.obtenerTodos();
+    public List<CursoDTO> listar() {
+        return cursoService.obtenerTodosComoDTO();
     }
 
     @GetMapping("/{id}")
@@ -45,4 +46,6 @@ public class CursoController {
         cursoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    
 }

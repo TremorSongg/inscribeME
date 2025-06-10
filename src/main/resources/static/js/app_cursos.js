@@ -32,20 +32,22 @@ function mostrarCursos(cursos) {
         const card = document.createElement("div");
         card.className = "col-lg-3 col-md-4 col-sm-6 mb-4";
         
+        // La plantilla ahora es más simple y segura
         card.innerHTML = `
             <div class="card shadow-sm h-100">
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${curso.nombre}</h5>
                     <p class="card-text flex-grow-1">${curso.descripcion}</p>
                     
+                    <p class="card-text"><small class="text-muted"><strong>Instructor:</strong> ${curso.nombreInstructor}</small></p>
                     
-                    <p class="card-text"><small class="text-muted"><strong>Instructor:</strong> ${curso.instructor ? curso.instructor.nombre : 'No asignado'}</small></p>
-                    
-                    <p class="card-text fs-5 fw-bold text-primary mt-auto">$${curso.precio.toLocaleString()}</p>
-                    <p><strong>Cupos disponibles:</strong> ${curso.cupoDisponible}</p>
-                    <button class="btn btn-outline-primary" onclick="agregarAlCarrito(${curso.id})" ${curso.cupoDisponible === 0 ? "disabled" : ""}>
-                        ${curso.cupoDisponible > 0 ? "Agregar al carrito" : "Sin cupos"}
-                    </button>
+                    <div class="mt-auto">
+                        <p class="card-text fs-5 fw-bold text-primary mb-2">$${curso.precio.toLocaleString()}</p>
+                        <p><strong>Cupos disponibles:</strong> ${curso.cupoDisponible}</p>
+                        <button class="btn btn-outline-primary w-100" onclick="agregarAlCarrito(${curso.id})" ${curso.cupoDisponible === 0 ? "disabled" : ""}>
+                            ${curso.cupoDisponible > 0 ? "Agregar al carrito" : "Sin cupos"}
+                        </button>
+                    </div>
                 </div>
             </div>
         `;

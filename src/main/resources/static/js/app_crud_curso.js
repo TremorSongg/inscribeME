@@ -88,20 +88,22 @@ document.addEventListener('DOMContentLoaded', () => {
 async function cargarCursos() {
     try {
         const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Error al cargar cursos');
         const cursos = await res.json();
         const tabla = document.getElementById('tabla-cursos');
         tabla.innerHTML = '';
 
         cursos.forEach(curso => {
             const fila = document.createElement('tr');
-            // Añadimos la columna del instructor para que se vea en la tabla de admin
+            
+            // Verificamos que esta plantilla genere una celda para el instructor
             fila.innerHTML = `
                 <td>${curso.id}</td>
                 <td>${curso.nombre}</td>
                 <td>${curso.descripcion || '-'}</td>
                 <td>$${curso.precio.toLocaleString()}</td>
                 <td>${curso.cupoDisponible} / ${curso.cupoTotal}</td>
-                <td>${curso.instructor ? curso.instructor.nombre : 'N/A'}</td>
+                <td>${curso.nombreInstructor || 'N/A'}</td>
                 <td>
                     <button class="btn btn-editar btn-sm" onclick="editarCurso(${curso.id})">Editar</button>
                     <button class="btn btn-eliminar btn-sm" onclick="eliminarCurso(${curso.id})">Eliminar</button>

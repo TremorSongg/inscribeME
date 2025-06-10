@@ -1,68 +1,52 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const usuarioId = 1; 
+    const usuarioId = sessionStorage.getItem('userId');
+    if (!usuarioId) {
+        document.getElementById('tabla-notificaciones').innerHTML = `
+            <tr><td colspan="3" class="text-center text-danger">Debes iniciar sesión para ver tus notificaciones.</td></tr>`;
+        return;
+    }
     
     try {
-        //se obtienen los reportes con un fetch a la ruta
-        const response = await fetch(`/api/reportes/usuario/${usuarioId}`);
-        if (!response.ok) throw new Error("Error al cargar reportes");
+        const response = await fetch(`/api/notificaciones/usuario/${usuarioId}`);
+        if (!response.ok) throw new Error("Error al cargar notificaciones");
         
-        const reportes = await response.json();
-        //llama  a la función y si hay error muestra mensaje de error
-        renderizarNotificaciones(reportes);
+        const notificaciones = await response.json();
+        renderizarNotificaciones(notificaciones);
     } catch (error) {
         console.error("Error:", error);
         document.getElementById('tabla-notificaciones').innerHTML = `
-            <tr><td colspan="4" class="text-center text-danger">Error al cargar notificaciones.</td></tr>
+            <tr><td colspan="3" class="text-center text-danger">Error al cargar notificaciones.</td></tr>
         `;
     }
 });
-//obtiene el cuerpo de la tabla tbody
-function renderizarNotificaciones(reportes = []) {
+
+function renderizarNotificaciones(notificaciones = []) {
     const tbody = document.getElementById('tabla-notificaciones');
-    const filaVacia = document.getElementById('sin-notificaciones');
     
-    // Limpia tabla exepto las filas vacias
-    tbody.innerHTML = ''; // Limpia el contenido del tbody
+    if (notificaciones.length === 0) {
+        // La fila de "sin notificaciones" ya está en el HTML, solo nos aseguramos de que se vea
+        document.getElementById('sin-notificaciones').style.display = '';
+        tbody.innerHTML = ''; // Limpiamos por si acaso
+        tbody.appendChild(document.getElementById('sin-notificaciones'));
+        return;
+    }
 
-    // agrega lso reportes a medida que se van generando
-    reportes.forEach(reporte => {
+    // Ocultamos el mensaje de "sin notificaciones" y limpiamos la tabla
+    document.getElementById('sin-notificaciones').style.display = 'none';
+    tbody.innerHTML = ''; 
+
+    notificaciones.forEach(notificacion => {
         const tr = document.createElement('tr');
+        tr.className = notificacion.leido ? 'leido' : 'no-leido fw-bold'; // Clase para diferenciar leídas/no leídas
 
-        // Formatear fecha
-        const fechaFormateada = reporte.fechaCreacion 
-            ? new Date(reporte.fechaCreacion).toLocaleString('es-CL', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-              })
-            : "Fecha no disponible";
-
-        const tipoBadge = document.createElement('span');
-        tipoBadge.className = 'badge bg-primary'; // actualmente no esta en uso ya que el estado solicitud tiene solo dos valores y bg-primary apunta a un tercer valor
-        tipoBadge.textContent = `Reporte #${reporte.id}`;
-
-        const estadoBadge = document.createElement('span');
-        estadoBadge.className = reporte.estado === 'PENDIENTE' ? 'badge bg-warning' : 'badge bg-success';
-        estadoBadge.textContent = reporte.estado;
+        const fechaFormateada = new Date(notificacion.fecha).toLocaleString('es-CL');
 
         tr.innerHTML = `
-            <td>${tipoBadge.outerHTML}</td>
-            <td>${reporte.mensaje || "Sin descripción"}</td>
+            <td><i class="fas fa-bell text-primary"></i></td>
+            <td>${notificacion.mensaje}</td>
             <td>${fechaFormateada}</td>
-            <td>${estadoBadge.outerHTML}</td>
+            <td><span class="badge ${notificacion.leido ? 'bg-secondary' : 'bg-primary'}">${notificacion.leido ? 'Leída' : 'Nueva'}</span></td>
         `;
-
         tbody.appendChild(tr);
     });
-
-    // Mostrar esta fila y mensaje si no hay reportes por ahora
-    if (reportes.length === 0 && filaVacia) {
-        filaVacia.style.display = '';
-    } else if (filaVacia) {
-        // oculta la fila vacia si hay reportes
-        filaVacia.style.display = 'none';
-    }
 }

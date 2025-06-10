@@ -25,8 +25,12 @@ public class CarritoService {
     private final CompraRepository compraRepository;
     private final PagoService pagoService;
     private final InscripcionRepository inscripcionRepository;
+    
+    // ▼▼▼ CORRECCIÓN AQUÍ ▼▼▼
+    // Se inyecta el SERVICIO, no el controlador.
+    private final NotificacionService notificacionService;
+    // ▲▲▲ FIN DE LA CORRECIÓN ▲▲▲
 
-    // Obtiene o crea un carrito para un usuario
     private Carrito obtenerOCrearCarrito(Long usuarioId) {
         return carritoRepository.findByUsuarioId(usuarioId).orElseGet(() -> {
             Usuario usuario = usuarioRepository.findById(usuarioId)
@@ -45,12 +49,10 @@ public class CarritoService {
         Curso curso = cursoRepository.findById(cursoId)
                 .orElseThrow(() -> new EntityNotFoundException("Curso no encontrado con id: " + cursoId));
 
-        // Validar si ya existe el curso en el carrito
         if (carrito.getItems().stream().anyMatch(item -> item.getCurso().getId().equals(cursoId))) {
             throw new IllegalStateException("El curso ya está en el carrito.");
         }
         
-        // Validar cupos
         if (curso.getCupoDisponible() < 1) {
             throw new IllegalStateException("No hay cupos disponibles para el curso: " + curso.getNombre());
         }
@@ -58,7 +60,7 @@ public class CarritoService {
         ItemCarrito nuevoItem = ItemCarrito.builder()
                 .carrito(carrito)
                 .curso(curso)
-                .cantidad(1) // Para cursos, la cantidad siempre es 1
+                .cantidad(1)
                 .build();
 
         carrito.getItems().add(nuevoItem);
@@ -112,7 +114,6 @@ public class CarritoService {
             throw new IllegalStateException("El carrito está vacío, no se puede realizar la compra.");
         }
         
-        // 1. Crear la Compra
         Compra nuevaCompra = new Compra();
         nuevaCompra.setUsuario(carrito.getUsuario());
         nuevaCompra.setFecha(LocalDateTime.now());
@@ -121,31 +122,26 @@ public class CarritoService {
         List<ItemCompra> itemsCompra = new ArrayList<>();
         double montoTotal = 0;
 
-        // 2. Procesar cada item del carrito
-        for (ItemCarrito itemCarrito : carrito.getItems()) {
+        for (ItemCarrito itemCarrito : new ArrayList<>(carrito.getItems())) {
             Curso curso = itemCarrito.getCurso();
             
-            // Doble chequeo de cupos (crítico en entornos concurrentes)
             if (curso.getCupoDisponible() < itemCarrito.getCantidad()) {
                 throw new IllegalStateException("No hay suficientes cupos para el curso: " + curso.getNombre());
             }
 
-            // 3. Descontar cupo
             curso.setCupoDisponible(curso.getCupoDisponible() - itemCarrito.getCantidad());
             cursoRepository.save(curso);
 
-            // 4. Transformar ItemCarrito a ItemCompra
             ItemCompra itemCompra = ItemCompra.builder()
                 .compra(nuevaCompra)
                 .curso(curso)
                 .cantidad(itemCarrito.getCantidad())
-                .precioUnitario(curso.getPrecio()) // Guardar el precio al momento de la compra
+                .precioUnitario(curso.getPrecio())
                 .build();
             itemsCompra.add(itemCompra);
 
             montoTotal += curso.getPrecio() * itemCarrito.getCantidad();
 
-            // ▼▼▼ LÓGICA NUEVA PARA CREAR LA INSCRIPCIÓN ▼▼▼
             Inscripcion inscripcion = Inscripcion.builder()
                 .usuario(carrito.getUsuario())
                 .curso(curso)
@@ -153,26 +149,22 @@ public class CarritoService {
                 .estado(EstadoInscripcion.INSCRITO)
                 .build();
             inscripcionRepository.save(inscripcion);
-            
+
+            String msg = "¡Gracias por tu compra! Te has inscrito al curso: '" + curso.getNombre() + "'.";
+            notificacionService.crearNotificacionParaUsuario(carrito.getUsuario(), msg);
         }
 
         nuevaCompra.setItems(itemsCompra);
         
-        // 5. Simular el Pago
         Pago pago = new Pago();
         pago.setMonto(montoTotal);
         pago.setFecha(LocalDateTime.now());
         pago.setExitoso(true);
         pago.setMedioPago("SIMULADO_TARJETA_CREDITO");
         pagoService.guardarPago(pago);
-        
-        // Se podría asociar el pago a la compra si el modelo lo permitiera
-        // nuevaCompra.setPago(pago);
 
-        // 6. Guardar la compra
         Compra compraGuardada = compraRepository.save(nuevaCompra);
 
-        // 7. Vaciar el carrito
         carrito.getItems().clear();
         carritoRepository.save(carrito);
 

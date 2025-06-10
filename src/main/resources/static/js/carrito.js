@@ -143,5 +143,9 @@ async function checkout() {
     }
 }
 
-// Cargar el carrito cuando la página esté lista
-document.addEventListener("DOMContentLoaded", loadCarrito);
+document.addEventListener("DOMContentLoaded", () => {
+    // Solo ejecuta la función si estamos en la página que tiene el contenedor del carrito
+    if (document.getElementById("carrito-container")) {
+        loadCarrito();
+    }
+});
