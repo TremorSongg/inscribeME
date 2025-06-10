@@ -1,5 +1,6 @@
 package com.example.inscribeMe.Service;
 
+import com.example.inscribeMe.Model.Rol;
 import com.example.inscribeMe.Model.Usuario;
 import com.example.inscribeMe.Repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,14 @@ public class UsuarioService {
     }
 
     public Usuario crearUsuario(Usuario usuario) {
+        //para no dejar valor rol en null
+        if(usuario.getRol()== null){
+            usuario.setRol(Rol.ESTUDIANTE);
+        }
+        //para no dejar valor telefono en null
+        if(usuario.getTelefono() == null){
+            usuario.setTelefono("");
+        }
         return usuarioRepository.save(usuario);
     }
 

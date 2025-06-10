@@ -30,6 +30,8 @@ public class UsuarioController {
         return usuarioService.crearUsuario(usuario);
     }
 
+    
+
     @PutMapping("/{id}")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
         return usuarioService.actualizarUsuario(id, usuario);
