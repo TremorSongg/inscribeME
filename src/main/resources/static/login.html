@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/auth-styles.css" />
+</head>
+<body class="auth-container">
+  <div class="auth-form-wrapper">
+    <input type="checkbox" id="authToggle" class="auth-toggle" aria-hidden="true">
+
+    <div class="auth-signup">
+      <form id="registerForm">
+        <label for="authToggle" class="auth-form-label" aria-hidden="true">Registro</label>
+        <input id="regName" type="text" class="auth-form-input" placeholder="Nombre de usuario" required>
+        <input id="regEmail" type="email" class="auth-form-input" placeholder="Correo electrónico" required>
+        <input id="regPassword" type="password" class="auth-form-input" placeholder="Contraseña" required>
+        <button type="button" class="auth-form-button" onclick="register()">Registrarse</button>
+      </form>
+    </div>
+
+    <div class="auth-login">
+      <form>
+        <label for="authToggle" class="auth-form-label" aria-hidden="true">Login</label>
+        <input id="email" type="email" class="auth-form-input" placeholder="Correo electrónico" required>
+        <input id="password" type="password" class="auth-form-input" placeholder="Contraseña" required>
+        <button type="button" class="auth-form-button" onclick="login()">Ingresar</button>
+      </form>
+    </div>
+  </div>
+
+  <form id="redirectForm" method="GET" action="index.html" style="display:none;">
+    <input type="hidden" name="nombre" id="nombre">
+  </form>
+
+  <script src="js/app_lo.js"></script>
+  <div id="particles-js"></div>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="js/particles-config.js"></script>
+
+</body>
+</html>

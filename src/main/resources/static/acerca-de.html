@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sobre Nosotros - EduTech Innovators</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f3f0f9;
+    }
+    .navbar {
+      justify-content: center;
+    }
+    .nav-link:hover {
+      color: #d8b4fe !important;
+    }
+    .header-right {
+      position: absolute;
+      top: 1rem;
+      right: 2rem;
+    }
+    .btn-animado {
+      transition: all 0.3s ease-in-out;
+    }
+    .btn-animado:hover {
+      background-color: #a084dc;
+      color: white;
+      transform: scale(1.05);
+    }
+    footer {
+      background: #5b4b8a;
+      color: white;
+      padding: 2rem 0;
+      margin-top: 3rem;
+    }
+    footer a {
+      color: #e0d7f3;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+    /* Nuevos estilos para la página Nosotros */
+    .hero-nosotros {
+      background: linear-gradient(135deg, #5b4b8a 0%, #3a2d58 100%);
+      color: white;
+      padding: 3rem 0;
+      border-radius: 0 0 20px 20px;
+      margin-bottom: 3rem;
+    }
+    .value-card {
+      border-left: 4px solid #5b4b8a;
+      transition: all 0.3s;
+      background: white;
+      border-radius: 8px;
+    }
+    .value-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(91, 75, 138, 0.1);
+    }
+    .timeline {
+      position: relative;
+      padding-left: 50px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 20px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: #5b4b8a;
+    }
+    .timeline-item {
+      position: relative;
+      margin-bottom: 30px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -38px;
+      top: 5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #5b4b8a;
+      border: 3px solid #f3f0f9;
+    }
+    .img-nosotros {
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border: 1px solid #e0d7f3;
+    }
+    .bg-purple-light {
+      background-color: #e0d7f3;
+    }
+  </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+  <header class="custom-header py-3 mb-4 shadow">
+    <div class="container d-flex justify-content-between align-items-center">
+      <!-- NAV IZQUIERDA -->
+      <nav class="d-flex gap-3 align-items-center">
+        <a href="index.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Inicio</a>
+        <a href="perfil.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Perfil</a>
+        <a href="cursos.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Cursos</a>
+        <a href="crear-curso.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Crear cursos</a>
+        <a href="notificaciones.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Notificaciones</a>
+        <a href="carrito.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Carrito</a>
+        <a href="reporteIncidencias.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Reporte</a>
+        <a href="acerca-de.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Nosotros</a>
+      </nav>
+
+      <!-- MENSAJE DE USUARIO A LA DERECHA -->
+      <span class="text-white fw-bold" id="mensajeUsuario"></span>
+    </div>
+  </header> 
+
+  <!-- Hero Nosotros -->
+  <section class="hero-nosotros">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <h1 class="display-5 fw-bold mb-4">Transformando la educación digital en Chile</h1>
+          <p class="lead">Plataforma de inscripiones seguras al alcance de todos</p>
+          <a href="contacto.html" class="btn btn-light btn-sm mt-3 mx-auto">Contáctanos</a>
+        </div>
+        <div class="col-md-4">
+          <!-- Espacio para imagen hero -->
+          <img src="img/equipo-educacion.jpg" alt="Equipo EduTech trabajando" class="img-fluid img-nosotros">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido Principal -->
+  <main class="container mt-5 flex-grow-1">
+    <!-- Nuestra Visión -->
+    <section class="mb-5">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <h2 class="fw-bold mb-4 text-center" style="color: #5b4b8a;">Nuestra Visión</h2>
+          <p class="lead text-center mb-5">En InscribeMe, creemos que el aprendizaje no termina en el aula.
+Somos una plataforma creada para facilitar el acceso a actividades extracurriculares recreativas y formativas, conectando personas con talleres que despiertan pasiones, fortalecen habilidades y mejoran el bienestar.</p>
+          
+          <div class="row g-4">
+            <div class="col-md-4">
+              <div class="value-card p-4 h-100">
+                <i class="fas fa-rocket fa-2x mb-3" style="color: #5b4b8a;"></i>
+                <h4>Accesibilidad</h4>
+                <p>Desarrollo constante de nuevas funcionalidades educativas adaptadas a las necesidadesde todos.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="value-card p-4 h-100">
+                <i class="fas fa-shield-alt fa-2x mb-3" style="color: #5b4b8a;"></i>
+                <h4>Seguridad</h4>
+                <p>Protección de datos y transacciones garantizada con los más altos estándares de la industria.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="value-card p-4 h-100">
+                <i class="fas fa-expand fa-2x mb-3" style="color: #5b4b8a;"></i>
+                <h4>Innovación</h4>
+                <p>Usamos tecnología para simplificar procesos y mejorar resultados, maximizando la experiencia del usuario.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nuestro Camino -->
+    <section class="bg-purple-light py-5 mb-5 rounded-3">
+      <div class="container">
+        <h2 class="text-center fw-bold mb-5" style="color: #5b4b8a;">Nuestro Camino</h2>
+        
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="timeline">
+              <div class="timeline-item">
+                <h4>2018 - Fundación</h4>
+                <p>Nacimos en Providencia, Santiago, con un pequeño equipo comprometido con revolucionar la educación digital.</p>
+              </div>
+              <div class="timeline-item">
+                <h4>2020 - Expansión a Valparaíso</h4>
+                <p>Primera expansión regional para atender la creciente demanda de instituciones educativas de la zona central.</p>
+              </div>
+              <div class="timeline-item">
+                <h4>2022 - Llegada a La Serena</h4>
+                <p>Consolidación en el norte del país con tecnología adaptada a necesidades regionales específicas.</p>
+              </div>
+              <div class="timeline-item">
+                <h4>2026 - Expandiendo limites</h4>
+                <p>Proyectos de expansion a otras regiones de chile en agenda.</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <!-- Espacio para mapa de ubicaciones -->
+            <img src="img/mapa-ubicaciones.jpg" alt="Ubicaciones de EduTech en Chile" class="img-fluid img-nosotros">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tecnología con Propósito -->
+    <section class="mb-5">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <!-- Espacio para imagen tecnológica -->
+          <img src="img/tecnologia-educativa.jpg" alt="Tecnología educativa" class="img-fluid img-nosotros">
+        </div>
+        <div class="col-md-6">
+          <h2 class="fw-bold mb-4" style="color: #5b4b8a;">Tecnología con Propósito</h2>
+          <p>Nuestra arquitectura está diseñada para evolucionar junto con las demandas del mercado educativo digital:</p>
+          <ul class="list-unstyled">
+            <li class="mb-3"><i class="fas fa-check-circle me-2" style="color: #5b4b8a;"></i> Plataformas escalables que soportan crecimiento continuo</li>
+            <li class="mb-3"><i class="fas fa-check-circle me-2" style="color: #5b4b8a;"></i> Garantía de seguridad en datos y transacciones</li>
+            <li class="mb-3"><i class="fas fa-check-circle me-2" style="color: #5b4b8a;"></i> Adaptabilidad a necesidades evolutivas de usuarios</li>
+            <li class="mb-3"><i class="fas fa-check-circle me-2" style="color: #5b4b8a;"></i> Integración con ecosistemas educativos globales</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comunidad -->
+    <section class="py-5 mb-4 rounded-3" style="background-color: #5b4b8a; color: white;">
+      <div class="container text-center">
+        <h2 class="fw-bold mb-4">Únase a nuestra comunidad</h2>
+        <p class="lead mb-5">Más de 50,000 usuarios activos transformando su futuro a través de nuestra plataforma</p>
+        
+        <div class="row g-4">
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">50K+</div>
+            <p>Usuarios activos</p>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">200+</div>
+            <p>Cursos disponibles</p>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">15+</div>
+            <p>Instituciones aliadas</p>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">3</div>
+            <p>Regiones cubiertas</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-3">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
+            <span>E-mail: 📧 contacto@plataforma.cl</span>
+            <span class="d-none d-md-block">|</span>
+            <span>Teléfono: 📞 +56 9 1234 5678</span>
+            <span class="d-none d-md-block">|</span>
+            <span>Dirección:📍 Av. Ficticia 1234, Santiago, Chile</span>
+            <span class="d-none d-md-block">|</span>
+            <div class="d-flex gap-4">
+              <a href="#" class="text-decoration-none px-2"><i class="fab fa-facebook"></i></a>
+              <a href="#" class="text-decoration-none px-2"><i class="fab fa-instagram"></i></a>
+              <a href="#" class="text-decoration-none px-2"><i class="fab fa-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app_in.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
