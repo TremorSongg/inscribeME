@@ -5,6 +5,7 @@ import com.example.inscribeMe.Service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,21 @@ public class UsuarioController {
         return usuarioService.crearUsuario(usuario);
     }
 
-    
+    //login que no me funciona:c
+    // @PostMapping("/login")
+    // public Map<String, String> login(@RequestBody Usuario u) {
+    //     Optional<Usuario> user = usuarioService.autenticar(u.getEmail(), u.getPassword());
+    //     Map<String, String> response = new HashMap<>();
+    //     if (user.isPresent()) {
+    //         response.put("result", "OK");
+    //         response.put("id", String.valueOf(user.get().getId())); // Convertir ID a String
+    //         response.put("nombre", user.get().getNombre());
+    //         response.put("email", user.get().getEmail());
+    //     } else {
+    //         response.put("result", "Error");
+    //     }
+    //     return response;
+    // }
 
     @PutMapping("/{id}")
     public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
