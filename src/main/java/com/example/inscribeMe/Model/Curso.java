@@ -2,6 +2,8 @@ package com.example.inscribeMe.Model;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
@@ -29,9 +31,10 @@ public class Curso {
 
     @ManyToOne
     @JoinColumn(name = "instructor_id")
+    @JsonBackReference("curso-inscripcion")
     private Usuario instructor;
 
     @OneToMany(mappedBy = "curso", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonManagedReference("curso-inscripcion")
     private List<Inscripcion> inscripciones;
 }

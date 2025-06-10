@@ -24,11 +24,11 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @JsonBackReference
+    @JsonBackReference("usuario-inscripcion")
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
-    @JsonBackReference
+    @JsonBackReference("curso-inscripcion")
     private Curso curso;
 }
