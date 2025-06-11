@@ -35,11 +35,14 @@ public class Usuario {
     @JsonManagedReference("usuario-inscripcion")
     private List<Inscripcion> inscripciones;
 
+    
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notificacion> notificaciones;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Compra> historialCompras;
+
 }
+
 
 
