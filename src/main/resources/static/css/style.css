@@ -1,181 +1,226 @@
+/*
+ * InscribeMe - Hoja de Estilos Principal
+ * Paleta de Colores: Coral y Crema
+ * Fecha de actualización: 11-06-2025
+*/
+
+/* --- Paleta de Colores y Variables CSS --- */
+:root {
+    --color-primario: #f36f46; /* Naranja Coral */
+    --color-primario-oscuro: #e8683f; /* Para hover y acentos */
+    --color-secundario: #f8a07e; /* Naranja Claro y Suave */
+    --color-fondo: #faf9f6; /* Crema */
+    --color-texto-principal: #3a3a3a; /* Gris Oscuro */
+    --color-texto-claro: #FFFFFF;
+    --color-oscuro-neutro: #5c5552; /* Gris Cálido para footer */
+    --color-peligro: #d9534f; /* Rojo compatible */
+    --color-borde: #e0e0e0;
+}
+
+/* --- Estilos Generales --- */
 body {
-  background: #f7f0ff;
-  color: #333;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-header {
-  background-color: #6a4dad;
-  color: white;
-  padding: 1rem 0;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-footer {
-  background-color: #2f1d53;
-  color: white;
-  padding: 1rem 0.5rem;
-  margin-top: 4rem;
-  text-align: left;
-}
-
-footer a {
-  color: #6a4dad;
-  text-decoration: none;
-}
-
-footer a:hover {
-  color: white;
-  text-decoration: underline;
-}
-
-.btn-animado {
-  transition: all 0.3s ease-in-out;
-}
-
-.btn-animado:hover {
-  background-color: #a084dc;
-  color: white;
-  transform: scale(1.05);
+    background: var(--color-fondo);
+    color: var(--color-texto-principal);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
-  max-width: 1080px;
-  margin: auto;
+    max-width: 1080px;
+    margin: auto;
 }
 
 a {
-  color: #6a4dad;
-  text-decoration: none;
+    color: var(--color-primario);
+    text-decoration: none;
 }
-
 a:hover {
-  color: #5c3d9c;
+    color: var(--color-primario-oscuro);
 }
 
-.card {
-  border: none;
-  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+/* --- Header Principal --- */
+header.custom-header {
+    background: var(--color-primario);
+    color: var(--color-texto-claro);
+    padding: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
-.custom-header {
-  background-color: #6a4dad; /* morado oscuro */
+.custom-header .btn {
+    transition: all 0.2s ease;
 }
-
 .custom-header .btn:hover {
-  background-color: #6a4dad !important;
-  color: white !important;
-  transform: scale(1.05);
-  transition: all 0.2s ease;
+    background-color: var(--color-primario-oscuro) !important;
+    color: var(--color-texto-claro) !important;
+    transform: scale(1.05);
 }
 
-.encabezado-tabla {
-  background-color: #6a4dad; /* igual que header */
-  color: #f7f5fa;
+/* --- Footer --- */
+footer {
+    background-color: var(--color-oscuro-neutro);
+    color: var(--color-fondo); /* Texto crema sobre fondo oscuro */
+    padding: 2rem 1rem;
+    margin-top: 4rem;
+}
+footer a {
+    color: var(--color-secundario);
+    text-decoration: none;
+}
+footer a:hover {
+    color: var(--color-texto-claro);
+    text-decoration: underline;
+}
+
+/* --- Componentes Comunes: Botones, Tarjetas, Tablas --- */
+.card {
+    border: 1px solid var(--color-borde);
+    box-shadow: 0 0 12px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.card:hover { 
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.btn-animado {
+    transition: all 0.3s ease-in-out;
+}
+.btn-animado:hover {
+    background-color: var(--color-primario-oscuro);
+    color: var(--color-texto-claro);
+    transform: scale(1.05);
 }
 
 .btn-eliminar {
-  background-color: #6f1785;  /* rojo violáceo */
-  color: white;
-  border: none;
+    background-color: var(--color-peligro);
+    color: var(--color-texto-claro);
+    border: none;
 }
-
 .btn-eliminar:hover {
-  background-color: #e24e4e;
-  transform: scale(1.05);
+    background-color: #c9302c;
+    transform: scale(1.05);
 }
 
 .btn-editar {
-  background-color: #af93eb;
-  color: white;
-  border: none;
+    background-color: var(--color-secundario);
+    color: var(--color-oscuro-neutro);
+    border: none;
 }
-
 .btn-editar:hover {
-  background-color: #bed653;
-  transform: scale(1.05);
+    background-color: var(--color-primario);
+    color: var(--color-texto-claro);
+    transform: scale(1.05);
 }
 
-#mensaje {
-  display: flex;
-  justify-content: flex-end;
-  padding: 1rem;
+.encabezado-tabla {
+    background-color: var(--color-primario);
+    color: var(--color-texto-claro);
 }
 
+/* --- Perfil de Usuario --- */
 .user-profile {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  background: #6a4dad; /* morado principal */
-  color: white;
-  padding: 12px 16px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--color-primario-oscuro);
+    color: var(--color-texto-claro);
+    padding: 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-
 .profile-image {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #af93eb;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-fondo);
 }
-
-.user-info {
-  flex-grow: 1;
-}
-
+.user-info { flex-grow: 1; }
 .user-name,
 .user-email {
-  margin: 0;
-  color: white;
+    margin: 0;
+    color: var(--color-texto-claro);
 }
-
-.logout-wrapper {
-  margin-left: auto;
-}
-
 .logout-btn {
-  padding: 6px 12px;
-  background: transparent;
-  color: white;
-  border: 1px solid white;
-  border-radius: 4px;
-  cursor: pointer;
+    padding: 6px 12px;
+    background: transparent;
+    color: var(--color-texto-claro);
+    border: 1px solid var(--color-texto-claro);
+    border-radius: 4px;
+    cursor: pointer;
 }
-
 .logout-btn:hover {
-  background: #a084dc;
-  color: white;
-  border-color: #a084dc;
+    background: var(--color-primario);
+    border-color: var(--color-primario);
 }
-
-/* Estilos adicionales para el perfil */
 .card-profile {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 5px 20px rgba(91, 75, 138, 0.15);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.text-brand { /* Reemplazo de .text-purple */
+    color: var(--color-primario) !important;
 }
 
-.profile-actions .btn {
-  min-width: 150px;
+/* --- Estilos del Antiguo Formulario de Login (auth-styles.css) --- */
+/* Nota: Estos estilos son para el formulario que ya no usas.
+   Los mantengo aquí por si los necesitas, pero no afectarán a tu página del búho. */
+.auth-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Jost', sans-serif;
+    position: relative;
+    z-index: 1;
 }
-
-.img-thumbnail {
-  border-width: 2px;
+.auth-form-wrapper {
+    width: 350px;
+    height: 500px;
+    overflow: hidden;
+    background: linear-gradient(to bottom, var(--color-primario), var(--color-secundario), var(--color-fondo));
+    border-radius: 10px;
+    box-shadow: 5px 20px 50px #000;
 }
-
-.user-info-item {
-  margin-bottom: 1rem;
+.auth-form-label {
+    color: var(--color-texto-claro);
+    font-size: 2.3em;
+    justify-content: center;
+    display: flex;
+    margin: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .5s ease-in-out;
 }
-
-.user-info-item i {
-  width: 25px;
-  text-align: center;
+.auth-form-input {
+    width: 60%;
+    height: 10px;
+    background: #e0dede;
+    justify-content: center;
+    display: flex;
+    margin: 20px auto;
+    padding: 12px;
+    border: none;
+    outline: none;
+    border-radius: 5px;
 }
-
-.text-purple { color: #5b4b8a; }
-.card { transition: transform 0.3s; }
-.card:hover { transform: translateY(-5px); }
+.auth-form-button {
+    width: 60%;
+    height: 40px;
+    margin: 10px auto;
+    justify-content: center;
+    display: block;
+    color: var(--color-texto-claro);
+    background: var(--color-primario-oscuro);
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 30px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    transition: .2s ease-in;
+    cursor: pointer;
+}
+.auth-form-button:hover {
+    background: var(--color-primario);
+}

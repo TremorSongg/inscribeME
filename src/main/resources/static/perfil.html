@@ -12,48 +12,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        body {
-            background-color: #f3f0f9;
+        /* --- Definición de la nueva paleta de colores --- */
+        :root {
+            --color-primario: #f36f46;       /* Naranja Coral */
+            --color-primario-oscuro: #e8683f; /* Para hover y acentos */
+            --color-secundario: #f8a07e;      /* Naranja Claro y Suave */
+            --color-fondo: linear-gradient(to bottom, #f5f3fa, #dfca9e, #f3c090);         /* Crema */
+            --color-texto-principal: #3a3a3a; /* Gris Oscuro */
+            --color-texto-claro: #FFFFFF;
+            --color-oscuro-neutro: #f36f46;    /* Gris Cálido/Marrón para footer */
+            --color-borde-suave: #fce5d9;
         }
-        /* ... otros estilos ... */
+
+        body {
+            background-color: var(--color-fondo);
+        }
+
+        /* --- ESTILOS ADAPTADOS A LA NUEVA PALETA --- */
+
+        .custom-header {
+            background-color: var(--color-primario);
+        }
+
+        footer {
+            background: var(--color-oscuro-neutro);
+            color: var(--color-fondo);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        footer a {
+            color: var(--color-secundario);
+        }
         footer a:hover {
             text-decoration: underline;
+            color: var(--color-texto-claro);
         }
 
         /* ESTILOS DEL CALENDARIO */
         #calendario-cursos .flatpickr-calendar {
             width: 100% !important;
             box-shadow: none;
-            border: 1px solid #e0d7f3;
+            border: 1px solid var(--color-borde-suave);
         }
-        /* ▼▼▼ REGLA AÑADIDA PARA OSCURECER LOS NÚMEROS ▼▼▼ */
         .flatpickr-day {
-            color: #3d3d3d; /* Un color gris oscuro para buena visibilidad */
+            color: var(--color-texto-principal);
         }
-        /* ▲▲▲ FIN DE REGLA AÑADIDA ▲▲▲ */
-
         .flatpickr-day.evento-inicio {
-            background-color: #5b4b8a;
+            background-color: var(--color-primario);
             color: white;
             border-radius: 50%;
             font-weight: bold;
         }
         .flatpickr-day.evento-fin {
-            background-color: #a084dc;
+            background-color: var(--color-secundario);
             color: white;
             border-radius: 50%;
         }
         .flatpickr-day.evento-inicio:hover, .flatpickr-day.evento-fin:hover {
-            background-color: #3b2a68;
+            background-color: var(--color-primario-oscuro);
         }
         .flatpickr-day.flatpickr-disabled {
-            color: #333131 !important; /* Un gris claro, visible pero tenue */
+            color: #c0c0c0 !important; /* Gris claro visible */
         }
+        
+        /* Estilos de la tarjeta de perfil y la lista de inscripciones */
+        #historial-container h2 {
+            color: var(--color-primario);
+            font-weight: bold;
+        }
+        #perfil-container .card h2 {
+             color: var(--color-primario) !important;
+        }
+        #perfil-container .card i {
+            color: var(--color-primario) !important;
+        }
+        #perfil-container .img-thumbnail {
+            border-color: var(--color-primario) !important;
+        }
+
     </style>
 </head>
 
 <body class="d-flex flex-column min-vh-100">
-    <!-- Header -->
     <header class="custom-header py-3 mb-4 shadow">
         <div class="container d-flex justify-content-between align-items-center">
             <nav class="d-flex gap-3 align-items-center">
@@ -70,15 +110,13 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="container d-flex flex-grow-1 mb-5">
         <div class="row w-100">
             <!-- Columna Izquierda: Perfil y Calendario -->
             <div class="col-lg-4 mb-4">
                 <div id="perfil-container" class="mb-4"></div>
-
                 <div class="d-flex justify-content-center mb-2">
-                    <button id="reset-calendario-btn" class="btn btn-sm btn-outline-secondary">Mostrar Todos</button>
+                    <button id="reset-calendario-btn" class="btn btn-sm btn-outline-secondary">Mostrar Todas las Fechas</button>
                 </div>
                 <div id="calendario-cursos" class="shadow-sm" style="border-radius: 15px;"></div>
             </div>
@@ -88,28 +126,27 @@
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="py-3">
-    <div class="container">
-      <div class="row align-items-center">
-        <div class="col-12">
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
-            <span>E-mail: 📧 contacto@plataforma.cl</span>
-            <span class="d-none d-md-block">|</span>
-            <span>Teléfono: 📞 +56 9 1234 5678</span>
-            <span class="d-none d-md-block">|</span>
-            <span>Dirección:📍 Av. Ficticia 1234, Santiago, Chile</span>
-            <span class="d-none d-md-block">|</span>
-            <div class="d-flex gap-4">
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-facebook"></i></a>
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-instagram"></i></a>
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-linkedin"></i></a>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-12">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
+                        <span>E-mail: 📧 contacto@plataforma.cl</span>
+                        <span class="d-none d-md-block">|</span>
+                        <span>Teléfono: 📞 +56 9 1234 5678</span>
+                        <span class="d-none d-md-block">|</span>
+                        <span>Dirección:📍 Av. Ficticia 1234, Santiago, Chile</span>
+                        <span class="d-none d-md-block">|</span>
+                        <div class="d-flex gap-4">
+                            <a href="#" class="text-decoration-none px-2"><i class="fab fa-facebook"></i></a>
+                            <a href="#" class="text-decoration-none px-2"><i class="fab fa-instagram"></i></a>
+                            <a href="#" class="text-decoration-none px-2"><i class="fab fa-linkedin"></i></a>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </footer>
+    </footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

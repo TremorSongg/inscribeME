@@ -1,199 +1,232 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Dashboard - InscribeMe</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+    <style>
+        /* --- Definición de la nueva paleta de colores --- */
+        :root {
+            --color-primario: #f36f46;       /* Naranja Coral */
+            --color-primario-oscuro: #e8683f; /* Para hover y acentos */
+            --color-secundario: #f8a07e;      /* Naranja Claro y Suave */
+            --color-fondo: linear-gradient(to bottom, #f5f3fa, #dfca9e, #f3c090);         /* Crema */
+            --color-texto-principal: #3a3a3a; /* Gris Oscuro */
+            --color-texto-claro: #FFFFFF;
+            --color-oscuro-neutro: #f36f46;    /* Gris Cálido/Marrón para footer */
+            --color-borde-suave: #fce5d9;
+        }
 
-  <style>
-    body {
-      background-color: #f3f0f9;
-    }
-    .navbar {
-      justify-content: center;
-    }
-    .nav-link:hover {
-      color: #d8b4fe !important;
-    }
-    .header-right {
-      position: absolute;
-      top: 1rem;
-      right: 2rem;
-    }
-    .btn-animado {
-      transition: all 0.3s ease-in-out;
-    }
-    .btn-animado:hover {
-      background-color: #a084dc;
-      color: white;
-      transform: scale(1.05);
-    }
-    footer {
-      background: #5b4b8a;
-      color: white;
-      padding: 2rem 0;
-      margin-top: 3rem;
-    }
-    footer a {
-      color: #e0d7f3;
-      text-decoration: none;
-    }
-    footer a:hover {
-      text-decoration: underline;
-    }
-  </style>
-  <body class="d-flex flex-column min-vh-100">
+        body {
+            background-color: var(--color-fondo);
+        }
+
+        /* --- ESTILOS ADAPTADOS A LA NUEVA PALETA --- */
+
+        .custom-header {
+            background-color: var(--color-primario);
+        }
+
+        footer {
+            background: var(--color-oscuro-neutro);
+            color: var(--color-fondo);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+        footer a {
+            color: var(--color-secundario);
+        }
+        footer a:hover {
+            text-decoration: underline;
+            color: var(--color-texto-claro);
+        }
+
+        /* Hero Section y Botón Principal */
+        .btn-primary.btn-animado {
+            background-color: var(--color-primario);
+            border-color: var(--color-primario);
+            transition: all 0.3s ease-in-out;
+        }
+        .btn-primary.btn-animado:hover {
+            background-color: var(--color-primario-oscuro);
+            border-color: var(--color-primario-oscuro);
+            color: white;
+            transform: scale(1.05);
+        }
+        h1.fw-bold {
+            color: var(--color-texto-principal);
+        }
+        
+        /* Secciones y Títulos */
+        section h2 {
+            color: var(--color-primario);
+            font-weight: bold;
+        }
+
+        /* Tarjetas de destacados y testimonios */
+        .card {
+            border: 1px solid var(--color-borde-suave);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .card .text-purple { /* Reemplazamos el color morado por el primario */
+            color: var(--color-primario) !important;
+        }
+
+        /* Sección "Próximos Lanzamientos" */
+        .bg-light {
+             background-color: #fdfaf3 !important; /* Crema muy claro para contraste sutil */
+        }
+        .bg-light .text-purple {
+            color: var(--color-primario) !important;
+        }
+
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
 <header class="custom-header py-3 mb-4 shadow">
-  <div class="container d-flex justify-content-between align-items-center">
-    <!-- NAV IZQUIERDA -->
-    <nav class="d-flex gap-3 align-items-center">
-      <a href="index.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Inicio</a>
-      <a href="perfil.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Perfil</a>
-      <a href="cursos.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Cursos</a>
-      <a href="crear-curso.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Crear cursos</a>
-      <a href="notificaciones.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Notificaciones</a>
-      <a href="carrito.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Carrito</a>
-      <a href="reporteIncidencias.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Reporte</a>
-      <a href="acerca-de.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Nosotros</a>
-    </nav>
-
-    <!-- MENSAJE DE USUARIO A LA DERECHA -->
-    <span class="text-white fw-bold" id="mensajeUsuario"></span>
-  </div>
+    <div class="container d-flex justify-content-between align-items-center">
+        <nav class="d-flex gap-3 align-items-center">
+            <a href="index.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Inicio</a>
+            <a href="perfil.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Perfil</a>
+            <a href="cursos.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Cursos</a>
+            <a href="crear-curso.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Crear cursos</a>
+            <a href="notificaciones.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Notificaciones</a>
+            <a href="carrito.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Carrito</a>
+            <a href="reporteIncidencias.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Reporte</a>
+            <a href="acerca-de.html" class="text-white text-decoration-none btn btn-sm btn-outline-light">Nosotros</a>
+        </nav>
+        <span class="text-white fw-bold" id="mensajeUsuario"></span>
+    </div>
 </header> 
 
-  <!-- Body -->
 <main class="container mt-5 flex-grow-1">
-  <!-- Hero Section -->
-  <div class="row align-items-center mb-5">
-    <div class="col-md-6">
-      <h1 class="fw-bold mb-3">InscribeMe: tu plataforma de inscripiones</h1>
-      <p class="lead mb-4">Descubre. Aprende. Inscríbete. Bienvenido a InscribeMe</p>
-      <a href="cursos.html" class="btn btn-primary btn-lg btn-animado">Visita la oferta de cursos extracurriculares</a>
-    </div>
-    <div class="col-md-6">
-      <!-- Espacio para imagen principal -->
-      <img src="img/hero-education.webp" alt="Estudiantes aprendiendo en línea" class="img-fluid rounded shadow">
-    </div>
-  </div>
-
-  <!-- Destacados -->
-  <section class="mb-5">
-    <h2 class="text-center mb-4">✨ Lo más popular</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body text-center">
-            <i class="fas fa-laptop-code fa-3x mb-3 text-purple"></i>
-            <h4>Inscribe tus talleres Online</h4>
-            <p>Para todos los niveles, desde iniciación hasta avanzado.</p>
-          </div>
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3">InscribeMe: tu plataforma de inscripciones</h1>
+            <p class="lead mb-4">Descubre. Aprende. Inscríbete. Bienvenido a InscribeMe</p>
+            <a href="cursos.html" class="btn btn-primary btn-lg btn-animado">Visita la oferta de cursos</a>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body text-center">
-            <i class="fas fa-chart-line fa-3x mb-3 text-purple"></i>
-            <h4>Karate tradicional</h4>
-            <p>Fortalece cuerpo y mente, ideal para niños y adultos.</p>
-          </div>
+        <div class="col-md-6">
+            <img src="https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Estudiantes aprendiendo en línea" class="img-fluid rounded shadow">
         </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100 border-0 shadow-sm">
-          <div class="card-body text-center">
-            <i class="fas fa-trophy fa-3x mb-3 text-purple"></i>
-            <h4>Escalada indoor</h4>
-            <p>Supera tus límites en un entorno seguro y desafiante.</p>
-          </div>
-        </div>
-      </div>
     </div>
-  </section>
 
-  <!-- Próximos Lanzamientos -->
-  <section class="bg-light p-4 rounded-3 mb-5">
-    <div class="row align-items-center">
-      <div class="col-md-5 text-center">
-  <img src="img/upcoming-courses.jpg" alt="Próximos cursos" class="img-fluid rounded">
-</div>
-      <div class="col-md-7">
-        <h2 class="mb-3">¡Quedan pocos cupos!</h2>
-        <ul class="list-unstyled">
-          <li class="mb-2"><i class="fas fa-futbol me-2 text-purple"></i> Fútbol infantil - Julio 2025</li>
-<li class="mb-2"><i class="fas fa-music me-2 text-purple"></i> Zumba femenino - Agosto 2025</li>
-<li class="mb-2"><i class="fas fa-mountain me-2 text-purple"></i> Escalada grupal - Septiembre 2025</li>
-
-        </ul>
-        
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonios -->
-  <section class="mb-5">
-    <h2 class="text-center mb-4">📚 Lo que dicen nuestros estudiantes</h2>
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex mb-3">
-              <img src="img/testimonial-1.gif" alt="Estudiante" class="rounded-circle me-3" width="60">
-              <div>
-                <h5 class="mb-0">Sofía Gálvez</h5>
-                <small class="text-muted">22 años</small>
-              </div>
+    <!-- Destacados -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">✨ Lo más popular</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-palette fa-3x mb-3 text-purple"></i>
+                        <h4>Talleres de Arte</h4>
+                        <p>Para todos los niveles, desde iniciación hasta avanzado.</p>
+                    </div>
+                </div>
             </div>
-            <p>"Gracias a InscribeMe descubrí mi pasión por el baile. La inscripción fue súper rápida y clara"</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <div class="d-flex mb-3">
-              <img src="img/testimonial-2.gif" alt="Estudiante" class="rounded-circle me-3" width="60">
-              <div>
-                <h5 class="mb-0">Carlos Rojas</h5>
-                <small class="text-muted">16 años</small>
-              </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-purple"></i>
+                        <h4>Karate Tradicional</h4>
+                        <p>Fortalece cuerpo y mente, ideal para niños y adultos.</p>
+                    </div>
+                </div>
             </div>
-            <p>"Nunca pensé que iba a disfrutar tanto del karate. La plataforma es muy intuitiva"</p>
-          </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-trophy fa-3x mb-3 text-purple"></i>
+                        <h4>Escalada Indoor</h4>
+                        <p>Supera tus límites en un entorno seguro y desafiante.</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
+
+    <!-- Próximos Lanzamientos -->
+    <section class="bg-light p-4 rounded-3 mb-5">
+        <div class="row align-items-center">
+            <div class="col-md-5 text-center">
+                <img src="https://images.pexels.com/photos/5905709/pexels-photo-5905709.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Próximos cursos" class="img-fluid rounded">
+            </div>
+            <div class="col-md-7">
+                <h2 class="mb-3">¡Quedan pocos cupos!</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-futbol me-2 text-purple"></i> Fútbol infantil - Julio 2025</li>
+                    <li class="mb-2"><i class="fas fa-music me-2 text-purple"></i> Zumba femenino - Agosto 2025</li>
+                    <li class="mb-2"><i class="fas fa-mountain me-2 text-purple"></i> Escalada grupal - Septiembre 2025</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="mb-5">
+        <h2 class="text-center mb-4">📚 Lo que dicen nuestros estudiantes</h2>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex mb-3 align-items-center">
+                            <img src="https://images.pexels.com/photos/3762800/pexels-photo-3762800.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Estudiante Sofía" class="rounded-circle me-3" width="60" height="60" style="object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Sofía Gálvez</h5>
+                                <small class="text-muted">22 años</small>
+                            </div>
+                        </div>
+                        <p>"Gracias a InscribeMe descubrí mi pasión por el baile. La inscripción fue súper rápida y clara."</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex mb-3 align-items-center">
+                            <img src="https://images.pexels.com/photos/2216607/pexels-photo-2216607.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Estudiante Carlos" class="rounded-circle me-3" width="60" height="60" style="object-fit: cover;">
+                            <div>
+                                <h5 class="mb-0">Carlos Rojas</h5>
+                                <small class="text-muted">16 años</small>
+                            </div>
+                        </div>
+                        <p>"Nunca pensé que iba a disfrutar tanto del karate. La plataforma es muy intuitiva."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
-  <!-- Footer -->
-  <footer class="py-3">
+<footer class="py-3">
     <div class="container">
-      <div class="row align-items-center">
-        <div class="col-12">
-          <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
-            <span>E-mail: 📧 contacto@plataforma.cl</span>
-            <span class="d-none d-md-block">|</span>
-            <span>Teléfono: 📞 +56 9 1234 5678</span>
-            <span class="d-none d-md-block">|</span>
-            <span>Dirección:📍 Av. Ficticia 1234, Santiago, Chile</span>
-            <span class="d-none d-md-block">|</span>
-            <div class="d-flex gap-4">
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-facebook"></i></a>
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-instagram"></i></a>
-              <a href="#" class="text-decoration-none px-2"><i class="fab fa-linkedin"></i></a>
+        <div class="row align-items-center">
+            <div class="col-12">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3">
+                    <span>E-mail: 📧 contacto@plataforma.cl</span> <span class="d-none d-md-block">|</span>
+                    <span>Teléfono: 📞 +56 9 1234 5678</span> <span class="d-none d-md-block">|</span>
+                    <span>Dirección:📍 Av. Ficticia 1234, Santiago, Chile</span> <span class="d-none d-md-block">|</span>
+                    <div class="d-flex gap-4">
+                        <a href="#" class="text-decoration-none px-2"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-decoration-none px-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-decoration-none px-2"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </footer>
+</footer>
 
-
-  <script src="js/app_in.js"></script>
+<script src="js/app_in.js"></script>
 </body>
 </html>
