@@ -25,9 +25,7 @@ public class NotificacionService {
     private final NotificacionRepository notificacionRepository;
     private final InscripcionRepository inscripcionRepository;
 
-    /**
-     * Genera y obtiene notificaciones como DTOs para un usuario específico.
-     */
+    
     public List<NotificacionDTO> generarYObtenerNotificaciones(Long usuarioId) {
         List<Inscripcion> inscripciones = inscripcionRepository.findByUsuarioId(usuarioId);
         LocalDate hoy = LocalDate.now();
@@ -50,7 +48,7 @@ public class NotificacionService {
             }
         }
         
-        // ▼▼▼ CAMBIO PRINCIPAL: Convertimos las entidades a DTOs ▼▼▼
+        
         return notificacionRepository.findByUsuarioIdOrderByFechaDesc(usuarioId).stream()
                 .map(notificacion -> NotificacionDTO.builder()
                         .id(notificacion.getId())

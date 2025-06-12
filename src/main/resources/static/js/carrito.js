@@ -17,17 +17,6 @@ async function loadCarrito() {
         const items = carrito.items || [];
         const total = carrito.total || 0;
         
-        // ... (el resto del código para mostrar el carrito vacío o lleno es idéntico al que ya tenías, solo asegúrate de que los campos coincidan con el DTO)
-        // Ejemplo de un item:
-        // <h5>${item.nombreCurso}</h5>
-        // <p>Precio unitario: $${item.precioUnitario.toFixed(2)}</p>
-        // <p>Subtotal: $${item.subtotal.toFixed(2)}</p>
-        // Y los botones:
-        // onclick="removeFromCart(${item.cursoId})"
-
-        // COPIA Y PEGA TODO TU CÓDIGO HTML DE RENDERIZADO AQUÍ, ESTÁ BIEN.
-        // SOLO ASEGÚRATE DE USAR `item.nombreCurso` en vez de `item.nombre`, etc.
-        // Aquí te dejo el renderizado ajustado por si acaso:
         
         if (items.length === 0) {
              container.innerHTML = `

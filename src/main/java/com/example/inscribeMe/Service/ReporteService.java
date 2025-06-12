@@ -17,10 +17,9 @@ public class ReporteService {
     private final ReporteRepository reporteRepository;
     private final UsuarioRepository usuarioRepository;
     
-    // ▼▼▼ CORRECCIÓN AQUÍ ▼▼▼
-    // Se inyecta el SERVICIO, no el controlador.
+    
     private final NotificacionService notificacionService;
-    // ▲▲▲ FIN DE LA CORRECIÓN ▲▲▲
+    
 
     @Transactional
     public Reporte crearReporte(Long usuarioId, String mensaje) {

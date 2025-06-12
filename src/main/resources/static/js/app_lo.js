@@ -1,12 +1,5 @@
-/**
- * URL de la API para el endpoint de login.
- */
 const API_URL = "http://localhost:8080/api/usuarios/login";
 
-/**
- * Función de Registro.
- * Toma los datos del formulario de registro y los envía al backend.
- */
 function register() {
     // Corregimos los IDs para que coincidan con el HTML del búho.
     const nombre = document.getElementById("reg-name").value;

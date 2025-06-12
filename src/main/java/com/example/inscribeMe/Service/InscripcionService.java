@@ -42,12 +42,11 @@ public class InscripcionService {
     public List<InscripcionDTO> obtenerInscripcionesPorUsuario(Long usuarioId) {
         return inscripcionRepository.findByUsuarioId(usuarioId).stream()
                 .map(inscripcion -> {
-                    // ▼▼▼ CORRECCIÓN AQUÍ: Se define la variable instructorName ▼▼▼
-                    // Manejo por si un curso no tuviera instructor asignado
+                    
                     String instructorName = (inscripcion.getCurso().getInstructor() != null)
                             ? inscripcion.getCurso().getInstructor().getNombre()
                             : "No asignado";
-                    // ▲▲▲ FIN DE LA CORRECIÓN ▲▲▲
+                    
 
                     return InscripcionDTO.builder()
                             .cursoId(inscripcion.getCurso().getId())

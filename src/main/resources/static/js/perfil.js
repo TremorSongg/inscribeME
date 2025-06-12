@@ -87,14 +87,12 @@ function inicializarCalendario(inscripciones, isFiltered = false) {
         }
     };
     
-    // ▼▼▼ LÓGICA MODIFICADA AQUÍ ▼▼▼
-    // Solo restringimos las fechas visibles si estamos en modo 'filtrado'
+    
     if (isFiltered) {
         const todasLasFechasFiltradas = [...fechasInicio, ...fechasFin];
         config.enable = todasLasFechasFiltradas.length > 0 ? todasLasFechasFiltradas : [""];
     }
-    // Si no estamos en modo filtrado, 'enable' no se define, por lo que se muestra el calendario completo y neutral.
-    // ▲▲▲ FIN DE LA MODIFICACIÓN ▲▲▲
+    
 
     fp_instance = flatpickr(contenedorCalendario, config);
 }
@@ -116,7 +114,7 @@ async function cargarInscripciones() {
         todasMisInscripciones = inscripciones; // Guardamos la lista completa
         renderizarInscripciones(inscripciones);
         
-        // ▼▼▼ CAMBIO CLAVE: Inicializamos el calendario VACÍO ▼▼▼
+        
         // Esto crea el calendario en un estado neutral, sin fechas coloreadas.
         inicializarCalendario([]);
         // ▲▲▲ FIN DEL CAMBIO ▲▲▲

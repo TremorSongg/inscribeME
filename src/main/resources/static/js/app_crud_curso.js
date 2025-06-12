@@ -1,6 +1,6 @@
 const API_URL = '/api/cursos';
 
-// ▼▼▼ 1. FUNCIÓN NUEVA PARA CARGAR LOS INSTRUCTORES ▼▼▼
+
 async function cargarInstructores() {
     try {
         const response = await fetch('/api/usuarios/instructores');
@@ -25,7 +25,7 @@ async function cargarInstructores() {
 }
 
 
-// ▼▼▼ 2. MODIFICACIÓN EN DOMCONTENTLOADED ▼▼▼
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarCursos();
     cargarInstructores(); // Se añade la llamada para llenar el menú de instructores
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const fechaInicio = document.getElementById('fechaInicio').value;
         const fechaFin = document.getElementById('fechaFin').value;
         
-        // ▼▼▼ 3. LÓGICA NUEVA PARA OBTENER Y ENVIAR EL INSTRUCTOR ▼▼▼
+        
         const instructorId = document.getElementById('instructor').value;
 
         // Construimos el objeto curso completo
