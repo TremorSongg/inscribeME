@@ -2,12 +2,14 @@ package com.example.inscribeMe.Model;
 
 import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Getter // Cambiamos @Data por Getter/Setter para evitar recursión en toString
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -24,11 +26,13 @@ public class Inscripcion {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
-    @JsonBackReference("usuario-inscripcion")
+    // Esta referencia debe coincidir con la que definiremos en Usuario
+    @JsonBackReference(value = "usuario-inscripciones")
     private Usuario usuario;
 
     @ManyToOne
     @JoinColumn(name = "curso_id")
-    @JsonBackReference("curso-inscripcion")
+    // IMPORTANTE: Debe coincidir con el nombre que pusimos en Curso.java
+    @JsonBackReference(value = "curso-inscripciones")
     private Curso curso;
 }
