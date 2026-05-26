@@ -22,6 +22,7 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
             const base64 = ev.target?.result as string;
             localStorage.setItem(storageKey, base64);
             setPhoto(base64);
+            window.dispatchEvent(new Event("profilePhotoUpdated"));
         };
         reader.readAsDataURL(file);
     };
@@ -48,7 +49,7 @@ const InstructorProfilePage = () => {
     const { user } = useAuth();
     const [myCourses, setMyCourses] = useState<CursoDTO[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<CursoDTO | null>(null);
-    const [activeTab, setActiveTab] = useState<"alumnos" | "asistencia" | "historial" | "notificacion">("alumnos");
+    const [activeTab, setActiveTab] = useState<"perfil" | "alumnos" | "asistencia" | "historial" | "notificacion">("perfil");
     const [loading, setLoading] = useState(true);
     const [myNotifs, setMyNotifs] = useState<NotificacionDTO[]>([]);
 
@@ -67,8 +68,10 @@ const InstructorProfilePage = () => {
     const [historial, setHistorial] = useState<AsistenciaDTO[]>([]);
     const [loadingHistorial, setLoadingHistorial] = useState(false);
 
-    // Notificación
+    // Notificación avanzada
     const [notifMsg, setNotifMsg] = useState("");
+    const [notifTarget, setNotifTarget] = useState<"admin" | "course_all" | "single_student">("course_all");
+    const [selectedStudentId, setSelectedStudentId] = useState<string>("");
     const [notifSent, setNotifSent] = useState(false);
     const [sendingNotif, setSendingNotif] = useState(false);
 
@@ -150,12 +153,32 @@ const InstructorProfilePage = () => {
     const sendNotification = async () => {
         if (!notifMsg.trim() || !user) return;
         setSendingNotif(true);
+        const formattedMsg = `[Reporte - Instructor: ${user.username}${selectedCourse ? ` - Curso: ${selectedCourse.nombre}` : ""}] ${notifMsg}`;
         try {
-            await notificacionesService.crear(user.id, `[Instructor ${user.username}] ${notifMsg}`);
+            if (notifTarget === "admin") {
+                await notificacionesService.crear(1, formattedMsg);
+            } else if (notifTarget === "course_all") {
+                if (alumnos.length > 0) {
+                    await Promise.all(alumnos.map(a => notificacionesService.crear(a.usuarioId, formattedMsg)));
+                } else {
+                    alert("No hay alumnos inscritos en este curso para enviar notificaciones.");
+                    return;
+                }
+            } else if (notifTarget === "single_student") {
+                if (selectedStudentId) {
+                    await notificacionesService.crear(Number(selectedStudentId), formattedMsg);
+                } else {
+                    alert("Selecciona un alumno antes de enviar la notificación.");
+                    return;
+                }
+            }
             setNotifSent(true);
             setNotifMsg("");
+            setSelectedStudentId("");
             setTimeout(() => setNotifSent(false), 3000);
-        } catch {} finally {
+        } catch {
+            // Silenciar
+        } finally {
             setSendingNotif(false);
         }
     };
@@ -220,229 +243,313 @@ const InstructorProfilePage = () => {
                     </aside>
 
                     {/* Panel principal */}
-                    {selectedCourse ? (
-                        <div>
-                            {/* Header curso */}
-                            <div className="mb-4 rounded-2xl bg-[#37474F] p-5 text-white shadow-md">
-                                <div className="flex flex-wrap items-center gap-3">
-                                    <span className="text-3xl">{getIcon(selectedCourse.nombre)}</span>
-                                    <div className="flex-1">
-                                        <h2 className="text-xl font-bold">{selectedCourse.nombre}</h2>
-                                        <p className="text-sm text-white/70">
-                                            {selectedCourse.cupoTotal - selectedCourse.cupoDisponible} inscritos · {selectedCourse.cupoDisponible} cupos libres
+                    <div className="flex-1">
+                        {/* Tabs del Panel */}
+                        <div className="mb-6 flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm">
+                            {[
+                                { key: "perfil",       label: "👤 Mi Perfil" },
+                                { key: "alumnos",      label: "👥 Alumnos" },
+                                { key: "asistencia",   label: "✅ Asistencia" },
+                                { key: "historial",    label: "📋 Historial" },
+                                { key: "notificacion", label: "📣 Reportar" },
+                            ].map(t => (
+                                <button key={t.key} id={`instructor-tab-${t.key}`}
+                                    onClick={() => setActiveTab(t.key as any)}
+                                    className={`flex-1 min-w-[95px] rounded-xl py-2.5 text-xs sm:text-sm font-semibold transition-all ${
+                                        activeTab === t.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-[#FAFAFA]"
+                                    }`}>
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Tab Perfil (Independiente de curso seleccionado) */}
+                        {activeTab === "perfil" && (
+                            <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                <h3 className="mb-5 text-xl font-bold text-[#37474F]">Mi Perfil de Instructor</h3>
+                                <div className="grid gap-4 md:grid-cols-2">
+                                    {[
+                                        { label: "Nombre completo", value: user.username },
+                                        { label: "Correo electrónico", value: user.email },
+                                        { label: "Teléfono", value: user.phone || "No registrado" },
+                                        { label: "Rol en el sistema", value: "Instructor Certificado" },
+                                    ].map(f => (
+                                        <div key={f.label} className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-4">
+                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#455A64]">{f.label}</p>
+                                            <p className="mt-1 text-base font-bold text-[#212121]">{f.value}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                                    <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 shadow-xs">
+                                        <p className="text-xs font-bold text-blue-700">📚 Cursos Asignados</p>
+                                        <p className="mt-1 text-3xl font-black text-blue-900">{myCourses.length}</p>
+                                    </div>
+                                    <div className="rounded-xl bg-amber-50 border border-amber-200 p-5 shadow-xs">
+                                        <p className="text-xs font-bold text-amber-700">👥 Total Estudiantes</p>
+                                        <p className="mt-1 text-3xl font-black text-amber-900">
+                                            {myCourses.reduce((acc, c) => acc + (c.cupoTotal - c.cupoDisponible), 0)}
                                         </p>
                                     </div>
-                                    <div className="text-right text-sm text-white/70">
-                                        <p>{selectedCourse.fechaInicio ? new Date(selectedCourse.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
-                                        <p>al {selectedCourse.fechaFin ? new Date(selectedCourse.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
-                                    </div>
                                 </div>
                             </div>
+                        )}
 
-                            {/* Tabs */}
-                            <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl bg-white p-2 shadow-sm sm:grid-cols-4">
-                                {[
-                                    { key: "alumnos",      label: "👥 Alumnos" },
-                                    { key: "asistencia",   label: "✅ Asistencia" },
-                                    { key: "historial",    label: "📋 Historial" },
-                                    { key: "notificacion", label: "📣 Notificar" },
-                                ].map(t => (
-                                    <button key={t.key} id={`instructor-tab-${t.key}`}
-                                        onClick={() => setActiveTab(t.key as typeof activeTab)}
-                                        className={`rounded-xl py-2 text-xs font-semibold transition-all sm:text-sm ${
-                                            activeTab === t.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-[#FAFAFA]"
-                                        }`}>
-                                        {t.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Tab Alumnos */}
-                            {activeTab === "alumnos" && (
-                                <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md">
-                                    <div className="mb-4 flex items-center justify-between">
-                                        <h3 className="font-bold text-[#37474F]">Alumnos inscritos</h3>
-                                        <span className="rounded-full bg-[#FFA000]/20 px-3 py-1 text-xs font-bold text-[#37474F]">
-                                            {alumnos.length} estudiantes
-                                        </span>
-                                    </div>
-                                    {loadingAlumnos ? (
-                                        <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-gray-100" />)}</div>
-                                    ) : alumnos.length === 0 ? (
-                                        <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                            <p className="text-3xl mb-2">📭</p>
-                                            <p className="text-sm font-medium">No hay alumnos inscritos en este curso aún.</p>
+                        {/* Tabs que requieren curso */}
+                        {activeTab !== "perfil" && (
+                            selectedCourse ? (
+                                <div>
+                                    {/* Header curso */}
+                                    <div className="mb-4 rounded-2xl bg-[#37474F] p-5 text-white shadow-md">
+                                        <div className="flex flex-wrap items-center gap-3">
+                                            <span className="text-3xl">{getIcon(selectedCourse.nombre)}</span>
+                                            <div className="flex-1">
+                                                <h2 className="text-xl font-bold">{selectedCourse.nombre}</h2>
+                                                <p className="text-sm text-white/70">
+                                                    {selectedCourse.cupoTotal - selectedCourse.cupoDisponible} inscritos · {selectedCourse.cupoDisponible} cupos libres
+                                                </p>
+                                            </div>
+                                            <div className="text-right text-sm text-white/70">
+                                                <p>{selectedCourse.fechaInicio ? new Date(selectedCourse.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
+                                                <p>al {selectedCourse.fechaFin ? new Date(selectedCourse.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
+                                            </div>
                                         </div>
-                                    ) : (
-                                        <div className="divide-y divide-gray-100">
-                                            {alumnos.map((a, i) => (
-                                                <div key={a.usuarioId} className="flex items-center gap-3 py-3">
-                                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
-                                                        {i + 1}
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <p className="text-sm font-semibold text-[#37474F]">
-                                                            {a.nombreUsuario || `Alumno #${a.usuarioId}`}
-                                                        </p>
-                                                        <p className="text-xs text-[#455A64]">
-                                                            Inscrito: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
-                                                        </p>
-                                                    </div>
-                                                    <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                                                        a.estado === "INSCRITO" ? "bg-green-100 text-green-700" :
-                                                        a.estado === "COMPLETADO" ? "bg-blue-100 text-blue-700" :
-                                                        "bg-gray-100 text-gray-600"}`}>
-                                                        {a.estado}
-                                                    </span>
+                                    </div>
+
+                                    {/* Tab Alumnos */}
+                                    {activeTab === "alumnos" && (
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                            <div className="mb-4 flex items-center justify-between">
+                                                <h3 className="font-bold text-[#37474F]">Alumnos inscritos</h3>
+                                                <span className="rounded-full bg-[#FFA000]/20 px-3 py-1 text-xs font-bold text-[#37474F]">
+                                                    {alumnos.length} estudiantes
+                                                </span>
+                                            </div>
+                                            {loadingAlumnos ? (
+                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-gray-100" />)}</div>
+                                            ) : alumnos.length === 0 ? (
+                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
+                                                    <p className="text-3xl mb-2">📭</p>
+                                                    <p className="text-sm font-medium">No hay alumnos inscritos en este curso aún.</p>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Tab Asistencia */}
-                            {activeTab === "asistencia" && (
-                                <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md">
-                                    <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                                        <h3 className="font-bold text-[#37474F]">Registro de Asistencia</h3>
-                                        <div className="flex items-center gap-3">
-                                            <input type="date" value={attendanceDate}
-                                                onChange={e => { setAttendanceDate(e.target.value); setAttendanceSaved(false); }}
-                                                className="rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition" />
-                                            {attendanceSaved && (
-                                                <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700 animate-fadeIn">✓ Guardado en BD</span>
+                                            ) : (
+                                                <div className="divide-y divide-gray-100">
+                                                    {alumnos.map((a, i) => (
+                                                        <div key={a.usuarioId} className="flex items-center gap-3 py-3">
+                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
+                                                                {i + 1}
+                                                            </div>
+                                                            <div className="flex-1">
+                                                                <p className="text-sm font-semibold text-[#37474F]">
+                                                                    {a.nombreUsuario || `Alumno #${a.usuarioId}`}
+                                                                </p>
+                                                                <p className="text-xs text-[#455A64]">
+                                                                    Inscrito: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                                </p>
+                                                            </div>
+                                                            <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                                                                a.estado === "INSCRITO" ? "bg-green-100 text-green-700" :
+                                                                a.estado === "COMPLETADO" ? "bg-blue-100 text-blue-700" :
+                                                                "bg-gray-100 text-gray-600"}`}>
+                                                                {a.estado}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </div>
                                             )}
                                         </div>
-                                    </div>
+                                    )}
 
-                                    {alumnos.length === 0 ? (
-                                        <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                            <p className="text-sm">No hay alumnos inscritos para registrar asistencia.</p>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="mb-4 flex gap-4 text-sm">
-                                                <span className="font-semibold text-green-700">✓ Presentes: {presentesCount}</span>
-                                                <span className="font-semibold text-red-600">✗ Ausentes: {alumnos.length - presentesCount}</span>
+                                    {/* Tab Asistencia */}
+                                    {activeTab === "asistencia" && (
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+                                                <h3 className="font-bold text-[#37474F]">Registro de Asistencia</h3>
+                                                <div className="flex items-center gap-3">
+                                                    <input type="date" value={attendanceDate}
+                                                        onChange={e => { setAttendanceDate(e.target.value); setAttendanceSaved(false); }}
+                                                        className="rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition" />
+                                                    {attendanceSaved && (
+                                                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700 animate-fadeIn">✓ Guardado en BD</span>
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div className="space-y-2">
-                                                {alumnos.map((a, i) => {
-                                                    const presente = !!attendance[a.usuarioId];
-                                                    return (
-                                                        <div key={a.usuarioId}
-                                                            className={`flex items-center justify-between rounded-xl border p-3 transition ${
-                                                                presente ? "border-green-200 bg-green-50" : "border-gray-200 bg-white"}`}>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
-                                                                    {i + 1}
+
+                                            {alumnos.length === 0 ? (
+                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
+                                                    <p className="text-sm">No hay alumnos inscritos para registrar asistencia.</p>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <div className="mb-4 flex gap-4 text-sm">
+                                                        <span className="font-semibold text-green-700">✓ Presentes: {presentesCount}</span>
+                                                        <span className="font-semibold text-red-600">✗ Ausentes: {alumnos.length - presentesCount}</span>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {alumnos.map((a, i) => {
+                                                            const presente = !!attendance[a.usuarioId];
+                                                            return (
+                                                                <div key={a.usuarioId}
+                                                                    className={`flex items-center justify-between rounded-xl border p-3 transition ${
+                                                                        presente ? "border-green-200 bg-green-50" : "border-gray-200 bg-white"}`}>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
+                                                                            {i + 1}
+                                                                        </div>
+                                                                        <span className="text-sm font-medium text-[#37474F]">
+                                                                            {a.nombreUsuario || `Alumno #${a.usuarioId}`}
+                                                                        </span>
+                                                                    </div>
+                                                                    <button id={`attendance-btn-${a.usuarioId}`}
+                                                                        onClick={() => toggleAttendance(a.usuarioId)}
+                                                                        className={`rounded-xl px-4 py-1.5 text-xs font-bold transition ${
+                                                                            presente
+                                                                                ? "bg-green-500 text-white hover:bg-green-600"
+                                                                                : "bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600"}`}>
+                                                                        {presente ? "✓ Presente" : "✗ Ausente"}
+                                                                    </button>
                                                                 </div>
-                                                                <span className="text-sm font-medium text-[#37474F]">
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <button id="btn-save-attendance"
+                                                        onClick={saveAttendance}
+                                                        disabled={savingAttendance}
+                                                        className="mt-5 w-full rounded-xl bg-[#FFA000] py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition disabled:opacity-60">
+                                                        {savingAttendance ? "Guardando en base de datos…" : "💾 Guardar asistencia"}
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Tab Historial */}
+                                    {activeTab === "historial" && (
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                            <h3 className="mb-5 font-bold text-[#37474F]">Historial de Asistencia</h3>
+                                            {loadingHistorial ? (
+                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-10 animate-pulse rounded-xl bg-gray-100" />)}</div>
+                                            ) : historial.length === 0 ? (
+                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
+                                                    <p className="text-3xl mb-2">📋</p>
+                                                    <p className="text-sm">Aún no hay registros de asistencia para este curso.</p>
+                                                </div>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-sm">
+                                                        <thead>
+                                                            <tr className="bg-[#37474F] text-white text-xs">
+                                                                <th className="px-4 py-3 text-left rounded-tl-xl">Fecha</th>
+                                                                <th className="px-4 py-3 text-left">Alumno</th>
+                                                                <th className="px-4 py-3 text-left rounded-tr-xl">Asistencia</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {historial.map((h, i) => (
+                                                                <tr key={h.id ?? i} className="border-b border-gray-100 hover:bg-gray-50">
+                                                                    <td className="px-4 py-2 text-[#455A64]">
+                                                                        {h.fecha ? new Date(h.fecha + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                                    </td>
+                                                                    <td className="px-4 py-2 font-medium text-[#37474F]">
+                                                                        {h.nombreUsuario || `#${h.usuarioId}`}
+                                                                    </td>
+                                                                    <td className="px-4 py-2">
+                                                                        <span className={`rounded-full px-3 py-0.5 text-xs font-bold ${
+                                                                            h.presente ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                                                            {h.presente ? "✓ Presente" : "✗ Ausente"}
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Tab Notificación */}
+                                    {activeTab === "notificacion" && (
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                            <h3 className="mb-4 text-lg font-bold text-[#37474F]">
+                                                Enviar reporte o notificación — «{selectedCourse.nombre}»
+                                            </h3>
+                                            {notifSent && (
+                                                <div className="mb-4 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-700 animate-fadeIn">
+                                                    ✅ Reporte/notificación enviado correctamente a los destinatarios.
+                                                </div>
+                                            )}
+
+                                            {/* Selector de destinatario */}
+                                            <div className="mb-5 grid gap-4 sm:grid-cols-2">
+                                                <div>
+                                                    <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Destinatario</label>
+                                                    <select
+                                                        id="notif-target-select"
+                                                        value={notifTarget}
+                                                        onChange={e => setNotifTarget(e.target.value as any)}
+                                                        className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white"
+                                                    >
+                                                        <option value="course_all">👥 Todos los alumnos de este curso ({alumnos.length})</option>
+                                                        <option value="single_student">👤 Alumno específico</option>
+                                                        <option value="admin">🛡️ Administrador del Sistema</option>
+                                                    </select>
+                                                </div>
+
+                                                {notifTarget === "single_student" && (
+                                                    <div>
+                                                        <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Seleccionar Alumno</label>
+                                                        <select
+                                                            id="notif-student-select"
+                                                            value={selectedStudentId}
+                                                            onChange={e => setSelectedStudentId(e.target.value)}
+                                                            className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white"
+                                                        >
+                                                            <option value="">-- Elige un estudiante --</option>
+                                                            {alumnos.map(a => (
+                                                                <option key={a.usuarioId} value={a.usuarioId}>
                                                                     {a.nombreUsuario || `Alumno #${a.usuarioId}`}
-                                                                </span>
-                                                            </div>
-                                                            <button id={`attendance-btn-${a.usuarioId}`}
-                                                                onClick={() => toggleAttendance(a.usuarioId)}
-                                                                className={`rounded-xl px-4 py-1.5 text-xs font-bold transition ${
-                                                                    presente
-                                                                        ? "bg-green-500 text-white hover:bg-green-600"
-                                                                        : "bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600"}`}>
-                                                                {presente ? "✓ Presente" : "✗ Ausente"}
-                                                            </button>
-                                                        </div>
-                                                    );
-                                                })}
+                                                                </option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <button id="btn-save-attendance"
-                                                onClick={saveAttendance}
-                                                disabled={savingAttendance}
-                                                className="mt-5 w-full rounded-xl bg-[#FFA000] py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition disabled:opacity-60">
-                                                {savingAttendance ? "Guardando en base de datos…" : "💾 Guardar asistencia"}
+
+                                            <div>
+                                                <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Mensaje del reporte</label>
+                                                <textarea
+                                                    id="instructor-notif-textarea"
+                                                    value={notifMsg}
+                                                    onChange={e => setNotifMsg(e.target.value)}
+                                                    rows={5}
+                                                    placeholder="Escribe el mensaje del reporte o notificación aquí..."
+                                                    className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition text-sm leading-relaxed"
+                                                />
+                                            </div>
+
+                                            <button
+                                                id="btn-send-notif-instructor"
+                                                onClick={sendNotification}
+                                                disabled={!notifMsg.trim() || sendingNotif || (notifTarget === "single_student" && !selectedStudentId)}
+                                                className="mt-4 rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] hover:bg-[#ffb300] hover:-translate-y-0.5 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
+                                                {sendingNotif ? "Enviando reporte..." : "📣 Enviar reporte"}
                                             </button>
-                                        </>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* Tab Historial */}
-                            {activeTab === "historial" && (
-                                <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md">
-                                    <h3 className="mb-5 font-bold text-[#37474F]">Historial de Asistencia</h3>
-                                    {loadingHistorial ? (
-                                        <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-10 animate-pulse rounded-xl bg-gray-100" />)}</div>
-                                    ) : historial.length === 0 ? (
-                                        <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                            <p className="text-3xl mb-2">📋</p>
-                                            <p className="text-sm">Aún no hay registros de asistencia para este curso.</p>
-                                        </div>
-                                    ) : (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-sm">
-                                                <thead>
-                                                    <tr className="bg-[#37474F] text-white text-xs">
-                                                        <th className="px-4 py-3 text-left rounded-tl-xl">Fecha</th>
-                                                        <th className="px-4 py-3 text-left">Alumno</th>
-                                                        <th className="px-4 py-3 text-left rounded-tr-xl">Asistencia</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    {historial.map((h, i) => (
-                                                        <tr key={h.id ?? i} className="border-b border-gray-100 hover:bg-gray-50">
-                                                            <td className="px-4 py-2 text-[#455A64]">
-                                                                {h.fecha ? new Date(h.fecha + "T00:00:00").toLocaleDateString("es-CL") : "—"}
-                                                            </td>
-                                                            <td className="px-4 py-2 font-medium text-[#37474F]">
-                                                                {h.nombreUsuario || `#${h.usuarioId}`}
-                                                            </td>
-                                                            <td className="px-4 py-2">
-                                                                <span className={`rounded-full px-3 py-0.5 text-xs font-bold ${
-                                                                    h.presente ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                                                    {h.presente ? "✓ Presente" : "✗ Ausente"}
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
                                         </div>
                                     )}
                                 </div>
-                            )}
-
-                            {/* Tab Notificación */}
-                            {activeTab === "notificacion" && (
-                                <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md">
-                                    <h3 className="mb-4 font-bold text-[#37474F]">
-                                        Enviar notificación — «{selectedCourse.nombre}»
-                                    </h3>
-                                    {notifSent && (
-                                        <div className="mb-4 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-700 animate-fadeIn">
-                                            ✅ Notificación enviada correctamente.
-                                        </div>
-                                    )}
-                                    <textarea id="instructor-notif-textarea"
-                                        value={notifMsg} onChange={e => setNotifMsg(e.target.value)}
-                                        rows={5} placeholder="Escribe tu mensaje aquí…"
-                                        className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition" />
-                                    <button id="btn-send-notif-instructor"
-                                        onClick={sendNotification}
-                                        disabled={!notifMsg.trim() || sendingNotif}
-                                        className="mt-4 rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                        {sendingNotif ? "Enviando…" : "Enviar notificación"}
-                                    </button>
+                            ) : (
+                                <div className="flex items-center justify-center rounded-2xl bg-white p-12 shadow-md text-center border border-[#455A64]/10 animate-fadeIn">
+                                    <div>
+                                        <div className="mb-3 text-4xl">📚</div>
+                                        <p className="font-bold text-[#37474F]">Por favor selecciona un curso del menú lateral</p>
+                                        <p className="text-sm text-[#455A64] mt-1">Necesitas elegir una actividad para gestionar su asistencia o alumnos.</p>
+                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    ) : (
-                        !loading && (
-                            <div className="flex items-center justify-center rounded-2xl bg-white p-12 shadow-md text-center">
-                                <div>
-                                    <div className="mb-3 text-4xl">📋</div>
-                                    <p className="text-[#455A64]">No tienes cursos asignados actualmente.</p>
-                                </div>
-                            </div>
-                        )
-                    )}
+                            )
+                        )}
+                    </div>
                 </div>
             </section>
         </main>

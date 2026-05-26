@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { notificacionesService } from "../services/notificacionesService";
 
 const Navbar = () => {
     const { user, logout, isAuthenticated } = useAuth();
@@ -9,6 +10,8 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [photo, setPhoto] = useState<string | null>(null);
+    const [unreadCount, setUnreadCount] = useState(0);
 
     // Shadow on scroll
     useEffect(() => {
@@ -21,6 +24,54 @@ const Navbar = () => {
     useEffect(() => { setMenuOpen(false); setUserMenuOpen(false); }, [location.pathname]);
 
     const handleLogout = () => { logout(); navigate("/login"); };
+
+    // Sincronizar foto de perfil reactivamente
+    useEffect(() => {
+        if (user) {
+            setPhoto(localStorage.getItem(`profilePhoto_${user.id}`));
+        } else {
+            setPhoto(null);
+        }
+
+        const handlePhotoUpdate = () => {
+            if (user) {
+                setPhoto(localStorage.getItem(`profilePhoto_${user.id}`));
+            }
+        };
+
+        window.addEventListener("profilePhotoUpdated", handlePhotoUpdate);
+        return () => window.removeEventListener("profilePhotoUpdated", handlePhotoUpdate);
+    }, [user]);
+
+    // Cargar notificaciones sin leer reactivamente
+    useEffect(() => {
+        if (!isAuthenticated || !user) {
+            setUnreadCount(0);
+            return;
+        }
+
+        const fetchUnread = () => {
+            notificacionesService.listarPorUsuario(user.id)
+                .then(notifs => {
+                    const count = notifs.filter(n => !n.leido).length;
+                    setUnreadCount(count);
+                })
+                .catch(() => {});
+        };
+
+        fetchUnread();
+
+        const handleNotifUpdate = () => fetchUnread();
+        window.addEventListener("notificationsUpdated", handleNotifUpdate);
+
+        // Polling de 15 segundos
+        const interval = setInterval(fetchUnread, 15000);
+
+        return () => {
+            window.removeEventListener("notificationsUpdated", handleNotifUpdate);
+            clearInterval(interval);
+        };
+    }, [user, isAuthenticated]);
 
     // ── Nav items by role ────────────────────────────────────────
     const navItems = !isAuthenticated
@@ -101,39 +152,72 @@ const Navbar = () => {
                 {/* ── Right actions ─────────────────────────────── */}
                 <div className="hidden items-center gap-3 md:flex">
                     {isAuthenticated && user ? (
-                        <div className="relative">
-                            <button
-                                onClick={() => setUserMenuOpen(v => !v)}
-                                id="btn-user-menu"
-                                className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 hover:bg-white/15 transition group">
-                                {/* Avatar */}
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
-                                    {user.username.charAt(0).toUpperCase()}
-                                </div>
-                                <div className="text-left">
-                                    <p className="text-xs font-bold text-white leading-none">{user.username.split(" ")[0]}</p>
-                                    <div className="mt-0.5 flex items-center gap-1">
-                                        <span className={`h-1.5 w-1.5 rounded-full ${ri?.dot}`} />
-                                        <span className="text-[10px] text-white/50">{ri?.label}</span>
-                                    </div>
-                                </div>
-                                <span className={`text-white/40 text-xs transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`}>▾</span>
-                            </button>
+                        <div className="flex items-center gap-3">
+                            {/* Campana de Notificaciones */}
+                            <div className="relative">
+                                <Link
+                                    to={user.role === "ESTUDIANTE" ? "/perfil" : user.role === "INSTRUCTOR" ? "/instructor/perfil" : "/admin/notificaciones"}
+                                    className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200"
+                                    title="Notificaciones"
+                                    onClick={() => {
+                                        if (user.role === "ESTUDIANTE") {
+                                            sessionStorage.setItem("activeProfileTab", "notificaciones");
+                                            window.dispatchEvent(new Event("activeProfileTabChanged"));
+                                        }
+                                    }}
+                                >
+                                    <span className="text-base">🔔</span>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white ring-2 ring-[#37474F]">
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </Link>
+                            </div>
 
-                            {/* Dropdown */}
-                            {userMenuOpen && (
-                                <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white shadow-2xl border border-gray-100 py-1 animate-fadeInDown z-50">
-                                    <div className="px-4 py-3 border-b border-gray-100">
-                                        <p className="text-xs font-bold text-[#37474F] truncate">{user.username}</p>
-                                        <p className="text-xs text-[#455A64] truncate">{user.email}</p>
+                            {/* Menú de Usuario */}
+                            <div className="relative">
+                                <button
+                                    onClick={() => setUserMenuOpen(v => !v)}
+                                    id="btn-user-menu"
+                                    className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 hover:bg-white/15 transition group">
+                                    {/* Avatar */}
+                                    {photo ? (
+                                        <img
+                                            src={photo}
+                                            alt="Avatar"
+                                            className="h-8 w-8 rounded-full object-cover border border-[#FFA000]"
+                                        />
+                                    ) : (
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
+                                            {user.username.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
+                                    <div className="text-left">
+                                        <p className="text-xs font-bold text-white leading-none">{user.username.split(" ")[0]}</p>
+                                        <div className="mt-0.5 flex items-center gap-1">
+                                            <span className={`h-1.5 w-1.5 rounded-full ${ri?.dot}`} />
+                                            <span className="text-[10px] text-white/50">{ri?.label}</span>
+                                        </div>
                                     </div>
-                                    <button id="btn-logout"
-                                        onClick={handleLogout}
-                                        className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition">
-                                        <span>🚪</span> Cerrar sesión
-                                    </button>
-                                </div>
-                            )}
+                                    <span className={`text-white/40 text-xs transition-transform duration-200 ${userMenuOpen ? "rotate-180" : ""}`}>▾</span>
+                                </button>
+
+                                {/* Dropdown */}
+                                {userMenuOpen && (
+                                    <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-white shadow-2xl border border-gray-100 py-1 animate-fadeInDown z-50">
+                                        <div className="px-4 py-3 border-b border-gray-100">
+                                            <p className="text-xs font-bold text-[#37474F] truncate">{user.username}</p>
+                                            <p className="text-xs text-[#455A64] truncate">{user.email}</p>
+                                        </div>
+                                        <button id="btn-logout"
+                                            onClick={handleLogout}
+                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+                                            <span>🚪</span> Cerrar sesión
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <>
@@ -165,9 +249,17 @@ const Navbar = () => {
                 <div className="border-t border-white/10 bg-[#263238] px-5 pb-6 pt-4">
                     {isAuthenticated && user && (
                         <div className="mb-4 flex items-center gap-3 rounded-xl bg-white/8 p-3">
-                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
-                                {user.username.charAt(0).toUpperCase()}
-                            </div>
+                            {photo ? (
+                                <img
+                                    src={photo}
+                                    alt="Avatar"
+                                    className="h-9 w-9 rounded-full object-cover border border-[#FFA000]"
+                                />
+                            ) : (
+                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
+                                    {user.username.charAt(0).toUpperCase()}
+                                </div>
+                            )}
                             <div>
                                 <p className="text-sm font-bold text-white">{user.username}</p>
                                 <p className="text-xs text-white/50">{ri?.label}</p>

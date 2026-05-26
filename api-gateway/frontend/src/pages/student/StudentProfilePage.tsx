@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { inscripcionesService, type InscripcionDTO } from "../../services/inscripcionesService";
 import { getIcon } from "../../services/cursosService";
+import { notificacionesService, type NotificacionDTO } from "../../services/notificacionesService";
 
 // ── Mini Calendario ────────────────────────────────────────────
 const MiniCalendar = ({ ins }: { ins: InscripcionDTO }) => {
@@ -64,6 +65,7 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
             const base64 = ev.target?.result as string;
             localStorage.setItem(storageKey, base64);
             setPhoto(base64);
+            window.dispatchEvent(new Event("profilePhotoUpdated"));
         };
         reader.readAsDataURL(file);
     };
@@ -88,16 +90,91 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
 // ── Página Principal ───────────────────────────────────────────
 const StudentProfilePage = () => {
     const { user } = useAuth();
-    const [activeTab, setActiveTab] = useState<"info" | "cursos">("info");
+    const [activeTab, setActiveTab] = useState<"info" | "cursos" | "notificaciones">("info");
     const [inscripciones, setInscripciones] = useState<InscripcionDTO[]>([]);
     const [loading, setLoading] = useState(true);
+    const [notificaciones, setNotificaciones] = useState<NotificacionDTO[]>([]);
+    const [loadingNotifs, setLoadingNotifs] = useState(false);
 
+    // Sincronizar pestaña activa de sessionStorage si se hace click en la campana
+    useEffect(() => {
+        const storedTab = sessionStorage.getItem("activeProfileTab");
+        if (storedTab === "notificaciones") {
+            setActiveTab("notificaciones");
+            sessionStorage.removeItem("activeProfileTab");
+        }
+
+        const handleTabChange = () => {
+            const nextTab = sessionStorage.getItem("activeProfileTab");
+            if (nextTab === "notificaciones") {
+                setActiveTab("notificaciones");
+                sessionStorage.removeItem("activeProfileTab");
+            }
+        };
+
+        window.addEventListener("activeProfileTabChanged", handleTabChange);
+        return () => window.removeEventListener("activeProfileTabChanged", handleTabChange);
+    }, []);
+
+    // Cargar inscripciones
     useEffect(() => {
         if (!user) { setLoading(false); return; }
         inscripcionesService.listarPorUsuario(user.id)
             .then(data => { setInscripciones(data ?? []); setLoading(false); })
             .catch(() => { setInscripciones([]); setLoading(false); });
     }, [user]);
+
+    // Cargar notificaciones
+    const fetchNotificaciones = () => {
+        if (!user) return;
+        setLoadingNotifs(true);
+        notificacionesService.listarPorUsuario(user.id)
+            .then(data => {
+                setNotificaciones(data ?? []);
+                setLoadingNotifs(false);
+            })
+            .catch(() => {
+                setNotificaciones([]);
+                setLoadingNotifs(false);
+            });
+    };
+
+    useEffect(() => {
+        if (user) {
+            fetchNotificaciones();
+        }
+    }, [user]);
+
+    const markNotifRead = async (notif: NotificacionDTO) => {
+        try {
+            await notificacionesService.marcarLeida(notif.id, { ...notif, leido: true });
+            setNotificaciones(prev => prev.map(n => n.id === notif.id ? { ...n, leido: true } : n));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        } catch {
+            setNotificaciones(prev => prev.map(n => n.id === notif.id ? { ...n, leido: true } : n));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        }
+    };
+
+    const markAllNotifsRead = async () => {
+        const unread = notificaciones.filter(n => !n.leido);
+        if (unread.length === 0) return;
+        try {
+            await Promise.all(unread.map(n => notificacionesService.marcarLeida(n.id, { ...n, leido: true })));
+        } catch {}
+        setNotificaciones(prev => prev.map(n => ({ ...n, leido: true })));
+        window.dispatchEvent(new Event("notificationsUpdated"));
+    };
+
+    const deleteNotif = async (id: number) => {
+        try {
+            await notificacionesService.eliminar(id);
+            setNotificaciones(prev => prev.filter(n => n.id !== id));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        } catch {}
+    };
+
+    const unreadCount = notificaciones.filter(n => !n.leido).length;
 
     if (!user) return (
         <main className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-[#FAFAFA] px-6">
@@ -143,15 +220,23 @@ const StudentProfilePage = () => {
                         {/* Tabs */}
                         <div className="mb-6 flex gap-2 rounded-2xl bg-white p-2 shadow-sm">
                             {[
-                                { key: "info",   label: "👤 Mi Perfil" },
-                                { key: "cursos", label: "📚 Mis Cursos" },
+                                { key: "info",           label: "👤 Mi Perfil" },
+                                { key: "cursos",         label: "📚 Mis Cursos" },
+                                { key: "notificaciones", label: "🔔 Notificaciones" },
                             ].map(tab => (
                                 <button key={tab.key} id={`tab-${tab.key}`}
-                                    onClick={() => setActiveTab(tab.key as "info" | "cursos")}
-                                    className={`flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
+                                    onClick={() => setActiveTab(tab.key as any)}
+                                    className={`relative flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all ${
                                         activeTab === tab.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-[#FAFAFA]"
                                     }`}>
-                                    {tab.label}
+                                    <span className="flex items-center justify-center gap-1.5">
+                                        {tab.label}
+                                        {tab.key === "notificaciones" && unreadCount > 0 && (
+                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white animate-pulse">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </span>
                                 </button>
                             ))}
                         </div>
@@ -242,6 +327,87 @@ const StudentProfilePage = () => {
                                             )}
                                         </div>
                                     ))
+                                )}
+                            </div>
+                        )}
+
+                        {/* Tab Notificaciones */}
+                        {activeTab === "notificaciones" && (
+                            <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-[#37474F]">Bandeja de Notificaciones</h3>
+                                        <p className="text-xs text-[#455A64] mt-0.5">
+                                            Tienes {notificaciones.length} notificaciones ({unreadCount} sin leer)
+                                        </p>
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <button
+                                            onClick={markAllNotifsRead}
+                                            className="rounded-xl border border-[#455A64]/30 px-4 py-2 text-xs font-bold text-[#37474F] hover:bg-[#FAFAFA] transition-colors cursor-pointer"
+                                        >
+                                            ✓ Marcar todas leídas
+                                        </button>
+                                    )}
+                                </div>
+
+                                {loadingNotifs ? (
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map(i => <div key={i} className="h-16 animate-pulse rounded-xl bg-gray-100" />)}
+                                    </div>
+                                ) : notificaciones.length === 0 ? (
+                                    <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
+                                        <p className="text-3xl mb-2">📭</p>
+                                        <p className="text-sm font-semibold">No tienes notificaciones en este momento.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {notificaciones.map((n) => (
+                                            <div
+                                                key={n.id}
+                                                className={`rounded-xl border p-4 transition-all duration-200 ${
+                                                    !n.leido
+                                                        ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-xs animate-pulse-soft"
+                                                        : "border-[#455A64]/10 bg-white"
+                                                }`}
+                                            >
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            {!n.leido && (
+                                                                <span className="flex h-2 w-2 rounded-full bg-[#FFA000] inline-block" />
+                                                            )}
+                                                            <span className="text-[10px] font-bold text-[#455A64] uppercase tracking-wider">
+                                                                {!n.leido ? "Nueva" : "Leída"}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-[#212121] leading-relaxed">{n.mensaje}</p>
+                                                        {n.fechaCreacion && (
+                                                            <p className="mt-1 text-[11px] text-[#455A64]/60">
+                                                                📅 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex gap-2 shrink-0 self-end sm:self-center">
+                                                        {!n.leido && (
+                                                            <button
+                                                                onClick={() => markNotifRead(n)}
+                                                                className="rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-semibold text-[#455A64] hover:bg-[#ECEFF1] transition-colors cursor-pointer"
+                                                            >
+                                                                Marcar leída
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => deleteNotif(n.id)}
+                                                            className="rounded-lg bg-red-50 border border-red-200/40 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         )}
