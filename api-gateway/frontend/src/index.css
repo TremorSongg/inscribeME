@@ -280,3 +280,137 @@ body {
   background: linear-gradient(90deg, var(--color-accent), #FFD54F);
   transition: width 0.6s ease;
 }
+
+/* ── Modo Oscuro (Dark Mode overrides) ─────────────────────── */
+.dark {
+  --color-bg:            #121D24; /* Fondo Slate Oscuro */
+  --color-text:          #F5F5F5;
+  --color-primary:       #E2E8F0;
+  --color-primary-light: #94A3B8;
+  --color-primary-dark:  #1A2830;
+}
+
+/* Adaptar backgrounds con Tailwind duro en modo oscuro */
+.dark .bg-white {
+  background-color: #1E2C34 !important;
+}
+
+.dark .card, .dark .card-flat {
+  background-color: #1E2C34 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25) !important;
+}
+
+.dark .card:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark .bg-\[\#FAFAFA\], 
+.dark .bg-\[\#FAFAFA\]\/90, 
+.dark .bg-\[\#F8F9FA\],
+.dark main {
+  background-color: #121D24 !important;
+}
+
+.dark .text-\[\#212121\] {
+  color: #F5F5F5 !important;
+}
+
+.dark .text-\[\#37474F\] {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-\[\#455A64\] {
+  color: #94A3B8 !important;
+}
+
+.dark .text-\[\#455A64\]\/60 {
+  color: rgba(245, 245, 245, 0.5) !important;
+}
+
+.dark .border-gray-100, 
+.dark .border-\[\#455A64\]\/10,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Inputs, Selects y Textareas */
+.dark select, 
+.dark input, 
+.dark textarea {
+  background-color: #1A2830 !important;
+  color: #F5F5F5 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.dark select option {
+  background-color: #1E2C34 !important;
+  color: #F5F5F5 !important;
+}
+
+.dark input:focus, 
+.dark select:focus, 
+.dark textarea:focus {
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 3px rgba(255, 160, 0, 0.15) !important;
+}
+
+/* Scrollbar en tema oscuro */
+.dark ::-webkit-scrollbar-track {
+  background: #121D24;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #37474F;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #455A64;
+}
+
+/* Alertas y fondos sutiles */
+.dark .bg-amber-50,
+.dark .bg-blue-50,
+.dark .bg-green-50,
+.dark .bg-red-50,
+.dark .bg-\[\#FFF8E1\],
+.dark .bg-emerald-100,
+.dark .bg-blue-100 {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.dark .text-blue-700,
+.dark .text-blue-900,
+.dark .text-amber-700,
+.dark .text-amber-900,
+.dark .text-green-700,
+.dark .text-emerald-700,
+.dark .text-red-600 {
+  color: #FFA000 !important;
+}
+
+.dark .border-blue-200,
+.dark .border-amber-200,
+.dark .border-green-200,
+.dark .border-red-200,
+.dark .border-\[\#FFA000\]\/40 {
+  border-color: rgba(255, 160, 0, 0.25) !important;
+}
+
+.dark .bg-white\/8,
+.dark .bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.dark .divide-gray-100 > * + * {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Gradientes específicos para Login/Registro en modo oscuro */
+.dark .from-\[\#37474F\], 
+.dark .from-\[\#263238\] {
+  background-image: linear-gradient(135deg, #121D24 0%, #1A2830 50%, #121D24 100%) !important;
+}
+
+

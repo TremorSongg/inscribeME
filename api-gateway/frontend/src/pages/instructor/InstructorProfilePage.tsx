@@ -45,11 +45,12 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
 };
 
 // ── InstructorProfilePage ──────────────────────────────────────
+// ── InstructorProfilePage ──────────────────────────────────────
 const InstructorProfilePage = () => {
     const { user } = useAuth();
     const [myCourses, setMyCourses] = useState<CursoDTO[]>([]);
     const [selectedCourse, setSelectedCourse] = useState<CursoDTO | null>(null);
-    const [activeTab, setActiveTab] = useState<"perfil" | "alumnos" | "asistencia" | "historial" | "notificacion">("perfil");
+    const [activeTab, setActiveTab] = useState<"perfil" | "notificaciones" | "alumnos" | "asistencia" | "historial" | "notificacion">("perfil");
     const [loading, setLoading] = useState(true);
     const [myNotifs, setMyNotifs] = useState<NotificacionDTO[]>([]);
 
@@ -75,6 +76,31 @@ const InstructorProfilePage = () => {
     const [notifSent, setNotifSent] = useState(false);
     const [sendingNotif, setSendingNotif] = useState(false);
 
+    // Sincronizar pestaña activa de sessionStorage si se hace click en la campana
+    useEffect(() => {
+        const storedTab = sessionStorage.getItem("activeProfileTab");
+        if (storedTab === "notificaciones") {
+            setActiveTab("notificaciones");
+            sessionStorage.removeItem("activeProfileTab");
+        }
+
+        const handleTabChange = () => {
+            const nextTab = sessionStorage.getItem("activeProfileTab");
+            if (nextTab === "notificaciones") {
+                setActiveTab("notificaciones");
+                sessionStorage.removeItem("activeProfileTab");
+            }
+        };
+
+        window.addEventListener("activeProfileTabChanged", handleTabChange);
+        return () => window.removeEventListener("activeProfileTabChanged", handleTabChange);
+    }, []);
+
+    const fetchInstructorNotifs = () => {
+        if (!user) return;
+        notificacionesService.listarPorUsuario(user.id).then(setMyNotifs).catch(() => {});
+    };
+
     useEffect(() => {
         if (!user) return;
         cursosService.listar()
@@ -86,8 +112,46 @@ const InstructorProfilePage = () => {
             })
             .catch(() => setLoading(false));
 
-        notificacionesService.listarPorUsuario(user.id).then(setMyNotifs).catch(() => {});
+        fetchInstructorNotifs();
     }, [user]);
+
+    // Escuchar actualizaciones de notificaciones reactivamente
+    useEffect(() => {
+        const handleNotifUpdate = () => fetchInstructorNotifs();
+        window.addEventListener("notificationsUpdated", handleNotifUpdate);
+        return () => window.removeEventListener("notificationsUpdated", handleNotifUpdate);
+    }, [user]);
+
+    const markMyNotifRead = async (notif: NotificacionDTO) => {
+        try {
+            await notificacionesService.marcarLeida(notif.id, { ...notif, leido: true });
+            setMyNotifs(prev => prev.map(n => n.id === notif.id ? { ...n, leido: true } : n));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        } catch {
+            setMyNotifs(prev => prev.map(n => n.id === notif.id ? { ...n, leido: true } : n));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        }
+    };
+
+    const markAllMyNotifsRead = async () => {
+        const unread = myNotifs.filter(n => !n.leido);
+        if (unread.length === 0) return;
+        try {
+            await Promise.all(unread.map(n => notificacionesService.marcarLeida(n.id, { ...n, leido: true })));
+        } catch {}
+        setMyNotifs(prev => prev.map(n => ({ ...n, leido: true })));
+        window.dispatchEvent(new Event("notificationsUpdated"));
+    };
+
+    const deleteMyNotif = async (id: number) => {
+        try {
+            await notificacionesService.eliminar(id);
+            setMyNotifs(prev => prev.filter(n => n.id !== id));
+            window.dispatchEvent(new Event("notificationsUpdated"));
+        } catch {}
+    };
+
+    const unreadCount = myNotifs.filter(n => !n.leido).length;
 
     // Cargar alumnos cuando cambia el curso
     useEffect(() => {
@@ -247,18 +311,26 @@ const InstructorProfilePage = () => {
                         {/* Tabs del Panel */}
                         <div className="mb-6 flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm">
                             {[
-                                { key: "perfil",       label: "👤 Mi Perfil" },
-                                { key: "alumnos",      label: "👥 Alumnos" },
-                                { key: "asistencia",   label: "✅ Asistencia" },
-                                { key: "historial",    label: "📋 Historial" },
-                                { key: "notificacion", label: "📣 Reportar" },
+                                { key: "perfil",         label: "👤 Mi Perfil" },
+                                { key: "notificaciones", label: "🔔 Notificaciones" },
+                                { key: "alumnos",        label: "👥 Alumnos" },
+                                { key: "asistencia",     label: "✅ Asistencia" },
+                                { key: "historial",      label: "📋 Historial" },
+                                { key: "notificacion",   label: "📣 Reportar" },
                             ].map(t => (
                                 <button key={t.key} id={`instructor-tab-${t.key}`}
                                     onClick={() => setActiveTab(t.key as any)}
-                                    className={`flex-1 min-w-[95px] rounded-xl py-2.5 text-xs sm:text-sm font-semibold transition-all ${
+                                    className={`relative flex-1 min-w-[95px] rounded-xl py-2.5 text-xs sm:text-sm font-semibold transition-all ${
                                         activeTab === t.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-[#FAFAFA]"
                                     }`}>
-                                    {t.label}
+                                    <span className="flex items-center justify-center gap-1.5">
+                                        {t.label}
+                                        {t.key === "notificaciones" && unreadCount > 0 && (
+                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white animate-pulse">
+                                                {unreadCount}
+                                            </span>
+                                        )}
+                                    </span>
                                 </button>
                             ))}
                         </div>
@@ -295,8 +367,85 @@ const InstructorProfilePage = () => {
                             </div>
                         )}
 
+                        {/* Tab Notificaciones (Independiente de curso seleccionado) */}
+                        {activeTab === "notificaciones" && (
+                            <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                                <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                                    <div>
+                                        <h3 className="text-xl font-bold text-[#37474F]">Bandeja de Notificaciones</h3>
+                                        <p className="text-xs text-[#455A64] mt-0.5">
+                                            Tienes {myNotifs.length} notificaciones ({unreadCount} sin leer)
+                                        </p>
+                                    </div>
+                                    {unreadCount > 0 && (
+                                        <button
+                                            onClick={markAllMyNotifsRead}
+                                            className="rounded-xl border border-[#455A64]/30 px-4 py-2 text-xs font-bold text-[#37474F] hover:bg-[#FAFAFA] transition-colors cursor-pointer"
+                                        >
+                                            ✓ Marcar todas leídas
+                                        </button>
+                                    )}
+                                </div>
+
+                                {myNotifs.length === 0 ? (
+                                    <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
+                                        <p className="text-3xl mb-2">📭</p>
+                                        <p className="text-sm font-semibold">No tienes notificaciones en este momento.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {myNotifs.map((n) => (
+                                            <div
+                                                key={n.id}
+                                                className={`rounded-xl border p-4 transition-all duration-200 ${
+                                                    !n.leido
+                                                        ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-xs animate-pulse-soft"
+                                                        : "border-[#455A64]/10 bg-white"
+                                                }`}
+                                            >
+                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            {!n.leido && (
+                                                                <span className="flex h-2 w-2 rounded-full bg-[#FFA000] inline-block" />
+                                                            )}
+                                                            <span className="text-[10px] font-bold text-[#455A64] uppercase tracking-wider">
+                                                                {!n.leido ? "Nueva" : "Leída"}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-sm text-[#212121] leading-relaxed">{n.mensaje}</p>
+                                                        {n.fechaCreacion && (
+                                                            <p className="mt-1 text-[11px] text-[#455A64]/60">
+                                                                📅 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex gap-2 shrink-0 self-end sm:self-center">
+                                                        {!n.leido && (
+                                                            <button
+                                                                onClick={() => markMyNotifRead(n)}
+                                                                className="rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-semibold text-[#455A64] hover:bg-[#ECEFF1] transition-colors cursor-pointer"
+                                                            >
+                                                                Marcar leída
+                                                            </button>
+                                                        )}
+                                                        <button
+                                                            onClick={() => deleteMyNotif(n.id)}
+                                                            className="rounded-lg bg-red-50 border border-red-200/40 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
+                                                        >
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {/* Tabs que requieren curso */}
-                        {activeTab !== "perfil" && (
+                        {activeTab !== "perfil" && activeTab !== "notificaciones" && (
                             selectedCourse ? (
                                 <div>
                                     {/* Header curso */}

@@ -12,6 +12,19 @@ const Navbar = () => {
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [photo, setPhoto] = useState<string | null>(null);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
+
+    // Sincronizar tema
+    useEffect(() => {
+        if (theme === "dark") {
+            document.documentElement.classList.add("dark");
+        } else {
+            document.documentElement.classList.remove("dark");
+        }
+        localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const toggleTheme = () => setTheme(prev => prev === "light" ? "dark" : "light");
 
     // Shadow on scroll
     useEffect(() => {
@@ -153,6 +166,15 @@ const Navbar = () => {
                 <div className="hidden items-center gap-3 md:flex">
                     {isAuthenticated && user ? (
                         <div className="flex items-center gap-3">
+                            {/* Botón de Modo Claro / Oscuro */}
+                            <button
+                                onClick={toggleTheme}
+                                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
+                                title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+                            >
+                                <span className="text-base">{theme === "light" ? "🌙" : "☀️"}</span>
+                            </button>
+
                             {/* Campana de Notificaciones */}
                             <div className="relative">
                                 <Link
@@ -160,7 +182,7 @@ const Navbar = () => {
                                     className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200"
                                     title="Notificaciones"
                                     onClick={() => {
-                                        if (user.role === "ESTUDIANTE") {
+                                        if (user.role === "ESTUDIANTE" || user.role === "INSTRUCTOR") {
                                             sessionStorage.setItem("activeProfileTab", "notificaciones");
                                             window.dispatchEvent(new Event("activeProfileTabChanged"));
                                         }
@@ -181,18 +203,28 @@ const Navbar = () => {
                                     onClick={() => setUserMenuOpen(v => !v)}
                                     id="btn-user-menu"
                                     className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 hover:bg-white/15 transition group">
-                                    {/* Avatar */}
-                                    {photo ? (
-                                        <img
-                                            src={photo}
-                                            alt="Avatar"
-                                            className="h-8 w-8 rounded-full object-cover border border-[#FFA000]"
-                                        />
-                                    ) : (
-                                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
-                                            {user.username.charAt(0).toUpperCase()}
-                                        </div>
-                                    )}
+                                    {/* Avatar Clickable */}
+                                    <Link
+                                        to={user.role === "ESTUDIANTE" ? "/perfil" : user.role === "INSTRUCTOR" ? "/instructor/perfil" : "/admin"}
+                                        className="hover:scale-105 transition-transform"
+                                        title="Ir a mi perfil"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Evitar que abra/cierre el menú desplegable
+                                            setUserMenuOpen(false);
+                                        }}
+                                    >
+                                        {photo ? (
+                                            <img
+                                                src={photo}
+                                                alt="Avatar"
+                                                className="h-8 w-8 rounded-full object-cover border border-[#FFA000]"
+                                            />
+                                        ) : (
+                                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
+                                                {user.username.charAt(0).toUpperCase()}
+                                            </div>
+                                        )}
+                                    </Link>
                                     <div className="text-left">
                                         <p className="text-xs font-bold text-white leading-none">{user.username.split(" ")[0]}</p>
                                         <div className="mt-0.5 flex items-center gap-1">
@@ -210,9 +242,16 @@ const Navbar = () => {
                                             <p className="text-xs font-bold text-[#37474F] truncate">{user.username}</p>
                                             <p className="text-xs text-[#455A64] truncate">{user.email}</p>
                                         </div>
+                                        <Link
+                                            to={user.role === "ESTUDIANTE" ? "/perfil" : user.role === "INSTRUCTOR" ? "/instructor/perfil" : "/admin"}
+                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-[#37474F] hover:bg-[#FAFAFA] transition"
+                                            onClick={() => setUserMenuOpen(false)}
+                                        >
+                                            <span>👤</span> Mi Perfil
+                                        </Link>
                                         <button id="btn-logout"
                                             onClick={handleLogout}
-                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 transition">
+                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 border-t border-gray-100 transition">
                                             <span>🚪</span> Cerrar sesión
                                         </button>
                                     </div>
@@ -220,7 +259,14 @@ const Navbar = () => {
                             </div>
                         </div>
                     ) : (
-                        <>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={toggleTheme}
+                                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
+                                title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+                            >
+                                <span className="text-base">{theme === "light" ? "🌙" : "☀️"}</span>
+                            </button>
                             <NavLink to="/login"
                                 className="px-4 py-2 text-sm font-semibold text-white/80 hover:text-white transition-colors">
                                 Iniciar sesión
@@ -229,7 +275,7 @@ const Navbar = () => {
                                 className="rounded-xl bg-[#FFA000] px-5 py-2 text-sm font-bold text-[#263238] shadow-lg shadow-[#FFA000]/25 hover:bg-[#FFB300] hover:-translate-y-0.5 transition-all duration-200">
                                 Registrarse
                             </NavLink>
-                        </>
+                        </div>
                     )}
                 </div>
 
@@ -248,22 +294,31 @@ const Navbar = () => {
             <div className={`overflow-hidden transition-all duration-300 md:hidden ${menuOpen ? "max-h-screen" : "max-h-0"}`}>
                 <div className="border-t border-white/10 bg-[#263238] px-5 pb-6 pt-4">
                     {isAuthenticated && user && (
-                        <div className="mb-4 flex items-center gap-3 rounded-xl bg-white/8 p-3">
-                            {photo ? (
-                                <img
-                                    src={photo}
-                                    alt="Avatar"
-                                    className="h-9 w-9 rounded-full object-cover border border-[#FFA000]"
-                                />
-                            ) : (
-                                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
-                                    {user.username.charAt(0).toUpperCase()}
+                        <div className="mb-4 flex items-center justify-between rounded-xl bg-white/8 p-3">
+                            <div className="flex items-center gap-3">
+                                {photo ? (
+                                    <img
+                                        src={photo}
+                                        alt="Avatar"
+                                        className="h-9 w-9 rounded-full object-cover border border-[#FFA000]"
+                                    />
+                                ) : (
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FFA000] text-sm font-black text-[#263238]">
+                                        {user.username.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                                <div>
+                                    <p className="text-sm font-bold text-white">{user.username}</p>
+                                    <p className="text-xs text-white/50">{ri?.label}</p>
                                 </div>
-                            )}
-                            <div>
-                                <p className="text-sm font-bold text-white">{user.username}</p>
-                                <p className="text-xs text-white/50">{ri?.label}</p>
                             </div>
+                            <button
+                                onClick={toggleTheme}
+                                className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
+                                title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+                            >
+                                <span className="text-base">{theme === "light" ? "🌙" : "☀️"}</span>
+                            </button>
                         </div>
                     )}
                     <div className="flex flex-col gap-1">
@@ -287,6 +342,16 @@ const Navbar = () => {
                             </button>
                         ) : (
                             <div className="flex flex-col gap-2">
+                                <div className="mb-2 flex items-center justify-between px-2">
+                                    <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Tema</span>
+                                    <button
+                                        onClick={toggleTheme}
+                                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
+                                        title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+                                    >
+                                        <span className="text-base">{theme === "light" ? "🌙" : "☀️"}</span>
+                                    </button>
+                                </div>
                                 <NavLink to="/login" onClick={() => setMenuOpen(false)}
                                     className="rounded-xl py-3 text-center text-sm font-semibold text-white/80 hover:bg-white/10 transition">
                                     Iniciar sesión
