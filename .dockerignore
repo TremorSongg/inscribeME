@@ -1,0 +1,21 @@
+# Directorios de build Maven (se generan dentro del contenedor)
+**/target/
+
+# Control de versiones
+.git/
+.github/
+
+# Editor
+.vscode/
+.idea/
+*.iml
+
+# Documentación y scripts del host
+*.md
+
+# Variables de entorno locales
+.env.local
+.env.*.local
+
+# Logs
+*.log

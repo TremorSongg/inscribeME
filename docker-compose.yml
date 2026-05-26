@@ -1,0 +1,249 @@
+# ============================================================
+#  InscribeMe - Docker Compose
+#  Imágenes: docker.io/tremorsong/inscribeme-*
+#  Uso: docker compose up -d
+# ============================================================
+
+services:
+
+  # ── MySQL (único contenedor para todas las DBs) ──────────────
+  mysql:
+    image: mysql:8.0
+    container_name: inscribeme-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: "%"
+    ports:
+      - "${MYSQL_HOST_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Scripts ejecutados en orden al crear el contenedor por primera vez
+      - ./scripts/create-databases.sql:/docker-entrypoint-initdb.d/01-create-databases.sql:ro
+      - ./scripts/seed-data.sql:/docker-entrypoint-initdb.d/02-seed-data.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - inscribeme-net
+
+  # ── Eureka Server ────────────────────────────────────────────
+  eureka-server:
+    image: tremorsong/inscribeme-eureka-server:latest
+    container_name: inscribeme-eureka
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    environment:
+      EUREKA_INSTANCE_HOSTNAME: eureka-server
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 60s
+    networks:
+      - inscribeme-net
+
+  # ── Spring Boot Admin Dashboard ──────────────────────────────
+  admin-dashboard:
+    image: tremorsong/inscribeme-admin-dashboard:latest
+    container_name: inscribeme-admin
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_SECURITY_USER_NAME: admin
+      SPRING_SECURITY_USER_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── API Gateway ──────────────────────────────────────────────
+  api-gateway:
+    image: tremorsong/inscribeme-api-gateway:latest
+    container_name: inscribeme-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Frontend (React + Vite → Nginx) ──────────────────────────
+  frontend:
+    build:
+      context: ./api-gateway/frontend
+      dockerfile: Dockerfile
+    container_name: inscribeme-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Usuarios ─────────────────────────────────────────
+  servicio-usuarios:
+    image: tremorsong/inscribeme-servicio-usuarios:latest
+    container_name: inscribeme-usuarios
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_usuarios?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Cursos ───────────────────────────────────────────
+  servicio-cursos:
+    image: tremorsong/inscribeme-servicio-cursos:latest
+    container_name: inscribeme-cursos
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_cursos?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Inscripciones ────────────────────────────────────
+  servicio-inscripciones:
+    build:
+      context: .
+      dockerfile: servicio-inscripciones/Dockerfile
+    container_name: inscribeme-inscripciones
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_inscripciones?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Carrito ──────────────────────────────────────────
+  servicio-carrito:
+    image: tremorsong/inscribeme-servicio-carrito:latest
+    container_name: inscribeme-carrito
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_carrito?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Notificaciones ───────────────────────────────────
+  servicio-notificaciones:
+    image: tremorsong/inscribeme-servicio-notificaciones:latest
+    container_name: inscribeme-notificaciones
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_notificaciones?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+  # ── Servicio Reportes ─────────────────────────────────────────
+  servicio-reportes:
+    image: tremorsong/inscribeme-servicio-reportes:latest
+    container_name: inscribeme-reportes
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/inscribeme_reportes?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=America/Santiago&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_BOOT_ADMIN_CLIENT_URL: http://admin-dashboard:8090
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: admin
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SBA_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    networks:
+      - inscribeme-net
+
+# ── Volúmenes ─────────────────────────────────────────────────
+volumes:
+  mysql-data:
+    name: inscribeme-mysql-data
+
+# ── Redes ─────────────────────────────────────────────────────
+networks:
+  inscribeme-net:
+    name: inscribeme-network
+    driver: bridge

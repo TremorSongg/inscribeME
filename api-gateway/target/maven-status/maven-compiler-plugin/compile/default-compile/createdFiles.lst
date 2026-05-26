@@ -1,0 +1,3 @@
+com\inscribeme\gateway\util\JwtUtil.class
+com\inscribeme\gateway\ApiGatewayApplication.class
+com\inscribeme\gateway\filter\JwtAuthenticationFilter.class

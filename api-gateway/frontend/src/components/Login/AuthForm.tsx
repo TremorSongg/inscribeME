@@ -1,0 +1,183 @@
+import { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+
+type FieldError = {
+    email?: string;
+    password?: string;
+};
+
+const AuthForm = () => {
+    const { login } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [errors, setErrors] = useState<FieldError>({});
+    const [touched, setTouched] = useState({ email: false, password: false });
+    const [loginError, setLoginError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    // ── Validaciones ─────────────────────────────────────────────
+    const validate = (): FieldError => {
+        const errs: FieldError = {};
+        if (!email.includes("@") || email.trim().length < 5) {
+            errs.email = "Ingresa un correo electrónico válido (debe contener @).";
+        }
+        if (password.length < 6) {
+            errs.password = "La contraseña debe tener al menos 6 caracteres.";
+        }
+        return errs;
+    };
+
+    const handleBlur = (field: "email" | "password") => {
+        setTouched((prev) => ({ ...prev, [field]: true }));
+        setErrors(validate());
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setTouched({ email: true, password: true });
+        const errs = validate();
+        setErrors(errs);
+        if (Object.keys(errs).length > 0) return;
+
+        setLoading(true);
+        setLoginError("");
+
+        try {
+            await login(email.trim().toLowerCase(), password);
+            // login() actualiza el AuthContext. Leemos el rol del localStorage
+            // ya que el estado de React puede no haber propagado aún.
+            const stored = localStorage.getItem("authUser");
+            if (stored) {
+                const u = JSON.parse(stored) as { role: string };
+                if (u.role === "ADMIN") navigate("/admin", { replace: true });
+                else if (u.role === "INSTRUCTOR") navigate("/instructor/perfil", { replace: true });
+                else navigate("/perfil", { replace: true });
+            } else {
+                navigate("/", { replace: true });
+            }
+        } catch (err) {
+            setLoginError(
+                err instanceof Error
+                    ? "Correo o contraseña incorrectos. Verifica tus datos."
+                    : "Error al iniciar sesión. Intenta de nuevo."
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+            <h1 className="mb-2 text-center text-3xl font-bold text-[#37474F]">
+                Iniciar Sesión
+            </h1>
+            <p className="mb-6 text-center text-sm text-[#455A64]">
+                Bienvenido de vuelta a InscribeMe
+            </p>
+
+            {loginError && (
+                <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 animate-fadeIn">
+                    ⚠️ {loginError}
+                </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                {/* Email */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold text-[#37474F]">
+                        Correo electrónico
+                    </label>
+                    <input
+                        id="input-email-login"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onBlur={() => handleBlur("email")}
+                        placeholder="ejemplo@correo.cl"
+                        className={`w-full rounded-xl border px-4 py-3 outline-none transition focus:ring-2 ${
+                            touched.email && errors.email
+                                ? "input-error focus:ring-red-200"
+                                : touched.email && !errors.email
+                                ? "input-valid focus:ring-green-200"
+                                : "border-gray-300 focus:border-[#FFA000] focus:ring-[#FFA000]/30"
+                        }`}
+                    />
+                    {touched.email && errors.email && (
+                        <p className="field-error-msg">⚠ {errors.email}</p>
+                    )}
+                </div>
+
+                {/* Contraseña */}
+                <div>
+                    <label className="mb-2 block text-sm font-semibold text-[#37474F]">
+                        Contraseña
+                    </label>
+                    <div className="relative">
+                        <input
+                            id="input-password-login"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            onBlur={() => handleBlur("password")}
+                            placeholder="Mínimo 6 caracteres"
+                            className={`w-full rounded-xl border px-4 py-3 pr-12 outline-none transition focus:ring-2 ${
+                                touched.password && errors.password
+                                    ? "input-error focus:ring-red-200"
+                                    : touched.password && !errors.password
+                                    ? "input-valid focus:ring-green-200"
+                                    : "border-gray-300 focus:border-[#FFA000] focus:ring-[#FFA000]/30"
+                            }`}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F]"
+                            aria-label="Mostrar/ocultar contraseña"
+                        >
+                            {showPassword ? "🙈" : "👁️"}
+                        </button>
+                    </div>
+                    {touched.password && errors.password && (
+                        <p className="field-error-msg">⚠ {errors.password}</p>
+                    )}
+                </div>
+
+                <button
+                    id="btn-submit-login"
+                    type="submit"
+                    disabled={loading}
+                    className="w-full rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                    {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+                </button>
+            </form>
+
+            <p className="mt-6 text-center text-sm text-[#455A64]">
+                ¿No tienes cuenta?{" "}
+                <Link
+                    to="/registro"
+                    id="link-to-register"
+                    className="font-semibold text-[#FFA000] hover:underline"
+                >
+                    Regístrate aquí
+                </Link>
+            </p>
+
+            {/* Credenciales de demo — correctas y verificadas */}
+            <div className="mt-5 rounded-xl bg-blue-50 border border-blue-200 p-4">
+                <p className="text-xs font-bold text-blue-700 mb-2">🔑 Usuarios de prueba:</p>
+                <div className="space-y-1 text-xs text-blue-600">
+                    <p>Admin: <span className="font-mono font-bold">admin@inscribeme.cl</span> / <span className="font-mono">admin123</span></p>
+                    <p>Instructor: <span className="font-mono font-bold">carlos@inscribeme.cl</span> / <span className="font-mono">instructor1</span></p>
+                    <p>Estudiante: <span className="font-mono font-bold">juan@inscribeme.cl</span> / <span className="font-mono">estudiante1</span></p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default AuthForm;

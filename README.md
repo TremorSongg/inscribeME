@@ -1,2 +1,0 @@
-# inscribeME
-Proyecto Ing. Software

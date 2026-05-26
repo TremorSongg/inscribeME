@@ -1,0 +1,8 @@
+com\inscribeme\usuarios\util\JwtUtil.class
+com\inscribeme\usuarios\ServicioUsuariosApplication.class
+com\inscribeme\usuarios\repository\UsuarioRepository.class
+com\inscribeme\usuarios\model\Usuario$UsuarioBuilder.class
+com\inscribeme\usuarios\service\UsuarioService.class
+com\inscribeme\usuarios\model\Rol.class
+com\inscribeme\usuarios\model\Usuario.class
+com\inscribeme\usuarios\controller\UsuarioController.class

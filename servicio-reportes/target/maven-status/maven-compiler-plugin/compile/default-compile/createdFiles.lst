@@ -1,0 +1,7 @@
+com\inscribeme\reportes\repository\ReporteRepository.class
+com\inscribeme\reportes\service\ReporteService.class
+com\inscribeme\reportes\model\Reporte$ReporteBuilder.class
+com\inscribeme\reportes\model\Reporte.class
+com\inscribeme\reportes\ServicioReportesApplication.class
+com\inscribeme\reportes\model\EstadoReporte.class
+com\inscribeme\reportes\controller\ReporteController.class

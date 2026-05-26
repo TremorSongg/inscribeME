@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@keyframes cloudMove {
+  from {
+    transform: translateX(-200px);
+  }
+  to {
+    transform: translateX(100vw);
+  }
+}
+
+.cloud {
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  background-color: #fafafa;
+  border-radius: 30px;
+  opacity: 0.85;
+}
+
+.cloud::before {
+  content: "";
+  display: block;
+  width: 50px;
+  height: 50px;
+  top: -20px;
+  left: 20px;
+  background-color: #fafafa;
+  border-radius: 30px;
+  position: absolute;
+}
+
+.cloud[data-type="white_1"]::before {
+  box-shadow:
+    80px 0 0 10px #fafafa,
+    40px 0 0 20px #fafafa,
+    110px 0 0 -5px #fafafa;
+}
+
+.cloud[data-type="white_2"]::before {
+  box-shadow:
+    40px -10px 0 20px #fafafa,
+    80px -10px 0 10px #fafafa,
+    115px -5px 0 -10px #fafafa;
+}
+
+.cloud[data-type="white_3"]::before {
+  box-shadow:
+    40px -10px 0 15px #fafafa,
+    90px 0 0 15px #fafafa;
+}
+
+.cloud[data-type="white_4"]::before {
+  box-shadow:
+    80px 0 0 10px #fafafa,
+    40px 0 0 20px #fafafa,
+    110px 0 0 -5px #fafafa,
+    80px 25px 0 10px #fafafa,
+    40px 25px 0 20px #fafafa,
+    0 40px 0 -5px #fafafa;
+}
+
+.owl-hand {
+  position: absolute;
+  bottom: -8px;
+  width: 34px;
+  height: 34px;
+  border-radius: 40px;
+  background-color: #37474f;
+  transform: scaleY(0.6);
+  transition: 0.3s ease-out;
+}
+
+.owl-hand-left {
+  left: 12px;
+}
+
+.owl-hand-right {
+  left: 170px;
+}
+
+.owl-arm {
+  position: absolute;
+  top: 40px;
+  width: 40px;
+  height: 65px;
+  border-radius: 999px;
+  background-color: #455a64;
+  transition: 0.3s ease-out;
+}
+
+.owl-arm-left {
+  left: 20px;
+  transform: rotate(-20deg);
+}
+
+.owl-arm-right {
+  left: 158px;
+  transform: rotate(20deg) scaleX(-1);
+}
+
+.owl-password .owl-hand-left {
+  transform: translateX(42px) translateY(-15px) scale(0.7);
+}
+
+.owl-password .owl-hand-right {
+  transform: translateX(-42px) translateY(-15px) scale(0.7);
+}
+
+.owl-password .owl-arm-left {
+  transform: translateX(40px) translateY(-40px);
+}
+
+.owl-password .owl-arm-right {
+  transform: translateX(-40px) translateY(-40px) scaleX(-1);
+}

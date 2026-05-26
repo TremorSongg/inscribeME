@@ -1,0 +1,31 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: admin-dashboard
+  security:
+    user:
+      name: admin
+      password: admin123
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+# Spring Boot Admin: descubre clientes via Eureka automáticamente
+spring.boot.admin.discovery.enabled: true
+spring.boot.admin.discovery.converter.management-context-path: /actuator

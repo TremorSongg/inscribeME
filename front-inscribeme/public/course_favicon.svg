@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <defs>
+    <linearGradient id="navyGrad" x1="70" y1="80" x2="430" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#123D7A"/>
+      <stop offset="1" stop-color="#0B2E63"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="80" y1="220" x2="430" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFB02E"/>
+      <stop offset="1" stop-color="#F39200"/>
+    </linearGradient>
+  </defs>
+
+  <!-- outer book accent -->
+  <path fill="url(#orangeGrad)" d="M86 221c64 0 117 14 170 55v170c-45-40-96-61-159-68-7-1-13-6-13-14V221Zm340 0c-64 0-117 14-170 55v170c45-40 96-61 159-68 7-1 13-6 13-14V221Z" opacity="0.97"/>
+  <path fill="url(#orangeGrad)" d="M110 342c62 0 112 18 146 57 34-39 84-57 146-57 5 0 8 6 5 10-20 29-83 58-151 70-68-12-131-41-151-70-3-4 0-10 5-10Z"/>
+
+  <!-- inner book pages -->
+  <path fill="url(#navyGrad)" d="M118 198c59 0 108 13 138 57v151c-34-31-77-48-136-56-8-1-14-7-14-15V198h12Z"/>
+  <path fill="url(#navyGrad)" d="M394 198c-59 0-108 13-138 57v151c34-31 77-48 136-56 8-1 14-7 14-15V198h-12Z"/>
+  <path fill="url(#navyGrad)" d="M253 276h6v129c-2-2-4-3-6-5-2 2-4 3-6 5V276h6Z"/>
+
+  <!-- cap band -->
+  <path fill="url(#navyGrad)" d="M180 145l76 29 76-29v56c0 22-34 42-76 42s-76-20-76-42v-56Z"/>
+  <!-- cap top -->
+  <path fill="url(#navyGrad)" d="M256 85 102 148l154 61 154-61L256 85Z"/>
+  <path fill="#fff" opacity="0.9" d="M179 163l77 31 77-31-77 43-77-43Z"/>
+
+  <!-- tassel -->
+  <path stroke="url(#orangeGrad)" stroke-width="8" stroke-linecap="round" d="M389 146v55"/>
+  <circle cx="389" cy="205" r="10" fill="url(#orangeGrad)"/>
+  <path fill="url(#orangeGrad)" d="M389 213c10 15 13 36 6 56-2 4-6 7-10 7s-8-3-10-7c-7-20-4-41 6-56h8Z"/>
+</svg>
