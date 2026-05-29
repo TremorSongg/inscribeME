@@ -33,6 +33,9 @@ const RegisterForm = () => {
     const [loading, setLoading] = useState(false);
     const [backendError, setBackendError] = useState("");
 
+    // ── CAMBIO CLAVE: Agregamos el estado de control de la animación del búho ──
+    const [isBlind, setIsBlind] = useState(false);
+
     // ── Validaciones ─────────────────────────────────────────────
     const validate = (data: RegisterFields): FieldErrors => {
         const errs: FieldErrors = {};
@@ -59,6 +62,8 @@ const RegisterForm = () => {
     const handleBlur = (field: keyof RegisterFields) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
         setErrors(validate(form));
+        // Desactiva el búho al salir de los campos de contraseña
+        if (field === "password" || field === "confirmPassword") setIsBlind(false);
     };
 
     const fieldClass = (field: keyof RegisterFields) => {
@@ -89,7 +94,6 @@ const RegisterForm = () => {
                 telefono: form.phone,
                 rol: form.role,
             });
-            // register() hace auto-login internamente y actualiza localStorage
             const stored = localStorage.getItem("authUser");
             if (stored) {
                 const u = JSON.parse(stored) as { role: string };
@@ -118,7 +122,19 @@ const RegisterForm = () => {
     ];
 
     return (
-        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+        /* CAMBIO CLAVE: Agregamos la clase 'relative' a la tarjeta para fijar posicionalmente el búho arriba */
+        <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+            
+            {/* ── COMPONENTE BÚHO INTERACTIVO RECONFIGURADO ────────────────── */}
+            <div className={`owl-wrapper ${isBlind ? "owl-blind" : ""}`}>
+                <div className="owl-hand" />
+                <div className="owl-hand hand-r" />
+                <div className="owl-arms">
+                    <div className="owl-arm" />
+                    <div className="owl-arm arm-r" />
+                </div>
+            </div>
+
             <h1 className="mb-2 text-center text-3xl font-bold text-[#37474F]">
                 Crear cuenta
             </h1>
@@ -134,7 +150,7 @@ const RegisterForm = () => {
                         type="button"
                         id={`btn-role-${opt.value.toLowerCase()}`}
                         onClick={() => handleChange("role", opt.value)}
-                        className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all ${
+                        className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all cursor-pointer flex flex-col items-center justify-center ${
                             form.role === opt.value
                                 ? "border-[#FFA000] bg-[#FFA000]/10 text-[#37474F]"
                                 : "border-gray-200 text-[#455A64] hover:border-[#FFA000]/50"
@@ -147,14 +163,14 @@ const RegisterForm = () => {
             </div>
 
             {backendError && (
-                <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 animate-fadeIn">
+                <div className="mb-4 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700 animate-fadeIn text-left">
                     ⚠️ {backendError}
                 </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {/* Username */}
-                <div>
+                <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Nombre completo</label>
                     <input
                         id="input-username-register"
@@ -169,7 +185,7 @@ const RegisterForm = () => {
                 </div>
 
                 {/* Email */}
-                <div>
+                <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Correo electrónico</label>
                     <input
                         id="input-email-register"
@@ -184,7 +200,7 @@ const RegisterForm = () => {
                 </div>
 
                 {/* Teléfono */}
-                <div>
+                <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Teléfono</label>
                     <input
                         id="input-phone-register"
@@ -199,7 +215,7 @@ const RegisterForm = () => {
                 </div>
 
                 {/* Contraseña */}
-                <div>
+                <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Contraseña</label>
                     <div className="relative">
                         <input
@@ -207,14 +223,18 @@ const RegisterForm = () => {
                             type={showPassword ? "text" : "password"}
                             value={form.password}
                             onChange={(e) => handleChange("password", e.target.value)}
+                            
+                            /* CAMBIO CLAVE: Manejadores de foco enlazados al estado de animación */
+                            onFocus={() => setIsBlind(true)}
                             onBlur={() => handleBlur("password")}
+                            
                             placeholder="Mínimo 6 caracteres"
                             className={`${fieldClass("password")} pr-12`}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64]"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
                             aria-label="Ver contraseña"
                         >
                             {showPassword ? "🙈" : "👁️"}
@@ -224,7 +244,7 @@ const RegisterForm = () => {
                 </div>
 
                 {/* Confirmar contraseña */}
-                <div>
+                <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Confirmar contraseña</label>
                     <div className="relative">
                         <input
@@ -232,14 +252,18 @@ const RegisterForm = () => {
                             type={showConfirm ? "text" : "password"}
                             value={form.confirmPassword}
                             onChange={(e) => handleChange("confirmPassword", e.target.value)}
+                            
+                            /* CAMBIO CLAVE: Sincronizado también para activar el búho al reconfirmar contraseña */
+                            onFocus={() => setIsBlind(true)}
                             onBlur={() => handleBlur("confirmPassword")}
+                            
                             placeholder="Repite tu contraseña"
                             className={`${fieldClass("confirmPassword")} pr-12`}
                         />
                         <button
                             type="button"
                             onClick={() => setShowConfirm(!showConfirm)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64]"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
                             aria-label="Ver confirmación"
                         >
                             {showConfirm ? "🙈" : "👁️"}
@@ -254,15 +278,15 @@ const RegisterForm = () => {
                     id="btn-submit-register"
                     type="submit"
                     disabled={loading}
-                    className="mt-2 w-full rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="mt-4 w-full rounded-xl bg-[#FFA000] px-6 py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:transform-none cursor-pointer"
                 >
                     {loading ? "Creando cuenta..." : "Crear cuenta →"}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#455A64]">
+            <p className="mt-6 text-center text-sm text-[#455A64] font-medium">
                 ¿Ya tienes cuenta?{" "}
-                <Link to="/login" id="link-to-login" className="font-semibold text-[#FFA000] hover:underline">
+                <Link to="/login" id="link-to-login" className="font-bold text-[#FFA000] hover:underline">
                     Iniciar sesión
                 </Link>
             </p>

@@ -19,6 +19,9 @@ const AuthForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    // ── CAMBIO CLAVE: Agregamos el estado de control de la animación del búho ──
+    const [isBlind, setIsBlind] = useState(false);
+
     // ── Validaciones ─────────────────────────────────────────────
     const validate = (): FieldError => {
         const errs: FieldError = {};
@@ -34,6 +37,8 @@ const AuthForm = () => {
     const handleBlur = (field: "email" | "password") => {
         setTouched((prev) => ({ ...prev, [field]: true }));
         setErrors(validate());
+        // Desactiva el búho si el usuario sale del input de contraseña
+        if (field === "password") setIsBlind(false);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -48,8 +53,6 @@ const AuthForm = () => {
 
         try {
             await login(email.trim().toLowerCase(), password);
-            // login() actualiza el AuthContext. Leemos el rol del localStorage
-            // ya que el estado de React puede no haber propagado aún.
             const stored = localStorage.getItem("authUser");
             if (stored) {
                 const u = JSON.parse(stored) as { role: string };
@@ -71,7 +74,20 @@ const AuthForm = () => {
     };
 
     return (
-        <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+        /* CAMBIO CLAVE: Agregamos la clase 'relative' a la tarjeta para que sirva de anclaje posicional al búho */
+        <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+            
+            {/* ── COMPONENTE BÚHO INTERACTIVO ────────────────────────────── */}
+            {/* Se monta en el borde superior y se activa dinámicamente con la clase owl-blind */}
+            <div className={`owl-wrapper ${isBlind ? "owl-blind" : ""}`}>
+                <div className="owl-hand" />
+                <div className="owl-hand hand-r" />
+                <div className="owl-arms">
+                    <div className="owl-arm" />
+                    <div className="owl-arm arm-r" />
+                </div>
+            </div>
+
             <h1 className="mb-2 text-center text-3xl font-bold text-[#37474F]">
                 Iniciar Sesión
             </h1>
@@ -87,7 +103,7 @@ const AuthForm = () => {
 
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {/* Email */}
-                <div>
+                <div className="text-left">
                     <label className="mb-2 block text-sm font-semibold text-[#37474F]">
                         Correo electrónico
                     </label>
@@ -112,7 +128,7 @@ const AuthForm = () => {
                 </div>
 
                 {/* Contraseña */}
-                <div>
+                <div className="text-left">
                     <label className="mb-2 block text-sm font-semibold text-[#37474F]">
                         Contraseña
                     </label>
@@ -122,7 +138,11 @@ const AuthForm = () => {
                             type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            
+                            /* CAMBIO CLAVE: Manejadores de foco integrados para gatillar la animación */
+                            onFocus={() => setIsBlind(true)}
                             onBlur={() => handleBlur("password")}
+                            
                             placeholder="Mínimo 6 caracteres"
                             className={`w-full rounded-xl border px-4 py-3 pr-12 outline-none transition focus:ring-2 ${
                                 touched.password && errors.password
@@ -135,7 +155,7 @@ const AuthForm = () => {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F]"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
                             aria-label="Mostrar/ocultar contraseña"
                         >
                             {showPassword ? "🙈" : "👁️"}
@@ -150,25 +170,25 @@ const AuthForm = () => {
                     id="btn-submit-login"
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full rounded-xl bg-[#FFA000] py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:transform-none cursor-pointer"
                 >
-                    {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+                    {loading ? "Iniciando sesión..." : "Iniciar sesión →"}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#455A64]">
+            <p className="mt-6 text-center text-sm text-[#455A64] font-medium">
                 ¿No tienes cuenta?{" "}
                 <Link
                     to="/registro"
                     id="link-to-register"
-                    className="font-semibold text-[#FFA000] hover:underline"
+                    className="font-bold text-[#FFA000] hover:underline"
                 >
                     Regístrate aquí
                 </Link>
             </p>
 
-            {/* Credenciales de demo — correctas y verificadas */}
-            <div className="mt-5 rounded-xl bg-blue-50 border border-blue-200 p-4">
+            {/* Credenciales de demo */}
+            <div className="mt-5 rounded-xl bg-blue-50 border border-blue-200 p-4 text-left">
                 <p className="text-xs font-bold text-blue-700 mb-2">🔑 Usuarios de prueba:</p>
                 <div className="space-y-1 text-xs text-blue-600">
                     <p>Admin: <span className="font-mono font-bold">admin@inscribeme.cl</span> / <span className="font-mono">admin123</span></p>

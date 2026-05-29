@@ -450,3 +450,79 @@ body {
 .separador-contenido-footer2 {
   margin-bottom: 2rem !important; /* ~144px de aire real antes del Footer */
 }
+
+
+/* Buho */
+
+/* ── Animación de Nubes Deslizantes Infinita ────────────────── */
+@keyframes cloudMove {
+  from { transform: translateX(-240px); }
+  to { transform: translateX(100vw); }
+}
+
+.animate-cloud-1 { animation: cloudMove 55s linear infinite; }
+.animate-cloud-2 { animation: cloudMove 38s linear infinite; }
+.animate-cloud-3 { animation: cloudMove 46s linear infinite; }
+.animate-cloud-4 { animation: cloudMove 28s linear infinite; }
+
+/* ── Estilos del Búho Interactivo (Owl Body Match) ─────────── */
+.owl-wrapper {
+  width: 211px;
+  height: 108px;
+  background-image: url('https://i.postimg.cc/K8PkhWdb/owlhead.png');
+  position: absolute;
+  top: -102px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.owl-hand {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background-color: #472d20;
+  transform: scaleY(0.6);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  left: 12px;
+  bottom: -8px;
+}
+.owl-hand.hand-r { left: 165px; }
+
+.owl-arms {
+  top: 58px;
+  position: absolute;
+  width: 100%;
+  height: 41px;
+  overflow: hidden;
+}
+
+.owl-arm {
+  width: 40px;
+  height: 65px;
+  background-image: url('https://i.postimg.cc/PrPjDqYJ/owlhand.png');
+  position: absolute;
+  left: 20px;
+  top: 40px;
+  transform: rotate(-20deg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.owl-arm.arm-r {
+  transform: rotate(20deg) scaleX(-1);
+  left: 154px;
+}
+
+/* ── Modificadores de Estado Reactivo (Búho Tapándose Ojos) ── */
+.owl-blind .owl-hand {
+  transform: translateX(42px) translateY(-15px) scale(0.7);
+}
+.owl-blind .owl-hand.hand-r {
+  transform: translateX(-42px) translateY(-15px) scale(0.7);
+}
+.owl-blind .owl-arm {
+  transform: translateX(40px) translateY(-40px);
+}
+.owl-blind .owl-arm.arm-r {
+  transform: translateX(-40px) translateY(-40px) scaleX(-1);
+}
