@@ -77,7 +77,6 @@ const Navbar = () => {
         const handleNotifUpdate = () => fetchUnread();
         window.addEventListener("notificationsUpdated", handleNotifUpdate);
 
-        // Polling de 15 segundos
         const interval = setInterval(fetchUnread, 15000);
 
         return () => {
@@ -122,12 +121,15 @@ const Navbar = () => {
     const ri = user ? (roleInfo[user.role] ?? { label: user.role, dot: "bg-gray-400" }) : null;
 
     return (
-        <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        /* CAMBIO CLAVE: Añadimos flex flex-col items-center para forzar la alineación
+           geométrica central en pantallas ultra-wide */
+        <header className={`sticky top-0 z-50 w-full flex flex-col items-center transition-all duration-300 ${
             scrolled
                 ? "bg-[#263238]/95 backdrop-blur-md shadow-xl shadow-black/20"
                 : "bg-[#37474F]"
         }`}>
-            <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+            {/* CAMBIO CLAVE: Aseguramos w-full para que max-w-7xl calcule correctamente el centro */}
+            <nav className="w-full max-w-7xl mx-auto flex h-16 items-center justify-between px-6">
 
                 {/* ── Logo ─────────────────────────────────────── */}
                 <Link to="/" className="flex items-center gap-2.5 group" onClick={() => setMenuOpen(false)}>
@@ -140,7 +142,7 @@ const Navbar = () => {
                 </Link>
 
                 {/* ── Desktop nav ──────────────────────────────── */}
-                <div className="hidden items-center gap-1 md:flex">
+                <div className="hidden items-center gap-x-10 md:flex">
                     {navItems.map(item => (
                         <NavLink key={item.name} to={item.path}
                             className={({ isActive }) =>
@@ -163,11 +165,12 @@ const Navbar = () => {
                 </div>
 
                 {/* ── Right actions ─────────────────────────────── */}
-                <div className="hidden items-center gap-3 md:flex">
+                <div className="hidden items-center gap-x-5 md:flex">
                     {isAuthenticated && user ? (
                         <div className="flex items-center gap-3">
                             {/* Botón de Modo Claro / Oscuro */}
                             <button
+                                type="button"
                                 onClick={toggleTheme}
                                 className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
                                 title={theme === "light" ? "Modo oscuro" : "Modo claro"}
@@ -200,16 +203,16 @@ const Navbar = () => {
                             {/* Menú de Usuario */}
                             <div className="relative">
                                 <button
+                                    type="button"
                                     onClick={() => setUserMenuOpen(v => !v)}
                                     id="btn-user-menu"
-                                    className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 hover:bg-white/15 transition group">
-                                    {/* Avatar Clickable */}
+                                    className="flex items-center gap-2.5 rounded-xl bg-white/10 px-3 py-2 hover:bg-white/15 transition group cursor-pointer">
                                     <Link
                                         to={user.role === "ESTUDIANTE" ? "/perfil" : user.role === "INSTRUCTOR" ? "/instructor/perfil" : "/admin"}
                                         className="hover:scale-105 transition-transform"
                                         title="Ir a mi perfil"
                                         onClick={(e) => {
-                                            e.stopPropagation(); // Evitar que abra/cierre el menú desplegable
+                                            e.stopPropagation();
                                             setUserMenuOpen(false);
                                         }}
                                     >
@@ -250,8 +253,9 @@ const Navbar = () => {
                                             <span>👤</span> Mi Perfil
                                         </Link>
                                         <button id="btn-logout"
+                                            type="button"
                                             onClick={handleLogout}
-                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 border-t border-gray-100 transition">
+                                            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50 border-t border-gray-100 transition cursor-pointer">
                                             <span>🚪</span> Cerrar sesión
                                         </button>
                                     </div>
@@ -261,6 +265,7 @@ const Navbar = () => {
                     ) : (
                         <div className="flex items-center gap-3">
                             <button
+                                type="button"
                                 onClick={toggleTheme}
                                 className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
                                 title={theme === "light" ? "Modo oscuro" : "Modo claro"}
@@ -281,6 +286,7 @@ const Navbar = () => {
 
                 {/* ── Hamburger ────────────────────────────────── */}
                 <button
+                    type="button"
                     className="flex flex-col gap-1.5 p-2 md:hidden"
                     onClick={() => setMenuOpen(v => !v)}
                     aria-label="Menú" id="btn-menu-mobile">
@@ -291,7 +297,8 @@ const Navbar = () => {
             </nav>
 
             {/* ── Mobile menu ────────────────────────────────────── */}
-            <div className={`overflow-hidden transition-all duration-300 md:hidden ${menuOpen ? "max-h-screen" : "max-h-0"}`}>
+            {/* CAMBIO CLAVE: Añadimos w-full para asegurar que el despliegue cubra el espacio de forma consistente */}
+            <div className={`w-full overflow-hidden transition-all duration-300 md:hidden ${menuOpen ? "max-h-screen" : "max-h-0"}`}>
                 <div className="border-t border-white/10 bg-[#263238] px-5 pb-6 pt-4">
                     {isAuthenticated && user && (
                         <div className="mb-4 flex items-center justify-between rounded-xl bg-white/8 p-3">
@@ -313,6 +320,7 @@ const Navbar = () => {
                                 </div>
                             </div>
                             <button
+                                type="button"
                                 onClick={toggleTheme}
                                 className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
                                 title={theme === "light" ? "Modo oscuro" : "Modo claro"}
@@ -337,7 +345,8 @@ const Navbar = () => {
                     <div className="mt-4 border-t border-white/10 pt-4">
                         {isAuthenticated ? (
                             <button onClick={handleLogout}
-                                className="w-full rounded-xl border border-red-400/40 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 transition">
+                                type="button"
+                                className="w-full rounded-xl border border-red-400/40 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10 transition cursor-pointer">
                                 🚪 Cerrar sesión
                             </button>
                         ) : (
@@ -345,6 +354,7 @@ const Navbar = () => {
                                 <div className="mb-2 flex items-center justify-between px-2">
                                     <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Tema</span>
                                     <button
+                                        type="button"
                                         onClick={toggleTheme}
                                         className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white hover:bg-white/15 transition-all duration-200 cursor-pointer"
                                         title={theme === "light" ? "Modo oscuro" : "Modo claro"}

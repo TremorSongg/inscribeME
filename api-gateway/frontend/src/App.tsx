@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer"; // 1. Importamos el Footer aquí
 
 // Páginas públicas
 import HomePage from "./pages/HomePage";
@@ -29,111 +30,119 @@ function App() {
     return (
         <AuthProvider>
             <Router>
-                <div className="App">
+                {/* CAMBIO CLAVE: Convertimos el contenedor "App" en un Flexbox vertical 
+                    que ocupe el 100% de la pantalla (min-h-screen) e impida desajustes en ultra-wides */}
+                <div className="App flex flex-col min-h-screen w-full items-stretch">
                     <Navbar />
-                    <Routes>
-                        {/* ── Rutas públicas ───────────────────── */}
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/registro" element={<RegisterPage />} />
-                        <Route path="/nosotros" element={<AboutPage />} />
-                        <Route path="/cursos" element={<ProductPage />} />
+                    
+                    {/* El contenedor de las rutas crecerá (flex-1) para empujar el footer siempre al fondo */}
+                    <main className="flex-1 w-full">
+                        <Routes>
+                            {/* ── Rutas públicas ───────────────────── */}
+                            <Route path="/" element={<HomePage />} />
+                            <Route path="/login" element={<LoginPage />} />
+                            <Route path="/registro" element={<RegisterPage />} />
+                            <Route path="/nosotros" element={<AboutPage />} />
+                            <Route path="/cursos" element={<ProductPage />} />
 
-                        {/* ── Carrito (estudiante) ─────────────── */}
-                        <Route
-                            path="/carrito"
-                            element={
-                                <ProtectedRoute allowedRoles={["ESTUDIANTE"]}>
-                                    <CartPage />
-                                </ProtectedRoute>
-                            }
-                        />
+                            {/* ── Carrito (estudiante) ─────────────── */}
+                            <Route
+                                path="/carrito"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ESTUDIANTE"]}>
+                                        <CartPage />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                        {/* ── Perfil estudiante ────────────────── */}
-                        <Route
-                            path="/perfil"
-                            element={
-                                <ProtectedRoute allowedRoles={["ESTUDIANTE"]}>
-                                    <StudentProfilePage />
-                                </ProtectedRoute>
-                            }
-                        />
+                            {/* ── Perfil estudiante ────────────────── */}
+                            <Route
+                                path="/perfil"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ESTUDIANTE"]}>
+                                        <StudentProfilePage />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                        {/* ── Instructor ───────────────────────── */}
-                        <Route
-                            path="/instructor/perfil"
-                            element={
-                                <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
-                                    <InstructorProfilePage />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/instructor/notificaciones"
-                            element={
-                                <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
-                                    {/* Placeholder — notificaciones del instructor */}
-                                    <InstructorProfilePage />
-                                </ProtectedRoute>
-                            }
-                        />
+                            {/* ── Instructor ───────────────────────── */}
+                            <Route
+                                path="/instructor/perfil"
+                                element={
+                                    <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
+                                        <InstructorProfilePage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/instructor/notificaciones"
+                                element={
+                                    <ProtectedRoute allowedRoles={["INSTRUCTOR"]}>
+                                        <InstructorProfilePage />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                        {/* ── Admin ────────────────────────────── */}
-                        <Route
-                            path="/admin"
-                            element={
-                                <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                    <AdminDashboardPage />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/cursos"
-                            element={
-                                <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                    <CourseManagementPage />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/notificaciones"
-                            element={
-                                <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                    <AdminNotificationsPage />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin/estudiantes"
-                            element={
-                                <ProtectedRoute allowedRoles={["ADMIN"]}>
-                                    <AdminStudentsPage />
-                                </ProtectedRoute>
-                            }
-                        />
+                            {/* ── Admin ────────────────────────────── */}
+                            <Route
+                                path="/admin"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                        <AdminDashboardPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/admin/cursos"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                        <CourseManagementPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/admin/notificaciones"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                        <AdminNotificationsPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/admin/estudiantes"
+                                element={
+                                    <ProtectedRoute allowedRoles={["ADMIN"]}>
+                                        <AdminStudentsPage />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                        {/* ── Ruta antigua de admin login (redirect) ── */}
-                        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+                            {/* ── Ruta antigua de admin login (redirect) ── */}
+                            <Route path="/admin/login" element={<Navigate to="/login" replace />} />
 
-                        {/* ── 404 ──────────────────────────────── */}
-                        <Route
-                            path="*"
-                            element={
-                                <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-[#FAFAFA] text-center px-6">
-                                    <div>
-                                        <p className="text-8xl font-black text-[#37474F]">404</p>
-                                        <p className="mt-4 text-xl font-bold text-[#455A64]">Página no encontrada</p>
-                                        <a
-                                            href="/"
-                                            className="mt-6 inline-block rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition"
-                                        >
-                                            Volver al inicio
-                                        </a>
+                            {/* ── 404 ──────────────────────────────── */}
+                            <Route
+                                path="*"
+                                element={
+                                    <div className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-[#FAFAFA] text-center px-6">
+                                        <div>
+                                            <p className="text-8xl font-black text-[#37474F]">404</p>
+                                            <p className="mt-4 text-xl font-bold text-[#455A64]">Página no encontrada</p>
+                                            <a
+                                                href="/"
+                                                className="mt-6 inline-block rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition"
+                                            >
+                                                Volver al inicio
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                        />
-                    </Routes>
+                                }
+                            />
+                        </Routes>
+                    </main>
+
+                    {/* 2. El Footer ahora vive de forma global aquí, al final de todo el contenido */}
+                    <Footer />
                 </div>
             </Router>
         </AuthProvider>

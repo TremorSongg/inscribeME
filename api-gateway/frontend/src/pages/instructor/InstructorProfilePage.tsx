@@ -36,7 +36,7 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
                     {username.charAt(0).toUpperCase()}
                 </div>
             )}
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="text-white text-xs font-bold">📷 Cambiar</span>
             </div>
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} id={`photo-input-${userId}`} />
@@ -44,7 +44,6 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
     );
 };
 
-// ── InstructorProfilePage ──────────────────────────────────────
 // ── InstructorProfilePage ──────────────────────────────────────
 const InstructorProfilePage = () => {
     const { user } = useAuth();
@@ -145,7 +144,7 @@ const InstructorProfilePage = () => {
 
     const deleteMyNotif = async (id: number) => {
         try {
-            await notificacionesService.eliminar(id);
+            notificacionesService.eliminar(id);
             setMyNotifs(prev => prev.filter(n => n.id !== id));
             window.dispatchEvent(new Event("notificationsUpdated"));
         } catch {}
@@ -161,7 +160,6 @@ const InstructorProfilePage = () => {
             .then(data => { setAlumnos(data ?? []); setLoadingAlumnos(false); })
             .catch(() => { setAlumnos([]); setLoadingAlumnos(false); });
 
-        // Inicializar asistencia con false para todos
         setAttendance({});
         setAttendanceSaved(false);
     }, [selectedCourse]);
@@ -252,53 +250,68 @@ const InstructorProfilePage = () => {
     const presentesCount = Object.values(attendance).filter(Boolean).length;
 
     return (
-        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-4 py-10 text-[#212121]">
-            <section className="mx-auto max-w-6xl">
-                <div className="mb-8">
-                    <p className="text-sm font-semibold uppercase tracking-wide text-[#FFA000]">Panel Instructor</p>
-                    <h1 className="mt-1 text-4xl font-bold text-[#37474F]">Mis Cursos</h1>
+        /* CAMBIO CLAVE: pt-14 pb-28 y flex flex-col items-center para centrar perfectamente en monitores panorámicos */
+        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-[#212121] w-full flex flex-col items-center">
+            <section className="w-full max-w-7xl mx-auto">
+                
+                {/* Header Superior */}
+                <div className="mb-14 text-left animate-fadeInUp">
+                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#FFA000]">Panel Instructor</p>
+                    <h1 className="mt-2 text-5xl font-black text-[#37474F] md:text-6xl tracking-tight">Mis Cursos</h1>
                 </div>
 
-                <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-                    {/* Sidebar */}
-                    <aside>
-                        <div className="rounded-2xl bg-white p-5 shadow-md mb-4 text-center">
+                {/* Grid principal expandido con gap-8 */}
+                <div className="grid gap-8 lg:grid-cols-[300px_1fr] items-start">
+                    
+                    {/* ── COLUMNA IZQUIERDA: SIDEBAR DEL DOCENTE ─────────────────── */}
+                    <aside className="space-y-5">
+                        {/* Perfil rápido tarjeta */}
+                        <div className="rounded-2xl bg-white p-6 shadow-md border border-gray-100 text-center">
                             <ProfilePhoto userId={user.id} username={user.username} />
-                            <p className="font-bold text-[#37474F]">{user.username}</p>
-                            <p className="text-xs text-[#455A64]">{user.email}</p>
-                            <span className="mt-2 mx-auto block w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-blue-700">
+                            <p className="font-bold text-[#37474F] text-lg tracking-tight">{user.username}</p>
+                            <p className="text-xs font-semibold text-[#455A64] mt-0.5 truncate">{user.email}</p>
+                            <span className="mt-3 mx-auto block w-fit rounded-full bg-blue-50 px-3 py-0.5 text-xs font-bold text-blue-700 tracking-wide border border-blue-100">
                                 Instructor
                             </span>
-                            <p className="mt-2 text-[10px] text-[#455A64]">Haz clic en tu foto para cambiarla</p>
+                            <p className="mt-4 text-[10px] font-bold text-[#455A64]/50 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
+                            
                             {myNotifs.filter(n => !n.leido).length > 0 && (
-                                <div className="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3 text-left">
-                                    <p className="text-xs font-bold text-amber-700 mb-1">🔔 {myNotifs.filter(n => !n.leido).length} nueva(s)</p>
+                                <div className="mt-4 rounded-xl bg-amber-50/70 border border-amber-200/60 p-3 text-left">
+                                    <p className="text-xs font-bold text-amber-700 mb-1 flex items-center gap-1">
+                                        <span className="animate-pulse">🔔</span> {myNotifs.filter(n => !n.leido).length} nuevas alertas
+                                    </p>
                                     {myNotifs.slice(0, 2).map(n => (
-                                        <p key={n.id} className="text-xs text-amber-600 truncate">{n.mensaje}</p>
+                                        <p key={n.id} className="text-xs font-medium text-amber-600 truncate mt-0.5">· {n.mensaje}</p>
                                     ))}
                                 </div>
                             )}
                         </div>
 
-                        <div className="rounded-2xl bg-white p-4 shadow-md">
-                            <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-[#455A64]">Cursos asignados</h2>
+                        {/* Listado de cursos asignados */}
+                        <div className="rounded-2xl bg-white p-5 shadow-md border border-gray-100 text-left">
+                            <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-[#455A64]">Cursos asignados</h2>
                             {loading ? (
-                                <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-gray-200" />)}</div>
+                                <div className="space-y-2">{[1, 2].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-gray-100" />)}</div>
                             ) : myCourses.length === 0 ? (
-                                <p className="text-sm text-[#455A64] p-2">No tienes cursos asignados.</p>
+                                <p className="text-sm font-semibold text-[#455A64] p-2 text-center bg-gray-50 rounded-xl">No tienes cursos asignados.</p>
                             ) : (
                                 <div className="space-y-2">
                                     {myCourses.map(c => (
                                         <button key={c.id} id={`btn-course-${c.id}`}
+                                            type="button"
                                             onClick={() => { setSelectedCourse(c); setActiveTab("alumnos"); setAttendanceSaved(false); }}
-                                            className={`w-full rounded-xl p-3 text-left text-sm transition ${
-                                                selectedCourse?.id === c.id ? "bg-[#37474F] text-white" : "bg-[#FAFAFA] text-[#455A64] hover:bg-[#ECEFF1]"
+                                            className={`w-full rounded-xl p-3.5 text-left text-sm transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+                                                selectedCourse?.id === c.id 
+                                                    ? "bg-[#37474F] text-white shadow-md font-bold" 
+                                                    : "bg-[#FAFAFA] text-[#455A64] font-semibold hover:bg-[#ECEFF1] border border-gray-100"
                                             }`}>
-                                            <span className="mr-2">{getIcon(c.nombre)}</span>
-                                            <span className="font-semibold">{c.nombre}</span>
-                                            <span className={`ml-2 text-xs ${selectedCourse?.id === c.id ? "text-white/70" : "text-[#455A64]/60"}`}>
-                                                ({c.cupoTotal - c.cupoDisponible} alumnos)
-                                            </span>
+                                            <span className="text-lg shrink-0">{getIcon(c.nombre)}</span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="truncate leading-snug">{c.nombre}</p>
+                                                <p className={`text-[11px] mt-0.5 font-medium ${selectedCourse?.id === c.id ? "text-white/70" : "text-[#455A64]/60"}`}>
+                                                    ({c.cupoTotal - c.cupoDisponible} alumnos)
+                                                </p>
+                                            </div>
                                         </button>
                                     ))}
                                 </div>
@@ -306,10 +319,10 @@ const InstructorProfilePage = () => {
                         </div>
                     </aside>
 
-                    {/* Panel principal */}
-                    <div className="flex-1">
-                        {/* Tabs del Panel */}
-                        <div className="mb-6 flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm">
+                    {/* ── COLUMNA DERECHA: PANEL PRINCIPAL CON TABS ───────────────── */}
+                    <div className="flex-1 min-w-0">
+                        {/* Menú de pestañas superior */}
+                        <div className="mb-6 flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm border border-gray-100">
                             {[
                                 { key: "perfil",         label: "👤 Mi Perfil" },
                                 { key: "notificaciones", label: "🔔 Notificaciones" },
@@ -319,14 +332,15 @@ const InstructorProfilePage = () => {
                                 { key: "notificacion",   label: "📣 Reportar" },
                             ].map(t => (
                                 <button key={t.key} id={`instructor-tab-${t.key}`}
+                                    type="button"
                                     onClick={() => setActiveTab(t.key as any)}
-                                    className={`relative flex-1 min-w-[95px] rounded-xl py-2.5 text-xs sm:text-sm font-semibold transition-all ${
-                                        activeTab === t.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-[#FAFAFA]"
+                                    className={`relative flex-1 min-w-[100px] rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
+                                        activeTab === t.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-gray-50"
                                     }`}>
                                     <span className="flex items-center justify-center gap-1.5">
                                         {t.label}
                                         {t.key === "notificaciones" && unreadCount > 0 && (
-                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white animate-pulse">
+                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-sm animate-pulse">
                                                 {unreadCount}
                                             </span>
                                         )}
@@ -335,31 +349,31 @@ const InstructorProfilePage = () => {
                             ))}
                         </div>
 
-                        {/* Tab Perfil (Independiente de curso seleccionado) */}
+                        {/* ── TAB: MI PERFIL ──────────────────────────────────────── */}
                         {activeTab === "perfil" && (
-                            <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
-                                <h3 className="mb-5 text-xl font-bold text-[#37474F]">Mi Perfil de Instructor</h3>
+                            <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
+                                <h3 className="mb-6 text-xl font-black text-[#37474F] border-b border-gray-50 pb-3">Mi Perfil de Instructor</h3>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     {[
                                         { label: "Nombre completo", value: user.username },
                                         { label: "Correo electrónico", value: user.email },
                                         { label: "Teléfono", value: user.phone || "No registrado" },
-                                        { label: "Rol en el sistema", value: "Instructor Certificado" },
+                                        { label: "Rol en el sistema", value: "Instructor Certificado InscribeMe" },
                                     ].map(f => (
-                                        <div key={f.label} className="rounded-xl border border-gray-100 bg-[#FAFAFA] p-4">
-                                            <p className="text-xs font-semibold uppercase tracking-wide text-[#455A64]">{f.label}</p>
-                                            <p className="mt-1 text-base font-bold text-[#212121]">{f.value}</p>
+                                        <div key={f.label} className="rounded-xl border border-gray-100 bg-[#FAFAFA]/70 p-4">
+                                            <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">{f.label}</p>
+                                            <p className="mt-1.5 text-base font-bold text-[#212121]">{f.value}</p>
                                         </div>
                                     ))}
                                 </div>
                                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                                    <div className="rounded-xl bg-blue-50 border border-blue-200 p-5 shadow-xs">
-                                        <p className="text-xs font-bold text-blue-700">📚 Cursos Asignados</p>
-                                        <p className="mt-1 text-3xl font-black text-blue-900">{myCourses.length}</p>
+                                    <div className="rounded-xl bg-blue-50/50 border border-blue-200 p-5 shadow-xs">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-blue-700">📚 Cursos Asignados</p>
+                                        <p className="mt-2 text-4xl font-black text-blue-900 tracking-tight">{myCourses.length}</p>
                                     </div>
-                                    <div className="rounded-xl bg-amber-50 border border-amber-200 p-5 shadow-xs">
-                                        <p className="text-xs font-bold text-amber-700">👥 Total Estudiantes</p>
-                                        <p className="mt-1 text-3xl font-black text-amber-900">
+                                    <div className="rounded-xl bg-amber-50/50 border border-amber-200 p-5 shadow-xs">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-amber-700">👥 Total Estudiantes</p>
+                                        <p className="mt-2 text-4xl font-black text-amber-900 tracking-tight">
                                             {myCourses.reduce((acc, c) => acc + (c.cupoTotal - c.cupoDisponible), 0)}
                                         </p>
                                     </div>
@@ -367,72 +381,56 @@ const InstructorProfilePage = () => {
                             </div>
                         )}
 
-                        {/* Tab Notificaciones (Independiente de curso seleccionado) */}
+                        {/* ── TAB: BANDEJA DE NOTIFICACIONES ───────────────────────── */}
                         {activeTab === "notificaciones" && (
-                            <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
+                            <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
                                 <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
                                     <div>
-                                        <h3 className="text-xl font-bold text-[#37474F]">Bandeja de Notificaciones</h3>
-                                        <p className="text-xs text-[#455A64] mt-0.5">
-                                            Tienes {myNotifs.length} notificaciones ({unreadCount} sin leer)
+                                        <h3 className="text-xl font-black text-[#37474F]">Bandeja de Notificaciones</h3>
+                                        <p className="text-xs font-semibold text-[#455A64] mt-1">
+                                            Tienes {myNotifs.length} avisos registrados · {unreadCount} pendientes
                                         </p>
                                     </div>
                                     {unreadCount > 0 && (
-                                        <button
-                                            onClick={markAllMyNotifsRead}
-                                            className="rounded-xl border border-[#455A64]/30 px-4 py-2 text-xs font-bold text-[#37474F] hover:bg-[#FAFAFA] transition-colors cursor-pointer"
-                                        >
+                                        <button type="button" onClick={markAllMyNotifsRead} className="rounded-xl border border-[#455A64]/30 px-4 py-2 text-xs font-bold text-[#37474F] hover:bg-[#FAFAFA] transition-colors cursor-pointer shadow-sm">
                                             ✓ Marcar todas leídas
                                         </button>
                                     )}
                                 </div>
 
                                 {myNotifs.length === 0 ? (
-                                    <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                        <p className="text-3xl mb-2">📭</p>
-                                        <p className="text-sm font-semibold">No tienes notificaciones en este momento.</p>
+                                    <div className="rounded-2xl bg-[#FAFAFA] p-12 text-center text-[#455A64] border border-dashed border-gray-200">
+                                        <p className="text-4xl mb-2">📭</p>
+                                        <p className="text-sm font-bold">No tienes alertas institucionales en este momento.</p>
                                     </div>
                                 ) : (
                                     <div className="space-y-3">
                                         {myNotifs.map((n) => (
-                                            <div
-                                                key={n.id}
-                                                className={`rounded-xl border p-4 transition-all duration-200 ${
-                                                    !n.leido
-                                                        ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-xs animate-pulse-soft"
-                                                        : "border-[#455A64]/10 bg-white"
-                                                }`}
-                                            >
+                                            <div key={n.id} className={`rounded-xl border p-4 transition-all duration-300 ${
+                                                !n.leido ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-sm" : "border-[#455A64]/10 bg-white"
+                                            }`}>
                                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                                     <div className="flex-1">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            {!n.leido && (
-                                                                <span className="flex h-2 w-2 rounded-full bg-[#FFA000] inline-block" />
-                                                            )}
+                                                        <div className="flex items-center gap-2 mb-1.5">
+                                                            {!n.leido && <span className="flex h-2 w-2 rounded-full bg-[#FFA000] inline-block animate-pulse" />}
                                                             <span className="text-[10px] font-bold text-[#455A64] uppercase tracking-wider">
                                                                 {!n.leido ? "Nueva" : "Leída"}
                                                             </span>
                                                         </div>
-                                                        <p className="text-sm text-[#212121] leading-relaxed">{n.mensaje}</p>
+                                                        <p className="text-sm text-[#212121] font-medium leading-relaxed">{n.mensaje}</p>
                                                         {n.fechaCreacion && (
-                                                            <p className="mt-1 text-[11px] text-[#455A64]/60">
-                                                                📅 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
+                                                            <p className="mt-2 text-xs font-semibold text-[#455A64]/60">
+                                                                🕒 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
                                                             </p>
                                                         )}
                                                     </div>
                                                     <div className="flex gap-2 shrink-0 self-end sm:self-center">
                                                         {!n.leido && (
-                                                            <button
-                                                                onClick={() => markMyNotifRead(n)}
-                                                                className="rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-semibold text-[#455A64] hover:bg-[#ECEFF1] transition-colors cursor-pointer"
-                                                            >
+                                                            <button type="button" onClick={() => markMyNotifRead(n)} className="rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-bold text-[#455A64] hover:bg-[#ECEFF1] transition-colors cursor-pointer shadow-sm">
                                                                 Marcar leída
                                                             </button>
                                                         )}
-                                                        <button
-                                                            onClick={() => deleteMyNotif(n.id)}
-                                                            className="rounded-lg bg-red-50 border border-red-200/40 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-100 transition-colors cursor-pointer"
-                                                        >
+                                                        <button type="button" onClick={() => deleteMyNotif(n.id)} className="rounded-lg bg-red-50 border border-red-200/30 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors cursor-pointer shadow-sm">
                                                             Eliminar
                                                         </button>
                                                     </div>
@@ -444,62 +442,60 @@ const InstructorProfilePage = () => {
                             </div>
                         )}
 
-                        {/* Tabs que requieren curso */}
+                        {/* ── SECCIONES DEL PANEL QUE SÍ REQUIEREN UN CURSO ASIGNADO ── */}
                         {activeTab !== "perfil" && activeTab !== "notificaciones" && (
                             selectedCourse ? (
-                                <div>
-                                    {/* Header curso */}
-                                    <div className="mb-4 rounded-2xl bg-[#37474F] p-5 text-white shadow-md">
-                                        <div className="flex flex-wrap items-center gap-3">
-                                            <span className="text-3xl">{getIcon(selectedCourse.nombre)}</span>
-                                            <div className="flex-1">
-                                                <h2 className="text-xl font-bold">{selectedCourse.nombre}</h2>
-                                                <p className="text-sm text-white/70">
-                                                    {selectedCourse.cupoTotal - selectedCourse.cupoDisponible} inscritos · {selectedCourse.cupoDisponible} cupos libres
-                                                </p>
-                                            </div>
-                                            <div className="text-right text-sm text-white/70">
-                                                <p>{selectedCourse.fechaInicio ? new Date(selectedCourse.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
-                                                <p>al {selectedCourse.fechaFin ? new Date(selectedCourse.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
-                                            </div>
+                                <div className="space-y-5">
+                                    {/* Cabecera del Curso Seleccionado */}
+                                    <div className="rounded-2xl bg-[#37474F] p-6 text-white shadow-md text-left flex flex-wrap items-center gap-4">
+                                        <span className="text-4xl shrink-0 shadow-inner p-2 rounded-xl bg-white/5">{getIcon(selectedCourse.nombre)}</span>
+                                        <div className="flex-1 min-w-0">
+                                            <h2 className="text-2xl font-black tracking-tight truncate">{selectedCourse.nombre}</h2>
+                                            <p className="text-sm text-white/70 font-semibold mt-0.5">
+                                                Alumnos matriculados: {selectedCourse.cupoTotal - selectedCourse.cupoDisponible} · {selectedCourse.cupoDisponible} vacantes
+                                            </p>
+                                        </div>
+                                        <div className="text-right text-xs font-bold text-white/60 shrink-0 border-l border-white/10 pl-4 hidden sm:block leading-relaxed">
+                                            <p>📅 Inicio: {selectedCourse.fechaInicio ? new Date(selectedCourse.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
+                                            <p>🏁 Término: {selectedCourse.fechaFin ? new Date(selectedCourse.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : ""}</p>
                                         </div>
                                     </div>
 
-                                    {/* Tab Alumnos */}
+                                    {/* 📥 Sub-tab: Alumnos del curso */}
                                     {activeTab === "alumnos" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
-                                            <div className="mb-4 flex items-center justify-between">
-                                                <h3 className="font-bold text-[#37474F]">Alumnos inscritos</h3>
-                                                <span className="rounded-full bg-[#FFA000]/20 px-3 py-1 text-xs font-bold text-[#37474F]">
-                                                    {alumnos.length} estudiantes
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
+                                            <div className="mb-6 flex items-center justify-between border-b border-gray-50 pb-3">
+                                                <h3 className="text-xl font-black text-[#37474F]">Alumnos inscritos</h3>
+                                                <span className="rounded-full bg-[#FFA000]/15 px-3 py-1 text-xs font-bold text-[#37474F] tracking-wide">
+                                                    {alumnos.length} estudiantes activos
                                                 </span>
                                             </div>
                                             {loadingAlumnos ? (
-                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-12 animate-pulse rounded-xl bg-gray-100" />)}</div>
+                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-14 animate-pulse rounded-xl bg-gray-50" />)}</div>
                                             ) : alumnos.length === 0 ? (
-                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                                    <p className="text-3xl mb-2">📭</p>
-                                                    <p className="text-sm font-medium">No hay alumnos inscritos en este curso aún.</p>
+                                                <div className="rounded-2xl bg-[#FAFAFA] p-10 text-center text-[#455A64] border border-dashed border-gray-200">
+                                                    <p className="text-4xl mb-2">📭</p>
+                                                    <p className="text-sm font-bold">No hay alumnos inscritos en este curso aún.</p>
                                                 </div>
                                             ) : (
-                                                <div className="divide-y divide-gray-100">
+                                                <div className="divide-y divide-gray-100 border border-gray-50 rounded-2xl overflow-hidden shadow-sm">
                                                     {alumnos.map((a, i) => (
-                                                        <div key={a.usuarioId} className="flex items-center gap-3 py-3">
-                                                            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
+                                                        <div key={a.usuarioId} className="flex items-center gap-4 px-5 py-4 bg-white hover:bg-[#FAFAFA] transition duration-150">
+                                                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#37474F] text-xs font-black text-[#FFA000] shadow-sm">
                                                                 {i + 1}
                                                             </div>
-                                                            <div className="flex-1">
-                                                                <p className="text-sm font-semibold text-[#37474F]">
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-sm font-bold text-[#37474F] truncate">
                                                                     {a.nombreUsuario || `Alumno #${a.usuarioId}`}
                                                                 </p>
-                                                                <p className="text-xs text-[#455A64]">
-                                                                    Inscrito: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                                <p className="text-xs font-semibold text-[#455A64] mt-0.5">
+                                                                    Inscripción el: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                                 </p>
                                                             </div>
-                                                            <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                                                                a.estado === "INSCRITO" ? "bg-green-100 text-green-700" :
-                                                                a.estado === "COMPLETADO" ? "bg-blue-100 text-blue-700" :
-                                                                "bg-gray-100 text-gray-600"}`}>
+                                                            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
+                                                                a.estado === "INSCRITO" ? "bg-green-50 text-green-700" :
+                                                                a.estado === "COMPLETADO" ? "bg-blue-50 text-blue-700" :
+                                                                "bg-gray-50 text-gray-600"}`}>
                                                                 {a.estado}
                                                             </span>
                                                         </div>
@@ -509,139 +505,149 @@ const InstructorProfilePage = () => {
                                         </div>
                                     )}
 
-                                    {/* Tab Asistencia */}
+                                    {/* 📥 Sub-tab: Registro Diario de Asistencia */}
                                     {activeTab === "asistencia" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
-                                            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-                                                <h3 className="font-bold text-[#37474F]">Registro de Asistencia</h3>
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
+                                            <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-50 pb-4">
+                                                <h3 className="text-xl font-black text-[#37474F]">Registro de Asistencia</h3>
                                                 <div className="flex items-center gap-3">
                                                     <input type="date" value={attendanceDate}
                                                         onChange={e => { setAttendanceDate(e.target.value); setAttendanceSaved(false); }}
-                                                        className="rounded-xl border border-gray-300 px-3 py-2 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition" />
+                                                        className="rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold outline-none bg-white focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all shadow-sm" />
                                                     {attendanceSaved && (
-                                                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700 animate-fadeIn">✓ Guardado en BD</span>
+                                                        <span className="rounded-full bg-green-50 border border-green-200 px-3 py-1 text-xs font-bold text-green-700 animate-fadeIn">✓ Guardado en BD</span>
                                                     )}
                                                 </div>
                                             </div>
 
                                             {alumnos.length === 0 ? (
-                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                                    <p className="text-sm">No hay alumnos inscritos para registrar asistencia.</p>
+                                                <div className="rounded-2xl bg-[#FAFAFA] p-10 text-center text-[#455A64] border border-dashed border-gray-200">
+                                                    <p className="text-sm font-bold">No hay alumnos inscritos en la lista para registrar asistencia.</p>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <div className="mb-4 flex gap-4 text-sm">
-                                                        <span className="font-semibold text-green-700">✓ Presentes: {presentesCount}</span>
-                                                        <span className="font-semibold text-red-600">✗ Ausentes: {alumnos.length - presentesCount}</span>
+                                                    <div className="mb-5 flex gap-4 text-xs font-bold uppercase tracking-wider">
+                                                        <span className="rounded-full bg-green-50 px-3 py-1 text-green-700 border border-green-100">✓ Presentes: {presentesCount}</span>
+                                                        <span className="rounded-full bg-red-50 px-3 py-1 text-red-600 border border-red-100">✗ Ausentes: {alumnos.length - presentesCount}</span>
                                                     </div>
-                                                    <div className="space-y-2">
+                                                    
+                                                    <div className="grid gap-3 sm:grid-cols-2">
                                                         {alumnos.map((a, i) => {
                                                             const presente = !!attendance[a.usuarioId];
                                                             return (
                                                                 <div key={a.usuarioId}
-                                                                    className={`flex items-center justify-between rounded-xl border p-3 transition ${
-                                                                        presente ? "border-green-200 bg-green-50" : "border-gray-200 bg-white"}`}>
-                                                                    <div className="flex items-center gap-3">
-                                                                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#37474F] text-xs font-bold text-[#FFA000]">
+                                                                    className={`flex items-center justify-between rounded-xl border p-4 shadow-xs transition-all duration-200 ${
+                                                                        presente ? "border-green-200 bg-green-50/50" : "border-gray-200 bg-white hover:bg-gray-50/50"
+                                                                    }`}>
+                                                                    <div className="flex items-center gap-3 min-w-0">
+                                                                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#37474F] text-xs font-black text-[#FFA000]">
                                                                             {i + 1}
                                                                         </div>
-                                                                        <span className="text-sm font-medium text-[#37474F]">
+                                                                        <span className="text-sm font-bold text-[#37474F] truncate">
                                                                             {a.nombreUsuario || `Alumno #${a.usuarioId}`}
                                                                         </span>
                                                                     </div>
                                                                     <button id={`attendance-btn-${a.usuarioId}`}
+                                                                        type="button"
                                                                         onClick={() => toggleAttendance(a.usuarioId)}
-                                                                        className={`rounded-xl px-4 py-1.5 text-xs font-bold transition ${
-                                                                            presente
-                                                                                ? "bg-green-500 text-white hover:bg-green-600"
-                                                                                : "bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600"}`}>
+                                                                        className={`rounded-xl px-4 py-2 text-xs font-black transition-all cursor-pointer shadow-sm ${
+                                                                            presente 
+                                                                                ? "bg-green-500 text-white hover:bg-green-600 shadow-green-500/10" 
+                                                                                : "bg-gray-100 text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 border border-transparent"
+                                                                        }`}>
                                                                         {presente ? "✓ Presente" : "✗ Ausente"}
                                                                     </button>
                                                                 </div>
                                                             );
                                                         })}
                                                     </div>
+                                                    
                                                     <button id="btn-save-attendance"
+                                                        type="button"
                                                         onClick={saveAttendance}
                                                         disabled={savingAttendance}
-                                                        className="mt-5 w-full rounded-xl bg-[#FFA000] py-3 font-bold text-[#212121] hover:bg-[#ffb300] transition disabled:opacity-60">
-                                                        {savingAttendance ? "Guardando en base de datos…" : "💾 Guardar asistencia"}
+                                                        className="mt-6 w-full rounded-xl bg-[#FFA000] py-3.5 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 hover:bg-[#ffb300] transition-all disabled:opacity-60 cursor-pointer">
+                                                        {savingAttendance ? "Guardando cambios en base de datos…" : "💾 Guardar asistencia del día"}
                                                     </button>
                                                 </>
                                             )}
                                         </div>
                                     )}
 
-                                    {/* Tab Historial */}
+                                    {/* 📥 Sub-tab: Historial General de Asistencias */}
                                     {activeTab === "historial" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
-                                            <h3 className="mb-5 font-bold text-[#37474F]">Historial de Asistencia</h3>
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
+                                            <h3 className="mb-5 text-xl font-black text-[#37474F] border-b border-gray-50 pb-3">Historial de Asistencia</h3>
                                             {loadingHistorial ? (
-                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-10 animate-pulse rounded-xl bg-gray-100" />)}</div>
+                                                <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-10 animate-pulse rounded-xl bg-gray-50" />)}</div>
                                             ) : historial.length === 0 ? (
-                                                <div className="rounded-xl bg-[#FAFAFA] p-8 text-center text-[#455A64]">
-                                                    <p className="text-3xl mb-2">📋</p>
-                                                    <p className="text-sm">Aún no hay registros de asistencia para este curso.</p>
+                                                <div className="rounded-2xl bg-[#FAFAFA] p-10 text-center text-[#455A64] border border-dashed border-gray-200">
+                                                    <p className="text-4xl mb-2">📋</p>
+                                                    <p className="text-sm font-bold">Aún no hay registros de asistencia guardados para esta actividad académica.</p>
                                                 </div>
                                             ) : (
-                                                <div className="overflow-x-auto">
-                                                    <table className="w-full text-sm">
-                                                        <thead>
-                                                            <tr className="bg-[#37474F] text-white text-xs">
-                                                                <th className="px-4 py-3 text-left rounded-tl-xl">Fecha</th>
-                                                                <th className="px-4 py-3 text-left">Alumno</th>
-                                                                <th className="px-4 py-3 text-left rounded-tr-xl">Asistencia</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {historial.map((h, i) => (
-                                                                <tr key={h.id ?? i} className="border-b border-gray-100 hover:bg-gray-50">
-                                                                    <td className="px-4 py-2 text-[#455A64]">
-                                                                        {h.fecha ? new Date(h.fecha + "T00:00:00").toLocaleDateString("es-CL") : "—"}
-                                                                    </td>
-                                                                    <td className="px-4 py-2 font-medium text-[#37474F]">
-                                                                        {h.nombreUsuario || `#${h.usuarioId}`}
-                                                                    </td>
-                                                                    <td className="px-4 py-2">
-                                                                        <span className={`rounded-full px-3 py-0.5 text-xs font-bold ${
-                                                                            h.presente ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                                                                            {h.presente ? "✓ Presente" : "✗ Ausente"}
-                                                                        </span>
-                                                                    </td>
+                                                <div className="overflow-hidden rounded-2xl border border-gray-100 shadow-sm">
+                                                    <div className="overflow-x-auto">
+                                                        <table className="w-full text-sm">
+                                                            <thead>
+                                                                <tr className="bg-[#37474F] text-white text-xs font-bold uppercase tracking-wider border-b border-[#263238]">
+                                                                    <th className="px-5 py-4 text-left">Fecha</th>
+                                                                    <th className="px-5 py-4 text-left">Alumno</th>
+                                                                    <th className="px-5 py-4 text-left">Asistencia</th>
                                                                 </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-gray-100">
+                                                                {historial.map((h, i) => (
+                                                                    <tr key={h.id ?? i} className="hover:bg-[#FAFAFA] transition duration-150">
+                                                                        <td className="px-5 py-3.5 font-semibold text-[#455A64]">
+                                                                            📅 {h.fecha ? new Date(h.fecha + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                                        </td>
+                                                                        <td className="px-5 py-3.5 font-bold text-[#37474F]">
+                                                                            {h.nombreUsuario || `#${h.usuarioId}`}
+                                                                        </td>
+                                                                        <td className="px-5 py-3.5">
+                                                                            <span className={`rounded-full px-3 py-0.5 text-xs font-black ${
+                                                                                h.presente ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                                                                            }`}>
+                                                                                {h.presente ? "✓ Presente" : "✗ Ausente"}
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                ))}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
                                     )}
 
-                                    {/* Tab Notificación */}
+                                    {/* 📥 Sub-tab: Enviar Reportes o Notificaciones Avanzadas */}
                                     {activeTab === "notificacion" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10">
-                                            <h3 className="mb-4 text-lg font-bold text-[#37474F]">
-                                                Enviar reporte o notificación — «{selectedCourse.nombre}»
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
+                                            <h3 className="mb-2 text-xl font-black text-[#37474F]">
+                                                Emitir Reporte o Notificación
                                             </h3>
+                                            <p className="text-xs font-semibold text-[#455A64] border-b border-gray-50 pb-3">Canal asignado: <strong className="text-[#37474F]">{selectedCourse.nombre}</strong></p>
+                                            
                                             {notifSent && (
-                                                <div className="mb-4 rounded-xl bg-green-50 border border-green-200 p-4 text-sm text-green-700 animate-fadeIn">
-                                                    ✅ Reporte/notificación enviado correctamente a los destinatarios.
+                                                <div className="my-4 rounded-xl bg-green-50 border border-green-200 p-4 text-sm font-semibold text-green-700 animate-fadeIn">
+                                                    ✅ Aviso emitido correctamente hacia las bandejas correspondientes.
                                                 </div>
                                             )}
 
-                                            {/* Selector de destinatario */}
-                                            <div className="mb-5 grid gap-4 sm:grid-cols-2">
+                                            <div className="mt-5 mb-5 grid gap-5 sm:grid-cols-2">
                                                 <div>
-                                                    <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Destinatario</label>
+                                                    <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Segmento Destinatario</label>
                                                     <select
                                                         id="notif-target-select"
                                                         value={notifTarget}
                                                         onChange={e => setNotifTarget(e.target.value as any)}
-                                                        className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white"
+                                                        className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm font-semibold outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white shadow-sm"
                                                     >
                                                         <option value="course_all">👥 Todos los alumnos de este curso ({alumnos.length})</option>
-                                                        <option value="single_student">👤 Alumno específico</option>
-                                                        <option value="admin">🛡️ Administrador del Sistema</option>
+                                                        <option value="single_student">👤 Un alumno específico del taller</option>
+                                                        <option value="admin">🛡️ Administrador General del Sistema</option>
                                                     </select>
                                                 </div>
 
@@ -652,9 +658,9 @@ const InstructorProfilePage = () => {
                                                             id="notif-student-select"
                                                             value={selectedStudentId}
                                                             onChange={e => setSelectedStudentId(e.target.value)}
-                                                            className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white"
+                                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm font-semibold outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all bg-white shadow-sm"
                                                         >
-                                                            <option value="">-- Elige un estudiante --</option>
+                                                            <option value="">-- Elige un estudiante del listado --</option>
                                                             {alumnos.map(a => (
                                                                 <option key={a.usuarioId} value={a.usuarioId}>
                                                                     {a.nombreUsuario || `Alumno #${a.usuarioId}`}
@@ -665,35 +671,37 @@ const InstructorProfilePage = () => {
                                                 )}
                                             </div>
 
-                                            <div>
-                                                <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Mensaje del reporte</label>
+                                            <div className="mb-6">
+                                                <label className="mb-2 block text-xs font-bold text-[#455A64] uppercase tracking-wide">Cuerpo del reporte institucional</label>
                                                 <textarea
                                                     id="instructor-notif-textarea"
                                                     value={notifMsg}
                                                     onChange={e => setNotifMsg(e.target.value)}
                                                     rows={5}
-                                                    placeholder="Escribe el mensaje del reporte o notificación aquí..."
-                                                    className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition text-sm leading-relaxed"
+                                                    placeholder="Describe el anuncio o reporte oficial de forma clara..."
+                                                    className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all text-sm leading-relaxed bg-white shadow-sm"
                                                 />
                                             </div>
 
                                             <button
                                                 id="btn-send-notif-instructor"
+                                                type="button"
                                                 onClick={sendNotification}
                                                 disabled={!notifMsg.trim() || sendingNotif || (notifTarget === "single_student" && !selectedStudentId)}
-                                                className="mt-4 rounded-xl bg-[#FFA000] px-6 py-3 font-bold text-[#212121] hover:bg-[#ffb300] hover:-translate-y-0.5 shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="rounded-xl bg-[#FFA000] px-6 py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/25 hover:bg-[#ffb300] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none cursor-pointer"
                                             >
-                                                {sendingNotif ? "Enviando reporte..." : "📣 Enviar reporte"}
+                                                {sendingNotif ? "Transmitiendo aviso..." : "📣 Emitir Reporte Oficial →"}
                                             </button>
                                         </div>
                                     )}
                                 </div>
                             ) : (
-                                <div className="flex items-center justify-center rounded-2xl bg-white p-12 shadow-md text-center border border-[#455A64]/10 animate-fadeIn">
-                                    <div>
-                                        <div className="mb-3 text-4xl">📚</div>
-                                        <p className="font-bold text-[#37474F]">Por favor selecciona un curso del menú lateral</p>
-                                        <p className="text-sm text-[#455A64] mt-1">Necesitas elegir una actividad para gestionar su asistencia o alumnos.</p>
+                                /* Estado vacío si no hay curso clickeado */
+                                <div className="flex items-center justify-center rounded-2xl bg-white p-14 shadow-md text-center border border-gray-100 animate-fadeIn text-left">
+                                    <div className="text-center">
+                                        <div className="mb-4 text-5xl">📚</div>
+                                        <p className="text-xl font-black text-[#37474F]">Por favor selecciona un curso del menú lateral</p>
+                                        <p className="text-sm font-medium text-[#455A64] mt-2">Necesitas elegir una actividad para gestionar su asistencia, revisar su listado de alumnos o emitir reportes.</p>
                                     </div>
                                 </div>
                             )

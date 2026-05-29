@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import Footer from "../components/Footer";
 import { useAuth } from "../hooks/useAuth";
 import { cursosService, getIcon, getCategory, type CursoDTO } from "../services/cursosService";
 import { carritoService } from "../services/carritoService";
@@ -30,7 +29,6 @@ const ProductPage = () => {
         if (cartIds.includes(course.id)) return;
 
         if (user) {
-            // Llamar al backend
             try {
                 await carritoService.agregar(
                     user.id,
@@ -39,7 +37,7 @@ const ProductPage = () => {
                     course.precio
                 );
             } catch {
-                // Si falla el backend, aún actualizamos el estado visual
+                // Falla backend fallback
             }
         }
 
@@ -54,7 +52,8 @@ const ProductPage = () => {
         precio === 0 ? "Gratis" : `$${precio.toLocaleString("es-CL")}`;
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#FAFAFA] text-[#212121]">
+        /* CAMBIO CLAVE: Añadimos items-center para centrar las secciones hijas en Ultra-wides */
+        <div className="flex min-h-screen flex-col bg-[#FAFAFA] text-[#212121] w-full items-center">
             {/* Notificación flotante */}
             {notification && (
                 <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-[#37474F] px-6 py-4 text-white shadow-2xl animate-fadeInUp">
@@ -62,10 +61,13 @@ const ProductPage = () => {
                 </div>
             )}
 
-            <main className="flex-1">
+            {/* CAMBIO CLAVE: El main debe ser w-full y centrar sus elementos hijos */}
+            <main className="flex-1 w-full flex flex-col items-center">
+                
                 {/* Hero */}
-                <section className="bg-[#37474F] px-6 py-20 text-[#FAFAFA] md:px-12 lg:px-20">
-                    <div className="mx-auto max-w-7xl">
+                {/* CAMBIO CLAVE: Añadimos flex justify-center w-full */}
+                <section className="bg-[#37474F] px-6 py-20 text-[#FAFAFA] md:px-12 lg:px-20 w-full flex justify-center">
+                    <div className="w-full max-w-7xl mx-auto">
                         <div className="max-w-3xl">
                             <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#FFA000]">
                                 Actividades disponibles
@@ -82,8 +84,9 @@ const ProductPage = () => {
                 </section>
 
                 {/* Filtros */}
-                <section className="sticky top-16 z-30 border-b border-[#455A64]/10 bg-white px-6 py-4 shadow-sm md:px-12 lg:px-20">
-                    <div className="mx-auto flex max-w-7xl gap-2 overflow-x-auto pb-1">
+                {/* CAMBIO CLAVE: Sticky ahora usa flex justify-center w-full */}
+                <section className="sticky top-16 z-30 border-b border-[#455A64]/10 bg-white px-6 py-4 shadow-sm md:px-12 lg:px-20 w-full flex justify-center">
+                    <div className="w-full max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-1">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat}
@@ -102,8 +105,9 @@ const ProductPage = () => {
                 </section>
 
                 {/* Grid de cursos */}
-                <section className="px-6 py-16 md:px-12 lg:px-20">
-                    <div className="mx-auto max-w-7xl">
+                {/* CAMBIO CLAVE: Añadimos flex justify-center w-full */}
+                <section className="px-6 py-16 md:px-12 lg:px-20 w-full flex justify-center">
+                    <div className="w-full max-w-7xl mx-auto">
                         {loading && (
                             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                                 {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -202,15 +206,15 @@ const ProductPage = () => {
                                                                 inCart
                                                                     ? "bg-green-100 text-green-700 cursor-default"
                                                                     : course.cupoDisponible === 0
-                                                                    ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                                    : "bg-[#FFA000] text-[#212121] hover:bg-[#ffb300] hover:-translate-y-0.5 shadow-md"
+                                                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                                        : "bg-[#FFA000] text-[#212121] hover:bg-[#ffb300] hover:-translate-y-0.5 shadow-md"
                                                             }`}
                                                         >
                                                             {inCart
                                                                 ? "✓ En carrito"
                                                                 : course.cupoDisponible === 0
-                                                                ? "Sin cupos"
-                                                                : "Agregar al carrito"}
+                                                                    ? "Sin cupos"
+                                                                    : "Agregar al carrito"}
                                                         </button>
                                                     ) : (
                                                         <div className="mt-auto rounded-xl bg-[#ECEFF1] px-5 py-3 text-center text-xs font-medium text-[#455A64]">
@@ -227,8 +231,6 @@ const ProductPage = () => {
                     </div>
                 </section>
             </main>
-
-            <Footer />
         </div>
     );
 };

@@ -69,27 +69,33 @@ const AdminNotificationsPage = () => {
     const getUserName = (usuarioId: number) =>
         users.find((u) => u.id === usuarioId)?.nombre ?? `Usuario #${usuarioId}`;
 
+    {/* ── TARJETA DE NOTIFICACIÓN FORMATEADA ────────────────────────────────── */}
     const NotifCard = ({ n }: { n: NotificacionDTO }) => (
-        <div className={`rounded-2xl border p-4 transition-all ${!n.leido ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-sm" : "border-[#455A64]/10 bg-white"}`}>
-            <div className="flex items-start justify-between gap-3">
-                <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                        {!n.leido && <span className="h-2 w-2 rounded-full bg-[#FFA000] inline-block" />}
-                        <p className="text-sm font-semibold text-[#37474F]">
-                            Para: <span className="font-bold">{getUserName(n.usuarioId)}</span>
+        <div className={`rounded-2xl border p-5 transition-all duration-300 ${
+            !n.leido 
+                ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-md hover:shadow-lg" 
+                : "border-[#455A64]/10 bg-white shadow-sm hover:shadow-md"
+        }`}>
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2 mb-1.5">
+                        {!n.leido && <span className="h-2 w-2 rounded-full bg-[#FFA000] inline-block animate-pulse" />}
+                        <p className="text-sm font-bold text-[#37474F]">
+                            Para: <span className="text-[#263238]">{getUserName(n.usuarioId)}</span>
                         </p>
                     </div>
-                    <p className="text-sm text-[#212121] ml-4">{n.mensaje}</p>
+                    <p className="text-sm leading-relaxed text-[#455A64] ml-4">{n.mensaje}</p>
                     {n.fechaCreacion && (
-                        <p className="mt-1 ml-4 text-xs text-[#455A64]/70">
-                            {new Date(n.fechaCreacion).toLocaleString("es-CL")}
+                        <p className="mt-2 ml-4 text-xs font-semibold text-[#455A64]/60">
+                            🕒 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
                         </p>
                     )}
                 </div>
                 {!n.leido && (
                     <button
+                        type="button"
                         onClick={() => markRead(n)}
-                        className="shrink-0 rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-semibold text-[#455A64] hover:bg-[#ECEFF1] transition"
+                        className="shrink-0 rounded-xl bg-white border border-[#455A64]/20 px-3 py-1.5 text-xs font-bold text-[#455A64] hover:bg-[#ECEFF1] hover:text-[#37474F] transition-all cursor-pointer shadow-sm"
                     >
                         Marcar leído
                     </button>
@@ -101,85 +107,108 @@ const AdminNotificationsPage = () => {
     if (!user) return null;
 
     return (
-        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 py-10 text-[#212121]">
-            <section className="mx-auto max-w-5xl">
-                <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-                    <div>
-                        <p className="text-sm font-semibold uppercase tracking-wide text-[#FFA000]">Administración</p>
-                        <h1 className="mt-1 text-3xl font-bold text-[#37474F]">
+        /* CAMBIO CLAVE: Ajustamos pt-14 pb-28 y agregamos flex flex-col items-center 
+           para inyectar un centrado geométrico impecable en Ultra-Wides */
+        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-[#212121] w-full flex flex-col items-center">
+            <section className="w-full max-w-5xl mx-auto">
+                
+                {/* ── HEADER DE LA SECCIÓN ─────────────────────────────────────── */}
+                <div className="mb-14 flex flex-wrap items-center justify-between gap-6 animate-fadeInUp">
+                    <div className="text-left">
+                        {/* Escalamos la etiqueta superior en sintonía con las demás vistas */}
+                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#FFA000]">
+                            Administración
+                        </p>
+                        <h1 className="mt-2 text-5xl font-black text-[#37474F] md:text-6xl tracking-tight flex items-center gap-3">
                             Notificaciones
                             {unread > 0 && (
-                                <span className="ml-3 rounded-full bg-red-500 px-3 py-0.5 text-sm font-black text-white align-middle">{unread}</span>
+                                <span className="rounded-full bg-red-500 px-3.5 py-0.5 text-base font-black text-white shadow-md animate-pulse">
+                                    {unread}
+                                </span>
                             )}
                         </h1>
                     </div>
+                    {/* Botones de acción principales con estilos corregidos */}
                     <div className="flex gap-3">
                         {unread > 0 && (
-                            <button id="btn-mark-all-read" onClick={markAllRead} className="rounded-xl border border-[#455A64] px-4 py-2 text-sm font-semibold text-[#455A64] hover:bg-[#ECEFF1] transition">
+                            <button 
+                                id="btn-mark-all-read" 
+                                type="button"
+                                onClick={markAllRead} 
+                                className="rounded-xl border-2 border-[#455A64]/40 px-5 py-2.5 text-sm font-bold text-[#455A64] hover:bg-[#ECEFF1] hover:border-[#455A64] transition-all cursor-pointer shadow-sm"
+                            >
                                 Marcar todas leídas
                             </button>
                         )}
-                        <button id="btn-send-notif" onClick={() => setShowSendForm(!showSendForm)} className="rounded-xl bg-[#FFA000] px-4 py-2 text-sm font-bold text-[#212121] hover:bg-[#ffb300] transition">
-                            {showSendForm ? "Cancelar" : "+ Enviar Notificación"}
+                        <button 
+                            id="btn-send-notif" 
+                            type="button"
+                            onClick={() => setShowSendForm(!showSendForm)} 
+                            className="rounded-xl bg-[#FFA000] px-5 py-2.5 text-sm font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 hover:bg-[#ffb300] hover:-translate-y-0.5 transition-all cursor-pointer"
+                        >
+                            {showSendForm ? "Cancelar" : "＋ Enviar Notificación"}
                         </button>
                     </div>
                 </div>
 
                 {sendSuccess && (
-                    <div className="mb-6 rounded-xl bg-green-50 border border-green-200 px-5 py-3 text-sm text-green-700 animate-fadeIn">
-                        ✅ Notificación enviada correctamente.
+                    <div className="mb-6 rounded-xl bg-green-50 border border-green-200 px-5 py-3 text-sm font-semibold text-green-700 animate-fadeIn shadow-sm">
+                        ✅ Notificación enviada correctamente al canal.
                     </div>
                 )}
 
-                {/* Formulario de envío */}
+                {/* ── FORMULARIO DE ENVÍO PREMIUM ────────────────────────────────── */}
                 {showSendForm && (
-                    <div className="mb-6 rounded-2xl bg-white p-6 shadow-md border border-[#455A64]/10 animate-fadeIn">
-                        <h2 className="mb-4 text-lg font-bold text-[#37474F]">Enviar Notificación</h2>
-                        <div className="mb-4 grid gap-4 sm:grid-cols-2">
+                    <div className="mb-10 rounded-2xl bg-white p-8 shadow-xl border border-[#455A64]/10 animate-fadeIn text-left">
+                        <h2 className="mb-5 text-2xl font-black text-[#37474F]">Enviar Notificación</h2>
+                        <div className="mb-5 grid gap-5 sm:grid-cols-2">
                             <div>
-                                <label className="mb-1 block text-xs font-bold text-[#455A64]">Destinatario</label>
-                                <select id="send-notif-target" value={sendForm.target} onChange={(e) => setSendForm({ ...sendForm, target: e.target.value as SendForm["target"], userId: "" })} className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30">
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#455A64]">Destinatario</label>
+                                <select id="send-notif-target" value={sendForm.target} onChange={(e) => setSendForm({ ...sendForm, target: e.target.value as SendForm["target"], userId: "" })} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none bg-white focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all">
                                     <option value="all">Todos los usuarios</option>
                                     <option value="user">Usuario específico</option>
                                 </select>
                             </div>
                             {sendForm.target === "user" && (
                                 <div>
-                                    <label className="mb-1 block text-xs font-bold text-[#455A64]">Usuario</label>
-                                    <select id="send-notif-user" value={sendForm.userId} onChange={(e) => setSendForm({ ...sendForm, userId: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30">
+                                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#455A64]">Seleccionar Usuario</label>
+                                    <select id="send-notif-user" value={sendForm.userId} onChange={(e) => setSendForm({ ...sendForm, userId: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none bg-white focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all">
                                         <option value="">Seleccionar</option>
                                         {users.map((u) => <option key={u.id} value={u.id}>{u.nombre} ({u.rol})</option>)}
                                     </select>
                                 </div>
                             )}
                         </div>
-                        <div className="mb-4">
-                            <label className="mb-1 block text-xs font-bold text-[#455A64]">Mensaje</label>
-                            <textarea id="send-notif-message" rows={4} value={sendForm.message} onChange={(e) => setSendForm({ ...sendForm, message: e.target.value })} placeholder="Escribe tu mensaje..." className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition" />
+                        <div className="mb-6">
+                            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[#455A64]">Cuerpo del Mensaje</label>
+                            <textarea id="send-notif-message" rows={4} value={sendForm.message} onChange={(e) => setSendForm({ ...sendForm, message: e.target.value })} placeholder="Escribe tu mensaje institucional aquí..." className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all" />
                         </div>
-                        <button id="btn-confirm-send-notif" onClick={handleSend} disabled={!sendForm.message.trim() || sending || (sendForm.target === "user" && !sendForm.userId)} className="rounded-xl bg-[#FFA000] px-6 py-2.5 font-bold text-[#212121] hover:bg-[#ffb300] transition disabled:opacity-50">
-                            {sending ? "Enviando…" : "Enviar"}
+                        <button id="btn-confirm-send-notif" type="button" onClick={handleSend} disabled={!sendForm.message.trim() || sending || (sendForm.target === "user" && !sendForm.userId)} className="rounded-xl bg-[#FFA000] px-6 py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 hover:bg-[#ffb300] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:transform-none cursor-pointer">
+                            {sending ? "Enviando…" : "Enviar Notificación →"}
                         </button>
                     </div>
                 )}
 
-                {/* Lista de notificaciones */}
+                {/* ── LISTADO DE REGISTROS ────────────────────────────────────────── */}
                 {loading ? (
-                    <div className="space-y-3">
-                        {[1, 2, 3].map((i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-gray-200" />)}
+                    <div className="space-y-4">
+                        {[1, 2, 3].map((i) => <div key={i} className="h-24 animate-pulse rounded-2xl bg-gray-200" />)}
                     </div>
                 ) : notifs.length === 0 ? (
-                    <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-                        <p className="text-4xl mb-2">📭</p>
-                        <p className="font-bold text-[#37474F]">Sin notificaciones aún.</p>
-                        <p className="mt-1 text-sm text-[#455A64]">Usa el botón de arriba para enviar una.</p>
+                    <div className="rounded-2xl bg-white p-14 text-center shadow-md border border-gray-100">
+                        <p className="text-5xl mb-3">📭</p>
+                        <p className="text-xl font-black text-[#37474F]">Sin notificaciones aún.</p>
+                        <p className="mt-2 text-sm text-[#455A64]">Usa el botón superior para emitir un aviso al canal.</p>
                     </div>
                 ) : (
-                    <div className="space-y-3">
-                        <p className="text-xs font-semibold uppercase tracking-wide text-[#455A64] mb-2">
-                            {notifs.length} notificaciones · {unread} sin leer
+                    <div className="space-y-4 text-left">
+                        {/* Indicador superior formateado */}
+                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#455A64] mb-3">
+                            {notifs.length} registros totales · {unread} pendientes
                         </p>
-                        {notifs.map((n) => <NotifCard key={n.id} n={n} />)}
+                        <div className="flex flex-col gap-4">
+                            {notifs.map((n) => <NotifCard key={n.id} n={n} />)}
+                        </div>
                     </div>
                 )}
             </section>
