@@ -1,8 +1,8 @@
 import { useState } from "react";
-import CartItem from "../components/cart/CartItem";
-import CartSummary from "../components/cart/CartSummary";
-import EmptyCart from "../components/cart/EmptyCart";
-import UnauthenticatedMessage from "../components/cart/UnauthenticatedMessage";
+import CartItem from "../../components/cart/CartItem";
+import CartSummary from "../../components/cart/CartSummary";
+import EmptyCart from "../../components/cart/EmptyCart";
+import UnauthenticatedMessage from "../../components/cart/UnauthenticatedMessage";
 
 type AuthUser = {
   name: string;
@@ -16,7 +16,10 @@ export type CartCourse = {
   category: string;
   instructor: string;
   price: number;
-  imageUrl: string;
+  imageUrl?: string;
+  icon?: string;
+  startDate?: string;
+  endDate?: string;
 };
 
 const CartPage = () => {
@@ -31,7 +34,6 @@ const CartPage = () => {
 
   const handleRemoveCourse = (courseId: number) => {
     const updatedCart = cartCourses.filter((course) => course.id !== courseId);
-
     setCartCourses(updatedCart);
     localStorage.setItem("cartCourses", JSON.stringify(updatedCart));
   };
@@ -71,7 +73,11 @@ const CartPage = () => {
               ))}
             </section>
 
-            <CartSummary cartCourses={cartCourses} />
+            <CartSummary
+              cartCourses={cartCourses}
+              studentName={user.name}
+              studentEmail={user.email}
+            />
           </div>
         )}
       </section>

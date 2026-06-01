@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { carritoService, type ItemCarritoDTO } from "../../services/carritoService";
 import { notificacionesService } from "../../services/notificacionesService";
+import VoucherPanel from "../../components/cart/VoucherPanel";
 
 const CartPage = () => {
     const { user } = useAuth();
@@ -11,6 +12,11 @@ const CartPage = () => {
     const [loading, setLoading] = useState(true);
     const [purchased, setPurchased] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Guardamos una copia de los items/total ANTES de limpiar el carrito,
+    // para poder mostrar el voucher en la pantalla de éxito.
+    const [purchasedItems, setPurchasedItems] = useState<ItemCarritoDTO[]>([]);
+    const [purchasedTotal, setPurchasedTotal] = useState(0);
 
     useEffect(() => {
         if (!user) { setLoading(false); return; }
@@ -47,6 +53,9 @@ const CartPage = () => {
                     `Nueva inscripción: ${user.username} se inscribió en "${item.nombreCurso}"`
                 ).catch(() => {});
             }
+            // Guardamos copia antes de limpiar
+            setPurchasedItems([...items]);
+            setPurchasedTotal(total);
             setItems([]);
             setTotal(0);
             setPurchased(true);
@@ -74,18 +83,25 @@ const CartPage = () => {
         );
     }
 
-    // ── 2. VISTA: INSCRIPCIÓN EXITOSA ───────────────────────────────────────────────
+    // ── 2. VISTA: INSCRIPCIÓN EXITOSA + VOUCHER ─────────────────────────────────────
     if (purchased) {
         return (
-            <main className="min-h-[calc(100vh-64px)] w-full flex flex-col items-center justify-center bg-[#FAFAFA] px-6 py-12">
-                <section className="w-full max-w-md rounded-2xl bg-white p-10 text-center shadow-xl border border-gray-100 animate-fadeIn">
+            <main className="min-h-[calc(100vh-64px)] w-full flex flex-col items-center justify-center bg-[#FAFAFA] px-6 py-16">
+                <section className="w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-xl border border-gray-100 animate-fadeIn">
                     <div className="mb-4 text-6xl">🎉</div>
                     <h1 className="text-2xl font-black text-[#37474F] tracking-tight">¡Inscripción exitosa!</h1>
                     <p className="mt-3 text-sm font-semibold text-[#455A64] leading-relaxed">
-                        Te inscribiste correctamente en tus cursos. Puedes verlos en tu perfil.
+                        Te inscribiste correctamente en tus cursos. Descarga tu voucher para pagar en caja.
                     </p>
-                    <Link to="/perfil" id="btn-go-to-profile"
-                        className="mt-6 inline-block rounded-xl bg-[#FFA000] px-6 py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/25 hover:bg-[#ffb300] hover:-translate-y-0.5 transition-all">
+
+                    {/* Voucher QR + Descarga — aparece solo tras confirmar */}
+                    <VoucherPanel items={purchasedItems} total={purchasedTotal} user={user} />
+
+                    <Link
+                        to="/perfil"
+                        id="btn-go-to-profile"
+                        className="mt-5 inline-block rounded-xl border border-[#37474F]/20 px-6 py-2.5 text-sm font-bold text-[#37474F] transition hover:border-[#FFA000] hover:text-[#FFA000]"
+                    >
                         Ver mi perfil →
                     </Link>
                 </section>
@@ -93,7 +109,7 @@ const CartPage = () => {
         );
     }
 
-    // ── 3. VISTA PRINCIPAL DEL CARRITO (CON CENTRADO PREMIUM) ────────────────────────
+    // ── 3. VISTA PRINCIPAL DEL CARRITO ───────────────────────────────────────────────
     return (
         /* CAMBIO CLAVE: pt-14 pb-28 y flex flex-col items-center para centrar perfectamente en pantallas Ultra-Wide */
         <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-[#212121] w-full flex flex-col items-center">
@@ -121,7 +137,7 @@ const CartPage = () => {
                         </Link>
                     </div>
                 ) : (
-                    /* Layout de dos columnas: Rejilla estirada a max-w-7xl con gap horizontal de 10 */
+                    /* Layout de dos columnas */
                     <div className="grid gap-10 lg:grid-cols-[1fr_360px] text-left items-start">
                         
                         {/* Lista de items (Columna Izquierda) */}
@@ -156,7 +172,7 @@ const CartPage = () => {
                             ))}
                         </div>
 
-                        {/* Panel de Resumen (Columna Derecha) */}
+                        {/* Panel de Resumen (Columna Derecha) — SIN voucher aquí */}
                         <aside className="h-fit rounded-2xl bg-white p-6 shadow-md border border-gray-100 animate-fadeIn sticky top-24">
                             <h2 className="mb-5 text-xl font-black text-[#37474F] border-b border-gray-50 pb-3">Resumen</h2>
                             <div className="space-y-4 text-sm max-h-[220px] overflow-y-auto pr-1">
