@@ -38,7 +38,3 @@ management:
     health:
       show-details: always
 
-spring.boot.admin.client:
-  url: http://localhost:8090
-  username: admin
-  password: admin123
