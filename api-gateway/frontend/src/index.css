@@ -550,6 +550,44 @@ body {
   background-image: linear-gradient(135deg, #071527 0%, #0C1E35 50%, #071527 100%) !important;
 }
 
+/* Específicos para Navbar (Header) en modo oscuro */
+.dark header,
+.dark header.bg-white\/95,
+.dark header.bg-white\/80 {
+  background-color: #071527 !important;
+  background-image: none !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Hamburguesa en modo oscuro */
+.dark #btn-menu-mobile span {
+  background-color: #F8FAFF !important;
+}
+
+/* Específicos para Footer en modo oscuro */
+.dark footer,
+.dark footer section,
+.dark footer .from-sky-50 {
+  background-image: linear-gradient(to bottom, #0C1E35, #071527) !important;
+  background-color: #071527 !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark footer .bg-sky-50 {
+  background-color: #0E223D !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark footer .text-sky-600 {
+  color: #38BDF8 !important;
+}
+
+.dark footer .hover\:bg-sky-100:hover {
+  background-color: rgba(56, 189, 248, 0.1) !important;
+  color: #38BDF8 !important;
+}
+
+
 
 /* Separación controlada entre el Hero y la primera sección de contenido */
 .separador-hero-contenido {
