@@ -26,26 +26,26 @@ const MiniCalendar = ({ ins }: { ins: InscripcionDTO }) => {
     const days    = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
     return (
-        <div className="rounded-xl bg-[#F8F9FA] border border-[#455A64]/10 p-4 mt-4 text-left">
-            <p className="mb-3 text-center text-xs font-bold uppercase tracking-wider text-[#37474F]">{monthName}</p>
-            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-[#455A64]/70 mb-1.5">
+        <div className="rounded-xl bg-sky-50 border border-sky-100 p-4 mt-4 text-left">
+            <p className="mb-3 text-center text-xs font-bold uppercase tracking-wider text-sky-900 font-display">{monthName}</p>
+            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-sky-400 mb-1.5">
                 {WEEK.map(d => <span key={d}>{d}</span>)}
             </div>
             <div className="grid grid-cols-7 gap-1">
                 {empties.map(k => <div key={k} />)}
                 {days.map(day => (
                     <div key={day} className={`flex h-7 w-7 items-center justify-center rounded-full mx-auto text-[11px] font-bold transition-all
-                        ${isStart(day) || isEnd(day) ? "bg-[#FFA000] text-white font-black shadow-sm" :
-                          inRange(day) ? "bg-[#FFA000]/15 text-[#37474F]" :
-                          isToday(day) ? "ring-2 ring-[#FFA000] text-[#37474F] font-black" :
-                          "text-[#455A64]"}`}>
+                        ${isStart(day) || isEnd(day) ? "bg-sky-600 text-white font-extrabold shadow-sm" :
+                          inRange(day) ? "bg-sky-100 text-sky-700" :
+                          isToday(day) ? "ring-2 ring-sky-500 text-sky-700 font-bold" :
+                          "text-neutral-600"}`}>
                         {day}
                     </div>
                 ))}
             </div>
-            <div className="mt-3 flex gap-4 text-[10px] font-bold text-[#455A64]/80 border-t border-gray-200/50 pt-2">
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-[#FFA000] inline-block" /> Inicio / Fin</span>
-                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-[#FFA000]/25 inline-block" /> Período asignado</span>
+            <div className="mt-3 flex gap-4 text-[10px] font-bold text-neutral-600 border-t border-sky-100 pt-2">
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-sky-600 inline-block" /> Inicio / Fin</span>
+                <span className="flex items-center gap-1"><span className="h-2 w-2 rounded-full bg-sky-100 inline-block" /> Período asignado</span>
             </div>
         </div>
     );
@@ -73,9 +73,9 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
     return (
         <div className="relative mx-auto mb-4 h-24 w-24 cursor-pointer group" onClick={() => inputRef.current?.click()}>
             {photo ? (
-                <img src={photo} alt="Foto de perfil" className="h-24 w-24 rounded-full object-cover border-4 border-[#FFA000] shadow-lg" />
+                <img src={photo} alt="Foto de perfil" className="h-24 w-24 rounded-full object-cover border-4 border-primary-500 shadow-lg" />
             ) : (
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-[#37474F] border-4 border-[#FFA000]/40 shadow-lg text-4xl font-black text-[#FFA000]">
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-sky-900 border-4 border-primary-100 shadow-lg text-4xl font-extrabold text-white">
                     {username.charAt(0).toUpperCase()}
                 </div>
             )}
@@ -177,24 +177,26 @@ const StudentProfilePage = () => {
     const unreadCount = notificaciones.filter(n => !n.leido).length;
 
     if (!user) return (
-        <main className="flex min-h-[calc(100vh-64px)] w-full items-center justify-center bg-[#FAFAFA] px-6">
-            <div className="text-center rounded-2xl bg-white p-8 shadow-md border border-gray-100 max-w-sm animate-scaleIn">
+        <main className="flex min-h-[calc(100vh-64px)] w-full items-center justify-center bg-neutral-50 px-6">
+            <div className="text-center rounded-[24px] bg-white p-8 shadow-xl border border-neutral-200 max-w-sm animate-scaleIn">
                 <p className="text-4xl mb-2">🔒</p>
-                <p className="font-bold text-[#37474F]">No estás autenticado.</p>
-                <Link to="/login" className="mt-4 inline-block rounded-xl bg-[#FFA000] px-5 py-2 text-sm font-bold text-[#212121] shadow-md hover:bg-[#ffb300] transition">Iniciar sesión</Link>
+                <p className="font-bold text-neutral-800 font-display">No estás autenticado.</p>
+                <Link to="/login" className="mt-4 btn btn-primary inline-block">Iniciar sesión</Link>
             </div>
         </main>
     );
 
     return (
         /* CAMBIO CLAVE: pt-14 pb-28 y flex flex-col items-center para centrar perfectamente en monitores panorámicos */
-        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-[#212121] w-full flex flex-col items-center">
+        <main className="min-h-[calc(100vh-64px)] bg-neutral-50 px-6 pt-14 pb-28 text-sky-800 w-full flex flex-col items-center">
             <section className="w-full max-w-7xl mx-auto">
                 
                 {/* Header Superior */}
-                <div className="mb-14 text-left animate-fadeInUp">
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#FFA000]">Mi cuenta</p>
-                    <h1 className="mt-2 text-5xl font-black text-[#37474F] md:text-6xl tracking-tight">Perfil de Estudiante</h1>
+                <div className="mb-10 text-left animate-fadeInUp">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-primary-100 text-xs font-bold text-primary-600 uppercase tracking-wide">
+                        Mi cuenta
+                    </span>
+                    <h1 className="mt-3 text-3xl font-extrabold text-sky-800 md:text-4xl font-display">Perfil de Estudiante</h1>
                 </div>
 
                 {/* Grid Estructural del Dashboard del Alumno */}
@@ -202,61 +204,58 @@ const StudentProfilePage = () => {
                     
                     {/* ── BARRA LATERAL (SIDEBAR) ─────────────────────────────── */}
                     <aside className="space-y-5 h-fit">
-                        <div className="rounded-2xl bg-white p-6 shadow-md border border-gray-100 text-center">
+                        <div className="rounded-[24px] bg-sky-100 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 text-center flex flex-col items-center">
                             <ProfilePhoto userId={user.id} username={user.username} />
-                            <h2 className="text-lg font-black text-[#37474F] tracking-tight truncate">{user.username}</h2>
-                            <p className="text-xs font-semibold text-[#455A64] truncate mt-0.5">{user.email}</p>
+                            <h2 className="text-lg font-bold text-sky-800 font-display tracking-tight truncate">{user.username}</h2>
+                            <p className="text-xs font-semibold text-sky-600 truncate mt-0.5">{user.email}</p>
                             
-                            <span className="mt-3 mx-auto block w-fit rounded-full bg-emerald-50 border border-emerald-100 px-3.5 py-0.5 text-xs font-bold text-emerald-700 tracking-wide">
+                            <span className="mt-3 mx-auto block w-fit rounded-full bg-primary-50 border border-primary-100 px-3.5 py-0.5 text-xs font-bold text-primary-700 tracking-wide">
                                 Estudiante
                             </span>
                             
                             {user.phone && (
-                                <div className="mt-4 rounded-xl border border-gray-50 bg-[#FAFAFA]/70 p-3 text-left">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-[#455A64]">Teléfono</p>
-                                    <p className="text-sm font-bold text-[#37474F] mt-0.5">{user.phone}</p>
+                                <div className="mt-4 rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3 text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Teléfono</p>
+                                    <p className="text-sm font-bold text-sky-800 mt-0.5">{user.phone}</p>
                                 </div>
                             )}
                             
-                            <div className="mt-3 rounded-xl border border-gray-50 bg-[#FAFAFA]/70 p-3 text-left">
-                                <p className="text-[10px] font-bold uppercase tracking-wider text-[#455A64]">Cursos inscritos</p>
-                                <p className="text-3xl font-black text-[#FFA000] mt-0.5 tracking-tight">{loading ? "…" : inscripciones.length}</p>
+                            <div className="mt-3 rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3 text-left">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Cursos inscritos</p>
+                                <p className="text-center text-3xl font-black text-primary-600 mt-0.5 tracking-tight">{loading ? "…" : inscripciones.length}</p>
                             </div>
-                            <p className="mt-4 text-[10px] font-bold text-[#455A64]/50 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
+                            <p className="mt-4 text-[10px] font-bold text-sky-600 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
                         </div>
                     </aside>
 
                     {/* ── CUERPO CENTRAL DE INFORMACIÓN ───────────────────────── */}
                     <div className="flex-1 min-w-0">
                         {/* Fila de Pestañas (Tabs) */}
-                        <div className="mb-6 flex flex-wrap gap-2 rounded-2xl bg-white p-2 shadow-sm border border-gray-100">
+                        <div className="mb-6 tab-pill-bar">
                             {[
-                                { key: "info",           label: "👤 Mi Perfil" },
-                                { key: "cursos",         label: "📚 Mis Cursos" },
-                                { key: "notificaciones", label: "🔔 Notificaciones" },
+                                { key: "info",           label: "Mi Perfil",       icon: "👤" },
+                                { key: "cursos",         label: "Mis Cursos",       icon: "📚" },
+                                { key: "notificaciones", label: "Notificaciones",   icon: "🔔" },
                             ].map(tab => (
                                 <button key={tab.key} id={`tab-${tab.key}`}
                                     type="button"
                                     onClick={() => setActiveTab(tab.key as any)}
-                                    className={`relative flex-1 min-w-[100px] rounded-xl py-2.5 text-xs sm:text-sm font-bold transition-all duration-200 cursor-pointer ${
-                                        activeTab === tab.key ? "bg-[#37474F] text-white shadow-md" : "text-[#455A64] hover:bg-gray-50"
-                                    }`}>
-                                    <span className="flex items-center justify-center gap-1.5">
-                                        {tab.label}
-                                        {tab.key === "notificaciones" && unreadCount > 0 && (
-                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-sm animate-pulse">
-                                                {unreadCount}
-                                            </span>
-                                        )}
-                                    </span>
+                                    className={`tab-pill ${activeTab === tab.key ? 'active' : ''}`}>
+                                    <span className="text-base leading-none">{tab.icon}</span>
+                                    <span>{tab.label}</span>
+                                    {tab.key === "notificaciones" && unreadCount > 0 && (
+                                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white shadow-sm animate-pulse">
+                                            {unreadCount}
+                                        </span>
+                                    )}
                                 </button>
                             ))}
                         </div>
 
                         {/* PANEL: INFORMACIÓN GENERAL */}
                         {activeTab === "info" && (
-                            <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
-                                <h3 className="mb-6 text-xl font-black text-[#37474F] border-b border-gray-50 pb-3">Información personal</h3>
+                            <div className="animate-fadeIn rounded-[24px] bg-white p-7 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 text-left">
+                                <h3 className="mb-6 text-xl font-bold text-sky-900 !py-4 border-b border-neutral-100 pb-3 font-display">Información personal</h3>
                                 <div className="grid gap-4 md:grid-cols-2">
                                     {[
                                         { label: "Nombre completo", value: user.username },
@@ -264,13 +263,13 @@ const StudentProfilePage = () => {
                                         { label: "Teléfono", value: user.phone || "No registrado" },
                                         { label: "Rol en el sistema", value: "Estudiante Regular InscribeMe" },
                                     ].map(f => (
-                                        <div key={f.label} className="rounded-xl border border-gray-100 bg-[#FAFAFA]/70 p-4">
-                                            <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">{f.label}</p>
-                                            <p className="mt-1.5 text-base font-bold text-[#212121]">{f.value}</p>
+                                        <div key={f.label} className="rounded-2xl border border-neutral-100 bg-neutral-50/70 p-4 transition duration-200 hover:border-primary-500/20 hover:bg-white hover:shadow-sm">
+                                            <p className="text-xs font-bold uppercase tracking-wider text-sky-600">{f.label}</p>
+                                            <p className="mt-1.5 text-base font-bold text-sky-800">{f.value}</p>
                                         </div>
                                     ))}
                                 </div>
-                                <div className="mt-6 rounded-xl bg-blue-50/50 border border-blue-200/60 p-4 text-xs font-bold text-blue-700 flex items-center gap-2">
+                                <div className="mt-6 rounded-2xl bg-primary-50 border border-primary-100 p-4 text-xs font-bold text-primary-600 flex items-center gap-2">
                                     <span>💡</span> Para actualizar o rectificar tu información institucional, contacta al administrador del campus.
                                 </div>
                             </div>
@@ -284,51 +283,51 @@ const StudentProfilePage = () => {
                                         {[1, 2].map(i => <div key={i} className="h-52 animate-pulse rounded-2xl bg-gray-100" />)}
                                     </div>
                                 ) : inscripciones.length === 0 ? (
-                                    <div className="rounded-2xl bg-white p-14 text-center shadow-md border border-gray-100 border-dashed">
+                                    <div className="rounded-[24px] bg-white p-14 text-center shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 border-dashed">
                                         <div className="mb-3 text-5xl">📭</div>
-                                        <p className="text-xl font-black text-[#37474F]">No tienes cursos inscritos aún.</p>
-                                        <Link to="/cursos" className="mt-4 inline-block text-sm font-bold text-[#FFA000] hover:underline tracking-wide">
+                                        <p className="text-xl font-bold text-neutral-900 font-display">No tienes cursos inscritos aún.</p>
+                                        <Link to="/cursos" className="mt-4 inline-block text-sm font-bold text-primary-500 hover:underline tracking-wide">
                                             Explorar catálogo de actividades →
                                         </Link>
                                     </div>
                                 ) : (
                                     inscripciones.map((ins, idx) => (
-                                        <div key={`${ins.cursoId}-${idx}`} className="rounded-2xl bg-white p-6 shadow-md border border-gray-100 transition-all hover:shadow-lg duration-300">
+                                        <div key={`${ins.cursoId}-${idx}`} className="rounded-[24px] bg-white p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 transition-all hover:shadow-md duration-300">
                                             <div className="mb-5 flex items-center gap-4">
-                                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[#FFA000]/15 text-2xl shadow-inner">
+                                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-50 text-primary-500 text-2xl shadow-inner">
                                                     {getIcon(ins.nombreCurso)}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="text-xl font-black text-[#37474F] truncate">{ins.nombreCurso}</h3>
-                                                    <span className={`mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
-                                                        ins.estado === "INSCRITO" ? "bg-green-50 text-green-700" :
-                                                        ins.estado === "COMPLETADO" ? "bg-blue-50 text-blue-700" :
-                                                        "bg-gray-50 text-gray-600"}`}>
+                                                    <h3 className="text-xl font-bold text-neutral-900 font-display truncate">{ins.nombreCurso}</h3>
+                                                    <span className={`mt-1.5 inline-block rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide border ${
+                                                        ins.estado === "INSCRITO" ? "bg-emerald-50 text-emerald-700 border-emerald-100" :
+                                                        ins.estado === "COMPLETADO" ? "bg-primary-50 text-primary-700 border-primary-100" :
+                                                        "bg-neutral-50 text-neutral-600 border-neutral-200"}`}>
                                                         {ins.estado ?? "INSCRITO"}
                                                     </span>
                                                 </div>
                                             </div>
 
-                                            <div className="mb-5 grid gap-3 rounded-xl border border-gray-50 bg-[#FAFAFA]/70 p-4 sm:grid-cols-2 text-sm">
+                                            <div className="mb-5 grid gap-3 rounded-2xl border border-neutral-100 bg-neutral-50/70 p-4 sm:grid-cols-2 text-sm">
                                                 <div>
-                                                    <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">Profesor Jefe / Instructor</p>
-                                                    <p className="font-bold text-[#37474F] mt-0.5">{ins.nombreInstructor || "—"}</p>
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-sky-600">Profesor Jefe / Instructor</p>
+                                                    <p className="font-bold text-neutral-800 mt-0.5">{ins.nombreInstructor || "—"}</p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">Fecha de matrícula</p>
-                                                    <p className="font-bold text-[#37474F] mt-0.5">
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-sky-600">Fecha de matrícula</p>
+                                                    <p className="font-bold text-neutral-800 mt-0.5">
                                                         {ins.fechaInscripcion ? new Date(ins.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">Inicio del período</p>
-                                                    <p className="font-bold text-[#37474F] mt-0.5">
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-sky-600">Inicio del período</p>
+                                                    <p className="font-bold text-neutral-800 mt-0.5">
                                                         {ins.fechaInicioCurso ? new Date(ins.fechaInicioCurso + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <p className="text-xs font-bold uppercase tracking-wider text-[#455A64]">Término del período</p>
-                                                    <p className="font-bold text-[#37474F] mt-0.5">
+                                                    <p className="text-xs font-bold uppercase tracking-wider text-sky-600">Término del período</p>
+                                                    <p className="font-bold text-neutral-800 mt-0.5">
                                                         {ins.fechaFinCurso ? new Date(ins.fechaFinCurso + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                     </p>
                                                 </div>
@@ -345,16 +344,16 @@ const StudentProfilePage = () => {
 
                         {/* PANEL: BANDEJA DE NOTIFICACIONES */}
                         {activeTab === "notificaciones" && (
-                            <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-gray-100 text-left">
-                                <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-4">
+                            <div className="animate-fadeIn rounded-[24px] bg-white p-7 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 text-left">
+                                <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-neutral-100 pb-4">
                                     <div>
-                                        <h3 className="text-xl font-black text-[#37474F]">Bandeja de Notificaciones</h3>
-                                        <p className="text-xs font-semibold text-[#455A64] mt-1">
+                                        <h3 className="text-xl font-bold text-sky-900 font-display">Bandeja de Notificaciones</h3>
+                                        <p className="text-xs font-semibold text-sky-500 mt-1">
                                             Tienes {notificaciones.length} avisos · {unreadCount} sin leer
                                         </p>
                                     </div>
                                     {unreadCount > 0 && (
-                                        <button type="button" onClick={markAllNotifsRead} className="rounded-xl border border-[#455A64]/30 px-4 py-2 text-xs font-bold text-[#37474F] hover:bg-[#FAFAFA] transition-colors cursor-pointer shadow-sm">
+                                        <button type="button" onClick={markAllNotifsRead} className="rounded-xl border border-neutral-200 px-4 py-2 text-xs font-bold text-sky-700 hover:bg-sky-100 transition-colors cursor-pointer shadow-sm">
                                             ✓ Marcar todas leídas
                                         </button>
                                     )}
@@ -365,7 +364,7 @@ const StudentProfilePage = () => {
                                         {[1, 2, 3].map(i => <div key={i} className="h-16 animate-pulse rounded-xl bg-gray-50" />)}
                                     </div>
                                 ) : notificaciones.length === 0 ? (
-                                    <div className="rounded-2xl bg-[#FAFAFA] p-12 text-center text-[#455A64] border border-dashed border-gray-200">
+                                    <div className="rounded-[24px] bg-neutral-50 p-12 text-center text-sky-600 border border-dashed border-sky-200">
                                         <p className="text-4xl mb-2">📭</p>
                                         <p className="text-sm font-bold">No tienes alertas ni notificaciones en este momento.</p>
                                     </div>
@@ -373,30 +372,30 @@ const StudentProfilePage = () => {
                                     <div className="space-y-3">
                                         {notificaciones.map((n) => (
                                             <div key={n.id} className={`rounded-xl border p-4 transition-all duration-300 ${
-                                                !n.leido ? "border-[#FFA000]/40 bg-[#FFF8E1] shadow-sm" : "border-[#455A64]/10 bg-white"
+                                                !n.leido ? "border-primary-200 bg-primary-50/50 shadow-sm" : "border-sky-200 bg-sky-100"
                                             }`}>
-                                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                                <div className="flex flex-col !px-4 sm:flex-row sm:items-center sm:justify-between gap-4">
                                                     <div className="flex-1">
                                                         <div className="flex items-center gap-2 mb-1.5">
-                                                            {!n.leido && <span className="flex h-2 w-2 rounded-full bg-[#FFA000] inline-block animate-pulse" />}
-                                                            <span className="text-[10px] font-bold text-[#455A64] uppercase tracking-wider">
+                                                            {!n.leido && <span className="flex h-2 w-2 rounded-full bg-primary-500 inline-block animate-pulse" />}
+                                                            <span className="text-[10px] font-bold text-sky-600 uppercase tracking-wider">
                                                                 {!n.leido ? "Nueva" : "Leída"}
                                                             </span>
                                                         </div>
-                                                        <p className="text-sm text-[#212121] font-medium leading-relaxed">{n.mensaje}</p>
+                                                        <p className="text-sm text-neutral-800 font-medium leading-relaxed">{n.mensaje}</p>
                                                         {n.fechaCreacion && (
-                                                            <p className="mt-2 text-xs font-semibold text-[#455A64]/60">
+                                                            <p className="mt-2 text-xs font-semibold text-neutral-600">
                                                                 🕒 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
                                                             </p>
                                                         )}
                                                     </div>
                                                     <div className="flex gap-2 shrink-0 self-end sm:self-center">
                                                         {!n.leido && (
-                                                            <button type="button" onClick={() => markNotifRead(n)} className="rounded-lg bg-white border border-[#455A64]/20 px-3 py-1 text-xs font-bold text-[#455A64] hover:bg-[#ECEFF1] transition-colors cursor-pointer shadow-sm">
+                                                            <button type="button" onClick={() => markNotifRead(n)} className="rounded-lg bg-white border border-neutral-200 px-3 py-1 text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition-colors cursor-pointer shadow-sm">
                                                                 Marcar leída
                                                             </button>
                                                         )}
-                                                        <button type="button" onClick={() => deleteNotif(n.id)} className="rounded-lg bg-red-50 border border-red-200/30 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors cursor-pointer shadow-sm">
+                                                        <button type="button" onClick={() => deleteNotif(n.id)} className="rounded-lg bg-red-50 border border-red-200 px-3 py-1 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors cursor-pointer shadow-sm">
                                                             Eliminar
                                                         </button>
                                                     </div>

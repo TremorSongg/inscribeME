@@ -1,0 +1,37 @@
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+
+# Java / Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/
+.metadata/
+*.log
+dependency-reduced-pom.xml
+
+# IDEs and Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# System Files
+Thumbs.db
+db.crypt
+*.bak
+*~
+.DS_Store

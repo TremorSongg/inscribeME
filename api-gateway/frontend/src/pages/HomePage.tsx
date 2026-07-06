@@ -19,10 +19,10 @@ const HomePage = () => {
             {/* ── HERO ─────────────────────────────────────────── */}
             {/* CAMBIO CLAVE: Reemplazamos 'items-center' por 'items-start pt-16 md:pt-24' 
                 para empujar el contenido hacia arriba de forma controlada y natural */}
-            <section className="hero-bg min-h-[85vh] flex justify-center items-start pt-16 md:pt-24 relative w-full">
+            <section className="hero-bg min-h-[65vh] flex justify-center items-start pt-16 md:pt-24 relative w-full">
                 {/* Decorative circles */}
-                <div className="absolute top-16 right-12 h-64 w-64 rounded-full bg-[#FFA000]/6 blur-3xl pointer-events-none" />
-                <div className="absolute bottom-24 left-8 h-48 w-48 rounded-full bg-[#455A64]/20 blur-2xl pointer-events-none" />
+                <div className="absolute top-16 right-12 h-64 w-64 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
+                <div className="absolute bottom-24 left-8 h-48 w-48 rounded-full bg-sky-600/10 blur-2xl pointer-events-none" />
 
                 {/* Alivianamos el padding vertical interno reduciendo 'py-24' a 'pb-24 pt-6' */}
                 <div className="w-full max-w-7xl px-6 pt-6 pb-24 mx-auto">
@@ -79,7 +79,7 @@ const HomePage = () => {
             </div>
             
             {/* 2. Cursos: Sección del medio, solo lleva el espaciado de secciones estándar */}
-            <div id="cursos" className="w-full flex justify-center espaciado-secciones">
+            <div id="cursos" className="w-full flex justify-center espaciado-secciones py-20 px-6">
                 <SeccionCupos />
             </div>
             

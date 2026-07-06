@@ -52,50 +52,49 @@ const ProductPage = () => {
         precio === 0 ? "Gratis" : `$${precio.toLocaleString("es-CL")}`;
 
     return (
-        /* CAMBIO CLAVE: Añadimos items-center para centrar las secciones hijas en Ultra-wides */
-        <div className="flex min-h-screen flex-col bg-[#FAFAFA] text-[#212121] w-full items-center">
+        <div className="flex min-h-screen flex-col bg-neutral-50 text-neutral-800 font-sans w-full items-center">
             {/* Notificación flotante */}
             {notification && (
-                <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-[#37474F] px-6 py-4 text-white shadow-2xl animate-fadeInUp">
+                <div className="fixed bottom-6 right-6 z-50 rounded-2xl bg-neutral-900 border border-neutral-800 px-6 py-4 text-white shadow-2xl animate-fadeInUp flex items-center gap-2">
                     {notification}
                 </div>
             )}
 
-            {/* CAMBIO CLAVE: El main debe ser w-full y centrar sus elementos hijos */}
             <main className="flex-1 w-full flex flex-col items-center">
                 
-                {/* Hero */}
-                {/* CAMBIO CLAVE: Añadimos flex justify-center w-full */}
-                <section className="bg-[#37474F] px-6 py-20 text-[#FAFAFA] md:px-12 lg:px-20 w-full flex justify-center">
-                    <div className="w-full max-w-7xl mx-auto">
-                        <div className="max-w-3xl">
-                            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.25em] text-[#FFA000]">
+                {/* Hero Banner */}
+                <section className="relative overflow-hidden px-6 py-24 text-white w-full flex justify-center" style={{background: 'linear-gradient(135deg, #00395C 0%, #006397 50%, #0284C7 100%)'}}>
+                    <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.15) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(14,165,233,0.2) 0%, transparent 50%)'}} />
+                    
+                    <div className="relative z-10 w-full max-w-7xl mx-auto flex justify-center">
+                        <div className="max-w-3xl text-center mx-auto">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/15 text-xs font-bold text-sky-200 uppercase tracking-wide mb-4 border border-white/10">
                                 Actividades disponibles
-                            </p>
-                            <h1 className="mb-6 text-4xl font-bold leading-tight md:text-5xl">
+                            </span>
+
+                            <h1 className="mb-6 text-4xl font-extrabold text-sky-200 leading-tight md:text-5xl font-display">
                                 Explora nuestras actividades e inscríbete fácilmente.
                             </h1>
-                            <p className="text-lg leading-8 text-[#FAFAFA]/90">
-                                Encuentra talleres, deportes y actividades recreativas disponibles.
-                                Revisa los cupos, fechas y detalles antes de participar.
+
+                            <p className="text-lg leading-relaxed text-sky-100">
+                                Encuentra talleres, deportes y actividades recreativas disponibles. Revisa los cupos, fechas y detalles antes de participar.
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* Filtros */}
-                {/* CAMBIO CLAVE: Sticky ahora usa flex justify-center w-full */}
-                <section className="sticky top-16 z-30 border-b border-[#455A64]/10 bg-white px-6 py-4 shadow-sm md:px-12 lg:px-20 w-full flex justify-center">
-                    <div className="w-full max-w-7xl mx-auto flex gap-2 overflow-x-auto pb-1">
+                {/* Filtros Sticky */}
+                <section className="sticky top-20 z-30 border-b border-sky-100 bg-white/95 backdrop-blur-md px-6 !py-4 shadow-sm w-full flex justify-center">
+                    <div className="w-full max-w-7xl mx-auto flex justify-center gap-12 overflow-x-auto pb-1 scrollbar-none text-sm">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat}
                                 id={`filter-${cat.toLowerCase()}`}
                                 onClick={() => setSelectedCategory(cat)}
-                                className={`rounded-full px-5 py-2 text-sm font-semibold whitespace-nowrap transition-all ${
+                                className={`rounded-full px-5 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                                     selectedCategory === cat
-                                        ? "bg-[#37474F] text-white shadow-md"
-                                        : "bg-[#FAFAFA] text-[#455A64] hover:bg-[#ECEFF1]"
+                                        ? "bg-sky-600 text-white shadow-sm"
+                                        : "bg-sky-50 text-sky-700 hover:bg-sky-100"
                                 }`}
                             >
                                 {cat}
@@ -105,24 +104,24 @@ const ProductPage = () => {
                 </section>
 
                 {/* Grid de cursos */}
-                {/* CAMBIO CLAVE: Añadimos flex justify-center w-full */}
-                <section className="px-6 py-16 md:px-12 lg:px-20 w-full flex justify-center">
+                <section className="px-6 py-16 w-full flex justify-center">
                     <div className="w-full max-w-7xl mx-auto">
+                        
                         {loading && (
-                            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                                 {[1, 2, 3, 4, 5, 6].map((i) => (
-                                    <div key={i} className="h-80 animate-pulse rounded-2xl bg-gray-200" />
+                                    <div key={i} className="h-96 animate-pulse rounded-3xl bg-neutral-200" />
                                 ))}
                             </div>
                         )}
 
                         {error && (
-                            <div className="rounded-2xl bg-red-50 border border-red-200 p-10 text-center">
+                            <div className="rounded-3xl border border-red-200 bg-red-50/50 p-10 text-center max-w-md mx-auto shadow-sm">
                                 <p className="text-3xl mb-2">⚠️</p>
-                                <p className="font-bold text-red-700">{error}</p>
+                                <p className="font-bold text-red-700 font-display">{error}</p>
                                 <button
                                     onClick={() => { setLoading(true); setError(null); cursosService.listar().then(setCourses).finally(() => setLoading(false)); }}
-                                    className="mt-4 rounded-xl bg-red-100 px-5 py-2 text-sm font-semibold text-red-700 hover:bg-red-200 transition"
+                                    className="mt-4 rounded-full bg-red-100 px-6 py-2.5 text-sm font-bold text-red-700 hover:bg-red-200 transition cursor-pointer"
                                 >
                                     Reintentar
                                 </button>
@@ -131,18 +130,18 @@ const ProductPage = () => {
 
                         {!loading && !error && (
                             <>
-                                <p className="mb-8 text-sm text-[#455A64]">
-                                    Mostrando <strong>{filtered.length}</strong> actividades
+                                <p className="mb-8 text-sm text-neutral-700 font-medium pl-1">
+                                    Mostrando <strong className="text-neutral-800">{filtered.length}</strong> actividades
                                     {selectedCategory !== "Todos" && ` en "${selectedCategory}"`}
                                 </p>
 
                                 {filtered.length === 0 ? (
-                                    <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
-                                        <p className="text-4xl mb-3">📭</p>
-                                        <p className="font-bold text-[#37474F]">Sin cursos en esta categoría</p>
+                                    <div className="rounded-3xl border border-neutral-200 bg-white p-16 text-center shadow-[0_2px_8px_rgba(0,0,0,0.01)] max-w-md mx-auto">
+                                        <div className="text-4xl mb-4">📭</div>
+                                        <h3 className="text-lg font-bold text-neutral-900 font-display">Sin cursos en esta categoría</h3>
                                     </div>
                                 ) : (
-                                    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                    <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                                         {filtered.map((course) => {
                                             const inCart = cartIds.includes(course.id);
                                             const icon = getIcon(course.nombre);
@@ -150,49 +149,53 @@ const ProductPage = () => {
                                             return (
                                                 <article
                                                     key={course.id}
-                                                    className="group flex h-full flex-col rounded-2xl border border-[#455A64]/10 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-[0_12px_28px_rgba(33,33,33,0.15)]"
+                                                    className="group flex h-full flex-col rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20"
                                                 >
                                                     <div className="mb-5 flex items-center justify-between">
-                                                        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FFA000]/20 text-3xl">
+                                                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-3xl shadow-inner">
                                                             {icon}
                                                         </div>
-                                                        <span className="rounded-full bg-[#37474F] px-3 py-1 text-xs font-semibold text-[#FAFAFA]">
+                                                        <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-600">
                                                             {category}
                                                         </span>
                                                     </div>
 
-                                                    <h3 className="mb-2 text-xl font-bold text-[#37474F]">
+                                                    <h3 className="mb-2 text-xl font-bold text-neutral-900 font-display">
                                                         {course.nombre}
                                                     </h3>
-                                                    <p className="mb-5 flex-1 text-sm leading-7 text-[#455A64]">
+                                                    
+                                                    <p className="mb-4 text-sm leading-relaxed text-neutral-700 flex-1">
                                                         {course.descripcion}
                                                     </p>
-                                                    <p className="mb-4 text-xs text-[#455A64]">
-                                                        👨‍🏫 <span className="font-medium">{course.nombreInstructor}</span>
+                                                    
+                                                    <p className="mb-4 text-xs font-medium text-neutral-700 flex items-center gap-1.5">
+                                                        <i className="ti ti-school text-primary-500 text-base"></i>
+                                                        <span>Instructor: <strong className="text-neutral-800 font-semibold">{course.nombreInstructor}</strong></span>
                                                     </p>
 
-                                                    <div className="mb-5 space-y-2 border-t border-[#455A64]/10 pt-4 text-sm">
+                                                    {/* Detalles */}
+                                                    <div className="mb-5 space-y-2 border-t border-neutral-100 pt-4 text-xs">
                                                         <div className="flex justify-between">
-                                                            <span className="text-[#455A64]">Inicio</span>
-                                                            <span className="font-semibold">
+                                                            <span className="font-medium text-neutral-700">Inicio</span>
+                                                            <span className="font-semibold text-neutral-800">
                                                                 {course.fechaInicio ? new Date(course.fechaInicio).toLocaleDateString("es-CL") : "—"}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-[#455A64]">Término</span>
-                                                            <span className="font-semibold">
+                                                            <span className="font-medium text-neutral-700">Término</span>
+                                                            <span className="font-semibold text-neutral-800">
                                                                 {course.fechaFin ? new Date(course.fechaFin).toLocaleDateString("es-CL") : "—"}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-[#455A64]">Cupos</span>
-                                                            <span className={`font-semibold ${course.cupoDisponible <= 5 ? "text-red-600" : "text-green-600"}`}>
+                                                            <span className="font-medium text-neutral-700">Cupos</span>
+                                                            <span className={`font-bold ${course.cupoDisponible <= 5 ? "text-red-600" : "text-green-600"}`}>
                                                                 {course.cupoDisponible}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-[#455A64]">Valor</span>
-                                                            <span className="font-bold text-[#37474F]">{formatPrecio(course.precio)}</span>
+                                                            <span className="font-medium text-neutral-700">Valor</span>
+                                                            <span className="font-bold text-neutral-900 text-sm">{formatPrecio(course.precio)}</span>
                                                         </div>
                                                     </div>
 
@@ -202,12 +205,12 @@ const ProductPage = () => {
                                                             type="button"
                                                             onClick={() => handleAddToCart(course)}
                                                             disabled={inCart || course.cupoDisponible === 0}
-                                                            className={`mt-auto rounded-xl px-5 py-3 text-sm font-semibold transition ${
+                                                            className={`mt-auto rounded-full px-5 py-3.5 text-sm font-bold transition-all duration-200 cursor-pointer text-center ${
                                                                 inCart
-                                                                    ? "bg-green-100 text-green-700 cursor-default"
+                                                                    ? "bg-green-50 text-green-700 border border-green-200 cursor-default"
                                                                     : course.cupoDisponible === 0
-                                                                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                                                                        : "bg-[#FFA000] text-[#212121] hover:bg-[#ffb300] hover:-translate-y-0.5 shadow-md"
+                                                                        ? "bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed shadow-none"
+                                                                        : "btn btn-primary shadow-md hover:shadow-lg hover:-translate-y-0.5"
                                                             }`}
                                                         >
                                                             {inCart
@@ -217,7 +220,7 @@ const ProductPage = () => {
                                                                     : "Agregar al carrito"}
                                                         </button>
                                                     ) : (
-                                                        <div className="mt-auto rounded-xl bg-[#ECEFF1] px-5 py-3 text-center text-xs font-medium text-[#455A64]">
+                                                        <div className="mt-auto rounded-2xl bg-neutral-100 border border-neutral-200 py-3 text-center text-xs font-semibold text-neutral-500">
                                                             Vista de {user?.role === "INSTRUCTOR" ? "instructor" : "administrador"}
                                                         </div>
                                                     )}
@@ -228,6 +231,7 @@ const ProductPage = () => {
                                 )}
                             </>
                         )}
+
                     </div>
                 </section>
             </main>

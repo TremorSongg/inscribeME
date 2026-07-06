@@ -1,8 +1,0 @@
-com\inscribeme\cursos\dto\CursoDTO.class
-com\inscribeme\cursos\model\Curso$CursoBuilder.class
-com\inscribeme\cursos\repository\CursoRepository.class
-com\inscribeme\cursos\model\Curso.class
-com\inscribeme\cursos\dto\CursoDTO$CursoDTOBuilder.class
-com\inscribeme\cursos\ServicioCursosApplication.class
-com\inscribeme\cursos\service\CursoService.class
-com\inscribeme\cursos\controller\CursoController.class

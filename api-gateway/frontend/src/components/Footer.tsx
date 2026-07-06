@@ -1,83 +1,80 @@
 import { Link } from "react-router-dom";
 
-const Footer = () => (
-    /* CAMBIO CLAVE: Añadimos w-full flex flex-col items-center para que el footer 
-       y todo lo que tenga dentro se centre matemáticamente en pantallas ultra-wide */
-    <footer className="bg-[#1C2B33] text-white w-full flex flex-col items-center">
-        
-        {/* Main */}
-        {/* CAMBIO CLAVE: Añadimos w-full para que el max-w-7xl funcione correctamente con mx-auto */}
-        <div className="separador-hero-contenido2 separador-contenido-footer2 w-full max-w-7xl px-6 pt-40 pb-100 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 justify-items-center text-center sm:text-left">
-            
-            {/* Brand */}
-            <div className="lg:col-span-2 flex flex-col items-center sm:items-start">
-                <div className="flex items-center gap-2 mb-4">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#FFA000] text-[#1C2B33] font-black text-lg">I</div>
-                    <span className="text-xl font-black tracking-tight">InscribeMe</span>
+const Footer = () => {
+    return (
+        <section className="mt-16 bg-gradient-to-b from-sky-50 to-white border-t-2 border-sky-100 py-16 px-6 md:px-12 lg:px-20 font-sans text-neutral-800 w-full flex flex-col items-center">
+            <div className="w-full max-w-7xl">
+                <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4 pb-12">
+                    
+                    {/* Brand Column */}
+                    <div className="flex flex-col gap-4 lg:col-span-2">
+                        <Link to="/" className="flex items-center gap-2">
+                            <div className="flex h-9 w-9 items-center justify-center rounded-xl font-black text-white text-sm shadow-md transition-transform hover:scale-105 duration-200" style={{background: 'linear-gradient(135deg, #006397, #0EA5E9)'}}>
+                                IM
+                            </div>
+                            <span className="text-xl font-bold tracking-tight text-neutral-900 font-display">
+                                Inscribe<span className="text-sky-600">Me</span>
+                            </span>
+                        </Link>
+                        <p className="text-sm text-neutral-700 max-w-sm leading-relaxed">
+                            Academia deportiva y cultural que conecta estudiantes con instructores de excelencia. Transformamos energía en logros.
+                        </p>
+                        <span className="text-xs font-bold text-neutral-600">v1.0.0</span>
+                    </div>
+
+                    {/* Navigation Column */}
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-sm font-bold text-neutral-900 uppercase tracking-wider font-display">Navegación</h4>
+                        <ul className="space-y-3 text-sm">
+                            <li><Link to="/" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Inicio</Link></li>
+                            <li><Link to="/cursos" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Cursos</Link></li>
+                            <li><Link to="/nosotros" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Nosotros</Link></li>
+                            <li><Link to="/login" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Iniciar sesión</Link></li>
+                            <li><Link to="/registro" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Registrarse</Link></li>
+                        </ul>
+                    </div>
+
+                    {/* Contact Column */}
+                    <div className="flex flex-col gap-4">
+                        <h4 className="text-sm font-bold text-neutral-900 uppercase tracking-wider font-display">Contacto</h4>
+                        <ul className="space-y-3 text-sm">
+                            <li className="flex items-start gap-2 text-neutral-800">
+                                <i className="ti ti-map-pin text-lg text-sky-600 mt-0.5"></i>
+                                <span>Av. Deportes 1234,<br />Santiago, Chile</span>
+                            </li>
+                            <li className="flex items-center gap-2 text-neutral-800">
+                                <i className="ti ti-phone text-lg text-sky-600"></i>
+                                <a href="tel:+56912345678" className="hover:text-sky-600 transition-all duration-300 font-medium">+56 9 1234 5678</a>
+                            </li>
+                            <li className="flex items-center gap-2 text-neutral-800">
+                                <i className="ti ti-mail text-lg text-sky-600"></i>
+                                <a href="mailto:hola@inscribeme.cl" className="hover:text-sky-600 transition-all duration-300 font-medium">hola@inscribeme.cl</a>
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
-                <p className="text-white/50 text-sm leading-relaxed max-w-xs">
-                    Academia deportiva y cultural que conecta estudiantes con instructores de excelencia. Transformamos energía en logros.
-                </p>
-                <div className="mt-6 flex gap-3">
-                    {["📸", "🐦", "📘", "📺"].map((icon, i) => (
-                        <div key={i}
-                            className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 text-sm hover:bg-[#FFA000]/20 hover:scale-110 transition-all cursor-pointer">
-                            {icon}
+
+                {/* Bottom section with copyright and social links */}
+                <div className="bg-sky-50 rounded-3xl sm:rounded-[32px] border border-sky-100 mt-6">
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 sm:py-4 sm:px-8">
+                        <span className="text-xs font-semibold text-neutral-700">
+                            Copyright © {new Date().getFullYear()} <span className="font-bold text-sky-600">InscribeMe</span>. Todos los derechos reservados.
+                        </span>
+                        
+                        {/* Social icons using Tabler icons */}
+                        <div className="flex gap-2 text-xl">
+                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="LinkedIn"><i className="ti ti-brand-linkedin"></i></a>
+                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Facebook"><i className="ti ti-brand-facebook"></i></a>
+                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Instagram"><i className="ti ti-brand-instagram"></i></a>
+                            <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="GitHub"><i className="ti ti-brand-github"></i></a>
                         </div>
-                    ))}
+                    </div>
                 </div>
-            </div>
 
-            {/* Links */}
-            <div>
-                <p className="mb-5 text-xs font-bold uppercase tracking-widest text-[#FFA000]">Navegación</p>
-                <ul className="space-y-3 text-sm text-white/55">
-                    {[
-                        { to: "/", label: "Inicio" },
-                        { to: "/cursos", label: "Cursos" },
-                        { to: "/nosotros", label: "Nosotros" },
-                        { to: "/login", label: "Iniciar sesión" },
-                        { to: "/registro", label: "Registrarse" },
-                    ].map(l => (
-                        <li key={l.to}>
-                            <Link to={l.to} className="hover:text-[#FFA000] transition-colors">{l.label}</Link>
-                        </li>
-                    ))}
-                </ul>
             </div>
-
-            {/* Contact */}
-            <div className="flex flex-col items-center sm:items-start">
-                <p className="mb-5 text-xs font-bold uppercase tracking-widest text-[#FFA000]">Contacto</p>
-                <ul className="space-y-3 text-sm text-white/55 flex flex-col items-center sm:items-start">
-                    <li className="flex items-start gap-2 text-center sm:text-left">
-                        <span>📍</span>
-                        <span>Av. Deportes 1234,<br />Santiago, Chile</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <span>📞</span>
-                        <span>+56 9 1234 5678</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <span>✉️</span>
-                        <span>hola@inscribeme.cl</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        {/* Bottom bar */}
-        {/* CAMBIO CLAVE: Añadimos 'flex justify-center' aquí para que el contenedor 
-            exterior obligue a su contenido a posicionarse en el centro del monitor */}
-        <div className="border-t border-white/8 px-6 py-5 w-full flex justify-center">
-            
-            {/* CAMBIO CLAVE: Cambiamos 'mx-auto' y añadimos 'justify-center' real con flex */}
-            <div className="w-full max-w-7xl flex flex-col sm:flex-row items-center justify-center gap-x-8 gap-y-2 text-xs text-white/30 text-center">
-                <p>© {new Date().getFullYear()} InscribeMe. Todos los derechos reservados.</p>
-                <p>Hecho con ❤️ en Chile</p>
-            </div>
-        </div>
-    </footer>
-);
+        </section>
+    );
+};
 
 export default Footer;

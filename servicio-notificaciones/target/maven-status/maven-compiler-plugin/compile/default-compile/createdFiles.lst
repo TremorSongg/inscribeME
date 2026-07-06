@@ -1,8 +1,0 @@
-com\inscribeme\notificaciones\controller\NotificacionController.class
-com\inscribeme\notificaciones\dto\NotificacionDTO$NotificacionDTOBuilder.class
-com\inscribeme\notificaciones\dto\NotificacionDTO.class
-com\inscribeme\notificaciones\model\Notificacion$NotificacionBuilder.class
-com\inscribeme\notificaciones\repository\NotificacionRepository.class
-com\inscribeme\notificaciones\model\Notificacion.class
-com\inscribeme\notificaciones\service\NotificacionService.class
-com\inscribeme\notificaciones\ServicioNotificacionesApplication.class

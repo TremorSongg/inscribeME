@@ -45,15 +45,15 @@ const VoucherPanel = ({ items, total, user }: Props) => {
   };
 
   return (
-    <div className="mt-6 border-t border-gray-100 pt-6 space-y-5">
+    <div className="mt-6 border-t border-neutral-100 pt-6 space-y-5">
 
       {/* ── QR Preview ──────────────────────────────────────────── */}
       <div className="flex flex-col items-center gap-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-[#FFA000]">
+        <p className="text-xs font-bold uppercase tracking-widest text-primary-500 font-display">
           Código QR del Voucher
         </p>
 
-        <div className="flex h-[160px] w-[160px] items-center justify-center rounded-2xl border border-gray-100 bg-[#FAFAFA] shadow-inner">
+        <div className="flex h-[160px] w-[160px] items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 shadow-inner">
           {items.length > 0 ? (
             <canvas
               ref={canvasRef}
@@ -66,7 +66,7 @@ const VoucherPanel = ({ items, total, user }: Props) => {
         </div>
 
         {ready && (
-          <p className="text-center text-[11px] font-medium leading-relaxed text-[#455A64]/80">
+          <p className="text-center text-[11px] font-medium leading-relaxed text-neutral-400">
             El cajero escaneará este código para verificar tu voucher.
           </p>
         )}
@@ -81,12 +81,12 @@ const VoucherPanel = ({ items, total, user }: Props) => {
         aria-label="Descargar voucher de pago en PDF"
         className={`
           w-full flex items-center justify-center gap-2.5
-          rounded-xl py-3.5 font-black text-sm shadow-md transition-all duration-200
+          btn py-3.5 font-bold transition-all duration-200
           ${items.length === 0
-            ? "cursor-not-allowed bg-gray-100 text-gray-400"
+            ? "cursor-not-allowed bg-neutral-100 text-neutral-400 border-neutral-200"
             : generating
-            ? "cursor-wait bg-[#37474F]/70 text-white"
-            : "bg-[#37474F] text-white shadow-[#37474F]/20 hover:bg-[#455A64] hover:-translate-y-0.5 hover:shadow-lg active:scale-95"
+            ? "cursor-wait bg-neutral-800 text-white border-neutral-800"
+            : "btn-primary shadow-sm"
           }
         `}
       >
@@ -114,9 +114,11 @@ const VoucherPanel = ({ items, total, user }: Props) => {
 
       {/* ── Aviso validez ────────────────────────────────────────── */}
       {items.length > 0 && (
-        <div className="rounded-xl border border-[#FFA000]/20 bg-[#FFA000]/5 p-3.5">
-          <p className="text-xs font-bold text-[#FFA000]">⚠ Importante</p>
-          <p className="mt-1 text-[11px] font-medium leading-relaxed text-[#455A64]/80">
+        <div className="rounded-[24px] border border-orange-200 bg-orange-50/50 p-4 text-left">
+          <p className="text-xs font-bold text-orange-800 flex items-center gap-1">
+            <span className="text-sm">⚠️</span> Importante
+          </p>
+          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-orange-700">
             El voucher es válido por <strong>5 días hábiles</strong>. Preséntalo
             impreso o en pantalla en horario de caja.
           </p>

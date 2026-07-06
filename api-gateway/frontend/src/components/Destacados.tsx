@@ -22,47 +22,45 @@ const features = [
 ];
 
 const Destacados = () => (
-    <section className="bg-white py-16 px-6 w-full flex justify-center">
+    <section className="bg-white py-29 px-6 w-full flex justify-center border-t border-sky-50 font-sans text-neutral-800">
         <div className="w-full max-w-7xl mx-auto">
             
-            {/* Heading — Formateado en sintonía con las demás secciones */}
+            {/* Heading */}
             <div className="mb-16 text-center animate-fadeInUp flex flex-col items-center">
-                {/* Escalamos la etiqueta superior a text-sm e incrementamos el tracking */}
-                <p className="section-label mb-4 text-sm tracking-[0.2em]">
-                    ¿Por qué elegirnos?
-                </p>
-                {/* Agrandamos el título a text-4xl y md:text-6xl para igualar el impacto del Hero */}
-                <h2 className="text-4xl font-black leading-tight text-[#37474F] md:text-6xl">
-                    Todo lo que necesitas<br />
-                    <span className="text-gradient">para crecer.</span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-xs font-bold text-sky-600 uppercase tracking-wide mb-4">
+                    ✨ ¿Por qué elegirnos?
+                </span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-neutral-900 md:text-4xl font-display">
+                    Todo lo que necesitas para crecer
                 </h2>
-                {/* Subimos a text-lg/md:text-xl y aseguramos el centrado exacto con mx-auto */}
-                <p className="mt-6 text-lg md:text-xl leading-relaxed text-[#455A64] max-w-2xl mx-auto">
+                <p className="mt-3 text-neutral-700 max-w-xl mx-auto text-sm">
                     InscribeMe reúne las herramientas, el talento y la comunidad para que alcances tus metas.
                 </p>
             </div>
 
-            {/* Cards — Mantienen el espaciado premium y balanceado */}
-            <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Cards Grid */}
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                 {features.map((f, i) => (
-                    <div key={f.title}
-                        className="group card p-8 animate-fadeInUp flex flex-col justify-between"
+                    <article key={f.title}
+                        className="group relative rounded-3xl border border-sky-100 bg-white p-8 text-center shadow-[0_2px_16px_rgba(0,99,151,0.06)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,99,151,0.12)] hover:border-sky-300"
                         style={{ animationDelay: `${i * 90}ms` }}>
                         
-                        <div>
-                            {/* El icono del feature */}
-                            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#37474F] to-[#455A64] text-2xl shadow-md transition-transform group-hover:scale-110 duration-300">
-                                {f.icon}
-                            </div>
-                            
-                            {/* Textos de la tarjeta */}
-                            <h3 className="mb-3 text-xl font-bold text-[#37474F]">{f.title}</h3>
-                            <p className="text-sm leading-relaxed text-[#455A64]">{f.desc}</p>
+                        {/* Icon Container */}
+                        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-sky-50 text-2xl transition-all duration-300 group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white shadow-inner">
+                            {f.icon}
                         </div>
                         
-                        {/* Línea decorativa animada amarilla al hacer hover */}
-                        <div className="mt-6 h-0.5 w-0 bg-[#FFA000] transition-all duration-500 group-hover:w-full rounded-full" />
-                    </div>
+                        {/* Text Content */}
+                        <h3 className="mb-3 text-lg font-bold text-neutral-900 font-display">
+                            {f.title}
+                        </h3>
+                        <p className="text-sm leading-relaxed text-neutral-700">
+                            {f.desc}
+                        </p>
+                        
+                        {/* Decorative Bottom Bar on Hover */}
+                        <div className="absolute bottom-0 inset-x-0 h-1 rounded-b-3xl bg-gradient-to-r from-sky-500 to-blue-500 scale-x-0 transition-transform duration-300 group-hover:scale-x-100" />
+                    </article>
                 ))}
             </div>
         </div>

@@ -67,8 +67,8 @@ const RegisterForm = () => {
     };
 
     const fieldClass = (field: keyof RegisterFields) => {
-        const base = "w-full rounded-xl border px-4 py-3 outline-none transition focus:ring-2";
-        if (!touched[field]) return `${base} border-gray-300 focus:border-[#FFA000] focus:ring-[#FFA000]/30`;
+        const base = "w-full rounded-2xl border px-4 py-3.5 outline-none transition focus:ring-2";
+        if (!touched[field]) return `${base} border-neutral-300 focus:border-primary-500 focus:ring-primary-500/30`;
         if (errors[field]) return `${base} input-error focus:ring-red-200`;
         return `${base} input-valid focus:ring-green-200`;
     };
@@ -123,7 +123,7 @@ const RegisterForm = () => {
 
     return (
         /* CAMBIO CLAVE: Agregamos la clase 'relative' a la tarjeta para fijar posicionalmente el búho arriba */
-        <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+        <div className="relative w-full max-w-md rounded-[24px] border border-neutral-200 bg-white p-8 shadow-xl">
             
             {/* ── COMPONENTE BÚHO INTERACTIVO RECONFIGURADO ────────────────── */}
             <div className={`owl-wrapper ${isBlind ? "owl-blind" : ""}`}>
@@ -135,10 +135,10 @@ const RegisterForm = () => {
                 </div>
             </div>
 
-            <h1 className="mb-2 text-center text-3xl font-bold text-[#37474F]">
+            <h1 className="mb-2 text-center text-3xl font-extrabold text-[#497a96] font-display">
                 Crear cuenta
             </h1>
-            <p className="mb-6 text-center text-sm text-[#455A64]">
+            <p className="mb-6 text-center text-sm text-[#497a96]">
                 Únete a InscribeMe y empieza a inscribirte
             </p>
 
@@ -150,10 +150,10 @@ const RegisterForm = () => {
                         type="button"
                         id={`btn-role-${opt.value.toLowerCase()}`}
                         onClick={() => handleChange("role", opt.value)}
-                        className={`rounded-xl border-2 px-4 py-3 text-sm font-semibold transition-all cursor-pointer flex flex-col items-center justify-center ${
+                        className={`rounded-2xl border-2 px-4 py-3 text-sm font-semibold transition-all cursor-pointer flex flex-col items-center justify-center ${
                             form.role === opt.value
-                                ? "border-[#FFA000] bg-[#FFA000]/10 text-[#37474F]"
-                                : "border-gray-200 text-[#455A64] hover:border-[#FFA000]/50"
+                                ? "border-primary-500 bg-primary-50 text-primary-700"
+                                : "border-neutral-200 text-neutral-500 hover:border-primary-500/50"
                         }`}
                     >
                         <div className="text-xl mb-1">{opt.emoji}</div>
@@ -171,7 +171,7 @@ const RegisterForm = () => {
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {/* Username */}
                 <div className="text-left">
-                    <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Nombre completo</label>
+                    <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Nombre completo</label>
                     <input
                         id="input-username-register"
                         type="text"
@@ -186,7 +186,7 @@ const RegisterForm = () => {
 
                 {/* Email */}
                 <div className="text-left">
-                    <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Correo electrónico</label>
+                    <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Correo electrónico</label>
                     <input
                         id="input-email-register"
                         type="email"
@@ -201,7 +201,7 @@ const RegisterForm = () => {
 
                 {/* Teléfono */}
                 <div className="text-left">
-                    <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Teléfono</label>
+                    <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Teléfono</label>
                     <input
                         id="input-phone-register"
                         type="tel"
@@ -216,7 +216,7 @@ const RegisterForm = () => {
 
                 {/* Contraseña */}
                 <div className="text-left">
-                    <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Contraseña</label>
+                    <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Contraseña</label>
                     <div className="relative">
                         <input
                             id="input-password-register"
@@ -234,7 +234,7 @@ const RegisterForm = () => {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
                             aria-label="Ver contraseña"
                         >
                             {showPassword ? "🙈" : "👁️"}
@@ -245,7 +245,7 @@ const RegisterForm = () => {
 
                 {/* Confirmar contraseña */}
                 <div className="text-left">
-                    <label className="mb-1.5 block text-sm font-semibold text-[#37474F]">Confirmar contraseña</label>
+                    <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Confirmar contraseña</label>
                     <div className="relative">
                         <input
                             id="input-confirm-password-register"
@@ -263,7 +263,7 @@ const RegisterForm = () => {
                         <button
                             type="button"
                             onClick={() => setShowConfirm(!showConfirm)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
                             aria-label="Ver confirmación"
                         >
                             {showConfirm ? "🙈" : "👁️"}
@@ -278,15 +278,15 @@ const RegisterForm = () => {
                     id="btn-submit-register"
                     type="submit"
                     disabled={loading}
-                    className="mt-4 w-full rounded-xl bg-[#FFA000] px-6 py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:transform-none cursor-pointer"
+                    className="mt-4 w-full btn btn-primary py-3.5 font-bold transition-all duration-200 disabled:opacity-60 disabled:transform-none cursor-pointer"
                 >
                     {loading ? "Creando cuenta..." : "Crear cuenta →"}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#455A64] font-medium">
+            <p className="mt-6 text-center text-sm text-[#d69c1d] font-medium">
                 ¿Ya tienes cuenta?{" "}
-                <Link to="/login" id="link-to-login" className="font-bold text-[#FFA000] hover:underline">
+                <Link to="/login" id="link-to-login" className="font-bold text-primary-500 hover:underline">
                     Iniciar sesión
                 </Link>
             </p>

@@ -1,9 +1,0 @@
-com\inscribeme\inscripciones\controller\InscripcionController.class
-com\inscribeme\inscripciones\repository\InscripcionRepository.class
-com\inscribeme\inscripciones\model\EstadoInscripcion.class
-com\inscribeme\inscripciones\model\Inscripcion$InscripcionBuilder.class
-com\inscribeme\inscripciones\service\InscripcionService.class
-com\inscribeme\inscripciones\dto\InscripcionDTO.class
-com\inscribeme\inscripciones\ServicioInscripcionesApplication.class
-com\inscribeme\inscripciones\dto\InscripcionDTO$InscripcionDTOBuilder.class
-com\inscribeme\inscripciones\model\Inscripcion.class

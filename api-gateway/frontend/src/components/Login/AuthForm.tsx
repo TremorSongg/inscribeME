@@ -75,7 +75,7 @@ const AuthForm = () => {
 
     return (
         /* CAMBIO CLAVE: Agregamos la clase 'relative' a la tarjeta para que sirva de anclaje posicional al búho */
-        <div className="relative w-full max-w-md rounded-2xl bg-white p-8 shadow-xl">
+        <div className="relative w-full max-w-5xl mx-auto rounded-[14px] border border-neutral-200 bg-white p-8 shadow-xl">
             
             {/* ── COMPONENTE BÚHO INTERACTIVO ────────────────────────────── */}
             {/* Se monta en el borde superior y se activa dinámicamente con la clase owl-blind */}
@@ -88,11 +88,11 @@ const AuthForm = () => {
                 </div>
             </div>
 
-            <h1 className="mb-2 text-center text-3xl font-bold text-[#37474F]">
+            <h1 className="mb-2 text-center text-3xl font-extrabold text-primary-600 font-display">
                 Iniciar Sesión
             </h1>
-            <p className="mb-6 text-center text-sm text-[#455A64]">
-                Bienvenido de vuelta a InscribeMe
+            <p className="mb-6 text-center text-lg text-[#497a96] ">
+                Bienvenido a InscribeMe
             </p>
 
             {loginError && (
@@ -103,8 +103,8 @@ const AuthForm = () => {
 
             <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                 {/* Email */}
-                <div className="text-left">
-                    <label className="mb-2 block text-sm font-semibold text-[#37474F]">
+                <div className="text-center">
+                    <label className="mb-2 block text-center text-sm font-semibold text-[#497a96]">
                         Correo electrónico
                     </label>
                     <input
@@ -114,12 +114,12 @@ const AuthForm = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         onBlur={() => handleBlur("email")}
                         placeholder="ejemplo@correo.cl"
-                        className={`w-full rounded-xl border px-4 py-3 outline-none transition focus:ring-2 ${
+                        className={`w-full rounded-2xl border px-4 py-3.5 outline-none transition focus:ring-2 ${
                             touched.email && errors.email
                                 ? "input-error focus:ring-red-200"
                                 : touched.email && !errors.email
                                 ? "input-valid focus:ring-green-200"
-                                : "border-gray-300 focus:border-[#FFA000] focus:ring-[#FFA000]/30"
+                                : "border-neutral-300 focus:border-primary-500 focus:ring-primary-500/30"
                         }`}
                     />
                     {touched.email && errors.email && (
@@ -129,7 +129,7 @@ const AuthForm = () => {
 
                 {/* Contraseña */}
                 <div className="text-left">
-                    <label className="mb-2 block text-sm font-semibold text-[#37474F]">
+                    <label className="mb-2 text-center block text-sm font-semibold text-[#497a96]">
                         Contraseña
                     </label>
                     <div className="relative">
@@ -144,18 +144,18 @@ const AuthForm = () => {
                             onBlur={() => handleBlur("password")}
                             
                             placeholder="Mínimo 6 caracteres"
-                            className={`w-full rounded-xl border px-4 py-3 pr-12 outline-none transition focus:ring-2 ${
+                            className={`w-full rounded-2xl border px-4 py-3.5 pr-12 outline-none transition focus:ring-2 ${
                                 touched.password && errors.password
                                     ? "input-error focus:ring-red-200"
                                     : touched.password && !errors.password
                                     ? "input-valid focus:ring-green-200"
-                                    : "border-gray-300 focus:border-[#FFA000] focus:ring-[#FFA000]/30"
+                                    : "border-neutral-300 focus:border-primary-500 focus:ring-primary-500/30"
                             }`}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#455A64] hover:text-[#37474F] cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 cursor-pointer"
                             aria-label="Mostrar/ocultar contraseña"
                         >
                             {showPassword ? "🙈" : "👁️"}
@@ -170,27 +170,28 @@ const AuthForm = () => {
                     id="btn-submit-login"
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-xl bg-[#FFA000] py-3 font-black text-[#212121] shadow-lg shadow-[#FFA000]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#ffb300] disabled:opacity-60 disabled:transform-none cursor-pointer"
+                    className="w-full btn btn-primary !py-3.5 font-bold transition-all duration-200 disabled:opacity-60 disabled:transform-none cursor-pointer"
                 >
                     {loading ? "Iniciando sesión..." : "Iniciar sesión →"}
                 </button>
             </form>
 
-            <p className="mt-6 text-center text-sm text-[#455A64] font-medium">
+            <p className="mt-6 text-center text-sm text-[#e08917] font-medium">
                 ¿No tienes cuenta?{" "}
+
                 <Link
                     to="/registro"
                     id="link-to-register"
-                    className="font-bold text-[#FFA000] hover:underline"
+                    className="font-bold text-primary-500 hover:underline"
                 >
                     Regístrate aquí
                 </Link>
             </p>
 
             {/* Credenciales de demo */}
-            <div className="mt-5 rounded-xl bg-blue-50 border border-blue-200 p-4 text-left">
-                <p className="text-xs font-bold text-blue-700 mb-2">🔑 Usuarios de prueba:</p>
-                <div className="space-y-1 text-xs text-blue-600">
+            <div className="mt-5 rounded-2xl bg-primary-50 border border-primary-100 p-4 text-left">
+                <p className="text-xs font-bold text-primary-600 mb-2">🔑 Usuarios de prueba:</p>
+                <div className="space-y-1 text-xs text-primary-600/80">
                     <p>Admin: <span className="font-mono font-bold">admin@inscribeme.cl</span> / <span className="font-mono">admin123</span></p>
                     <p>Instructor: <span className="font-mono font-bold">carlos@inscribeme.cl</span> / <span className="font-mono">instructor1</span></p>
                     <p>Estudiante: <span className="font-mono font-bold">juan@inscribeme.cl</span> / <span className="font-mono">estudiante1</span></p>

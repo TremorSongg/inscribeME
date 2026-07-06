@@ -68,7 +68,9 @@ services:
 
   # ── API Gateway ──────────────────────────────────────────────
   api-gateway:
-    image: tremorsong/inscribeme-api-gateway:latest
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
     container_name: inscribeme-gateway
     restart: unless-stopped
     ports:

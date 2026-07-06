@@ -52,19 +52,19 @@ const StudentDetailPanel = ({
     });
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
-            <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-2xl bg-white shadow-2xl border border-gray-100 animate-slideUp overflow-hidden">
+        <div className="fixed inset-0 z-50 !py-48 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+            <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-xl bg-white shadow-2xl border border-neutral-100 animate-slideUp overflow-hidden">
                 
                 {/* Header Premium */}
-                <div className="flex items-center gap-5 bg-gradient-to-r from-[#37474F] to-[#455A64] p-6 text-left">
+                <div className="flex items-center gap-5 !px-4 bg-gradient-to-r from-sky-900 to-sky-950 p-6 text-left">
                     {photo ? (
                         <img src={photo} alt={student.nombre} className="h-16 w-16 rounded-full object-cover border-3 border-white/20 shadow-md" />
                     ) : (
-                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[#FFA000] text-2xl font-black text-[#212121] border-3 border-white/10 shadow-md">
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-sky-600 text-2xl font-bold text-white border-3 border-white/10 shadow-md">
                             {student.nombre.charAt(0).toUpperCase()}
                         </div>
                     )}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 !py-4 !px-2min-w-0">
                         <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Perfil de Estudiante</p>
                         <h2 className="text-2xl font-black text-white truncate mt-0.5">{student.nombre}</h2>
                         <p className="text-sm text-white/70 truncate mt-0.5">{student.email}</p>
@@ -76,21 +76,21 @@ const StudentDetailPanel = ({
                 </div>
 
                 {/* Stats rápidos */}
-                <div className="grid grid-cols-3 divide-x divide-gray-100 border-b border-gray-100 bg-[#FAFAFA]">
+                <div className="grid grid-cols-3 !px-4 !py-4 divide-x divide-neutral-100 border-b border-neutral-100 bg-[#FAFAFA]">
                     {[
                         { label: "Cursos inscritos", value: loading ? "…" : inscripciones.length },
                         { label: "Teléfono", value: student.telefono || "—" },
                         { label: "Estado", value: "Activo" },
                     ].map(s => (
                         <div key={s.label} className="py-4 px-2 text-center">
-                            <p className="text-xl font-black text-[#37474F] tracking-tight">{s.value}</p>
-                            <p className="text-xs font-bold text-[#455A64] uppercase tracking-wider mt-0.5">{s.label}</p>
+                            <p className="text-xl font-bold text-sky-900 tracking-tight">{s.value}</p>
+                            <p className="text-xs font-bold text-sky-400 uppercase tracking-wider mt-0.5">{s.label}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Tabs de Navegación Interna */}
-                <div className="flex gap-1 p-4 pb-0 bg-white border-b border-gray-50">
+                <div className="flex !py-4 gap-6 p-4 pb-0 bg-white border-b border-neutral-50 ">
                     {[
                         { key: "cursos",     label: "📚 Cursos" },
                         { key: "asistencia", label: "Asistencia" },
@@ -100,8 +100,8 @@ const StudentDetailPanel = ({
                             onClick={() => setActiveTab(t.key as "cursos" | "asistencia")}
                             className={`rounded-t-xl px-5 py-3 text-sm font-bold transition-all border-b-2 cursor-pointer ${
                                 activeTab === t.key
-                                    ? "border---color-accent text-[#FFA000] bg-amber-50/60"
-                                    : "border-transparent text-[#455A64] hover:text-[#37474F] hover:bg-gray-50"
+                                    ? "border-sky-600 text-sky-600 bg-sky-50"
+                                    : "border-transparent text-neutral-700 hover:text-neutral-900 hover:bg-neutral-50"
                             }`}>
                             {t.label}
                         </button>
@@ -115,29 +115,29 @@ const StudentDetailPanel = ({
                         <div className="animate-fadeIn">
                             {loading ? (
                                 <div className="space-y-3">
-                                    {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />)}
+                                    {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-neutral-100" />)}
                                 </div>
                             ) : inscripciones.length === 0 ? (
-                                <div className="rounded-2xl bg-gray-50 py-12 text-center border border-dashed border-gray-200">
+                                <div className="rounded-xl bg-neutral-50 py-12 text-center border border-dashed border-neutral-200">
                                     <p className="text-4xl mb-2">📭</p>
-                                    <p className="text-sm font-bold text-[#37474F]">Este estudiante no tiene cursos inscritos.</p>
+                                    <p className="text-sm font-bold text-neutral-900">Este estudiante no tiene cursos inscritos.</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     {inscripciones.map((ins, i) => (
                                         <div key={`${ins.cursoId}-${i}`}
-                                            className="flex gap-4 rounded-xl border border-gray-100 bg-white p-4 hover:shadow-md transition-all duration-200 animate-fadeInUp"
+                                            className="flex gap-4 rounded-xl border border-neutral-100 bg-white p-4 hover:shadow-md transition-all duration-200 animate-fadeInUp"
                                             style={{ animationDelay: `${i * 60}ms` }}>
-                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#FFA000]/15 text-xl">
+                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-xl font-bold text-sky-700 border border-sky-100">
                                                 📚
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-bold text-[#37474F] truncate">{ins.nombreCurso}</p>
-                                                <p className="text-xs font-semibold text-[#455A64] mt-0.5">
-                                                    Instructor: <span className="text-[#37474F]">{ins.nombreInstructor || "—"}</span> ·
+                                                <p className="font-bold text-neutral-900 truncate">{ins.nombreCurso}</p>
+                                                <p className="text-xs font-semibold text-sky-500 mt-0.5">
+                                                    Instructor: <span className="text-neutral-800">{ins.nombreInstructor || "—"}</span> ·
                                                     Inscrito: {ins.fechaInscripcion ? new Date(ins.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                 </p>
-                                                <p className="mt-1 text-[11px] font-bold text-[#455A64]/70 uppercase tracking-wider">
+                                                <p className="mt-1 text-[11px] font-bold text-neutral-900/70 uppercase tracking-wider">
                                                     {ins.fechaInicioCurso && ins.fechaFinCurso
                                                         ? `📅 ${new Date(ins.fechaInicioCurso + "T00:00:00").toLocaleDateString("es-CL")} al ${new Date(ins.fechaFinCurso + "T00:00:00").toLocaleDateString("es-CL")}`
                                                         : ""}
@@ -146,7 +146,7 @@ const StudentDetailPanel = ({
                                             <span className={`shrink-0 self-start rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
                                                 ins.estado === "INSCRITO" ? "bg-green-50 text-green-700" :
                                                 ins.estado === "COMPLETADO" ? "bg-blue-50 text-blue-700" :
-                                                "bg-gray-50 text-gray-600"}`}>
+                                                "bg-neutral-50 text-neutral-600"}`}>
                                                 {ins.estado}
                                             </span>
                                         </div>
@@ -160,13 +160,13 @@ const StudentDetailPanel = ({
                     {activeTab === "asistencia" && (
                         <div className="animate-fadeIn">
                             {inscripciones.length === 0 ? (
-                                <div className="rounded-2xl bg-gray-50 py-12 text-center border border-dashed border-gray-200">
-                                    <p className="text-sm font-bold text-[#455A64]">El estudiante no cuenta con materias activas.</p>
+                                <div className="rounded-xl bg-neutral-50 py-12 text-center border border-dashed border-neutral-200">
+                                    <p className="text-sm font-bold text-neutral-600">El estudiante no cuenta con materias activas.</p>
                                 </div>
                             ) : Object.keys(attendanceByCourse).length === 0 ? (
-                                <div className="rounded-2xl bg-gray-50 py-12 text-center border border-dashed border-gray-200">
+                                <div className="rounded-xl bg-neutral-50 py-12 text-center border border-dashed border-neutral-200">
                                     <p className="text-4xl mb-3">📋</p>
-                                    <p className="text-sm font-bold text-[#37474F]">
+                                    <p className="text-sm font-bold text-neutral-900">
                                         {loading ? "Cargando asistencia desde la base..." : "No hay registros de asistencia aún."}
                                     </p>
                                 </div>
@@ -176,11 +176,11 @@ const StudentDetailPanel = ({
                                         const presentes = records.filter(r => r.presente).length;
                                         const pct = records.length > 0 ? Math.round((presentes / records.length) * 100) : 0;
                                         return (
-                                            <div key={curso} className="rounded-xl border border-gray-100 p-4 bg-white shadow-sm">
+                                            <div key={curso} className="rounded-xl border border-neutral-100 p-4 bg-white shadow-sm">
                                                 <div className="mb-3 flex items-center justify-between gap-4">
-                                                    <p className="font-bold text-[#37474F] truncate">{curso}</p>
+                                                    <p className="font-bold text-neutral-900 truncate">{curso}</p>
                                                     <div className="flex items-center gap-2 shrink-0">
-                                                        <span className="text-xs font-semibold text-[#455A64]">{presentes}/{records.length} presencias</span>
+                                                        <span className="text-xs font-semibold text-neutral-900">{presentes}/{records.length} presencias</span>
                                                         <span className={`rounded-full px-2 py-0.5 text-xs font-black ${
                                                             pct >= 75 ? "bg-green-50 text-green-700" :
                                                             pct >= 50 ? "bg-amber-50 text-amber-700" :
@@ -190,7 +190,7 @@ const StudentDetailPanel = ({
                                                     </div>
                                                 </div>
                                                 {/* Progress fill */}
-                                                <div className="mb-4 h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+                                                <div className="mb-4 h-2 w-full rounded-full bg-neutral-100 overflow-hidden">
                                                     <div className={`h-2 rounded-full transition-all duration-500 ${pct >= 75 ? "bg-green-500" : pct >= 50 ? "bg-amber-500" : "bg-red-500"}`}
                                                         style={{ width: `${pct}%` }} />
                                                 </div>
@@ -198,7 +198,7 @@ const StudentDetailPanel = ({
                                                     {records.sort((a, b) => a.fecha.localeCompare(b.fecha)).map((r, j) => (
                                                         <div key={j} className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold shadow-sm border ${
                                                             r.presente ? "bg-green-50/50 text-green-700 border-green-100" : "bg-red-50/50 text-red-700 border-red-100"}`}>
-                                                            <span className="font-black text-sm leading-none">{r.presente ? "✓" : "✗"}</span>
+                                                            <span className="font-bold text-sm leading-none">{r.presente ? "✓" : "✗"}</span>
                                                             <span>{r.fecha ? new Date(r.fecha + "T00:00:00").toLocaleDateString("es-CL") : "—"}</span>
                                                         </div>
                                                     ))}
@@ -240,23 +240,22 @@ const AdminStudentsPage = () => {
 
     return (
         /* CAMBIO CLAVE: pt-14 pb-28 y flex flex-col items-center para forzar alineación central */
-        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-[#212121] w-full flex flex-col items-center">
+        <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-neutral-800 w-full flex flex-col items-center">
             <section className="w-full max-w-7xl mx-auto">
                 
                 {/* Header Unificado */}
                 <div className="mb-14 text-left animate-fadeInUp">
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-[#FFA000]">Administración</p>
-                    <h1 className="mt-2 text-5xl font-black text-[#37474F] md:text-6xl tracking-tight">Estudiantes</h1>
-                    <p className="mt-3 text-lg text-[#455A64]">Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema.</p>
+                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-600">Administración</p>
+                    <h1 className="mt-2 text-5xl font-black text-sky-900 md:text-6xl tracking-tight">Estudiantes</h1>
+                    <p className="mt-3 !py-4 text-lg text-sky-600">Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema.</p>
                 </div>
 
                 {/* Search Bar Refinada */}
                 <div className="mb-10 animate-fadeInUp" style={{ animationDelay: "80ms" }}>
-                    <div className="relative w-full max-w-2xl text-left">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg text-[#455A64]">🔍</span>
+                    <div className="relative w-full max-w-2xl text-left">                        
                         <input id="student-search" type="text" value={search} onChange={e => setSearch(e.target.value)}
-                            placeholder="Buscar por nombre o correo electrónico institucional…"
-                            className="w-full rounded-2xl border border-gray-300 bg-white py-4 pl-12 pr-4 text-sm shadow-sm outline-none focus:border-[#FFA000] focus:ring-2 focus:ring-[#FFA000]/30 transition-all" />
+                            placeholder="🔍 Buscar por nombre o correo electrónico institucional…"
+                            className="w-full rounded-xl border border-neutral-300 bg-white py-4 pl-12 pr-4 text-sm shadow-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
                     </div>
                 </div>
 
@@ -264,54 +263,54 @@ const AdminStudentsPage = () => {
                 {loading ? (
                     <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {[1,2,3,4,5,6].map(i => (
-                            <div key={i} className="h-36 animate-pulse rounded-2xl bg-gray-200" />
+                            <div key={i} className="h-36 animate-pulse rounded-xl bg-neutral-200" />
                         ))}
                     </div>
                 ) : filtered.length === 0 ? (
-                    <div className="rounded-2xl bg-white p-14 text-center shadow-md border border-gray-100">
+                    <div className="rounded-xl bg-white p-14 text-center shadow-md border border-neutral-200">
                         <p className="text-5xl mb-3">👤</p>
-                        <p className="text-xl font-black text-[#37474F]">
+                        <p className="text-xl font-bold text-neutral-900">
                             {search ? "Sin resultados coincidentes" : "No hay estudiantes registrados"}
                         </p>
-                        <p className="mt-2 text-sm text-[#455A64]">Verifica los criterios ingresados en la caja de búsqueda.</p>
+                        <p className="mt-2 text-sm text-neutral-600">Verifica los criterios ingresados en la caja de búsqueda.</p>
                     </div>
                 ) : (
-                    <div className="grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-x-6 !py-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {filtered.map((s, i) => {
                             const studentPhoto = localStorage.getItem(`profilePhoto_${s.id}`);
                             return (
                                 <button key={s.id} id={`student-card-${s.id}`}
                                     type="button"
                                     onClick={() => setSelected(s)}
-                                    className="group w-full rounded-2xl bg-white p-6 shadow-sm border border-gray-100 text-left hover:-translate-y-1.5 hover:shadow-xl hover:border-[#FFA000]/20 transition-all duration-300 animate-fadeInUp flex flex-col justify-between cursor-pointer"
+                                    className="group w-full rounded-xl bg-sky-100 p-6 shadow-sm border border-sky-300 text-left hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 transition-all duration-300 animate-fadeInUp flex flex-col justify-between cursor-pointer"
                                     style={{ animationDelay: `${i * 50}ms` }}>
                                     
                                     <div>
                                         <div className="flex items-center gap-4">
                                             {studentPhoto ? (
                                                 <img src={studentPhoto} alt={s.nombre}
-                                                    className="h-12 w-12 rounded-full object-cover border-2 border-[#FFA000]/30 shadow-sm" />
+                                                    className="h-12 w-12 rounded-full object-cover border-2 border-sky-500/30 shadow-sm" />
                                             ) : (
-                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#37474F] to-[#455A64] text-xl font-black text-[#FFA000] shadow-sm">
+                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-900 to-sky-950 text-xl font-bold text-white shadow-sm">
                                                     {s.nombre.charAt(0).toUpperCase()}
                                                 </div>
                                             )}
                                             <div className="flex-1 min-w-0">
-                                                <p className="font-bold text-[#37474F] text-base truncate">{s.nombre}</p>
-                                                <p className="text-xs font-semibold text-[#455A64] truncate mt-0.5">{s.email}</p>
+                                                <p className="font-bold text-neutral-900 text-base truncate">{s.nombre}</p>
+                                                <p className="text-xs font-semibold text-neutral-800 truncate mt-0.5">{s.email}</p>
                                             </div>
                                         </div>
                                         
                                         {s.telefono && (
-                                            <p className="mt-4 text-xs font-semibold text-[#455A64] flex items-center gap-2">
-                                                <span>📞</span> <span className="text-[#37474F]">{s.telefono}</span>
+                                            <p className="mt-4 text-xs font-semibold text-neutral-600 flex items-center gap-2">
+                                                <span>📞</span> <span className="text-neutral-900">{s.telefono}</span>
                                             </p>
                                         )}
                                     </div>
                                     
-                                    <div className="mt-5 pt-4 border-t border-gray-50 flex items-center justify-between w-full">
+                                    <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between w-full">
                                         <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 tracking-wide">Estudiante</span>
-                                        <span className="text-xs font-bold text-[#FFA000] md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                                        <span className="text-xs font-bold text-sky-600 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                                             Ver detalle →
                                         </span>
                                     </div>

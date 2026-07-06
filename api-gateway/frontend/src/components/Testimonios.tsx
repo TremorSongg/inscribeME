@@ -28,50 +28,55 @@ const testimonials = [
 const Stars = ({ count }: { count: number }) => (
     <div className="flex gap-0.5">
         {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className={`text-sm ${i < count ? "text-[#FFA000]" : "text-gray-200"}`}>★</span>
+            <span key={i} className={`text-base ${i < count ? "text-primary-500" : "text-neutral-200"}`}>★</span>
         ))}
     </div>
 );
 
 const Testimonios = () => (
-    /* CAMBIO CLAVE: py-16 (el espaciado exterior lo maneja el CSS global), 
-       y añadimos w-full + flex justify-center para centrar en ultra-wides */
-    <section className="bg-[#F0F4F7] py-16 px-6 w-full flex justify-center">
-        {/* CAMBIO CLAVE: w-full asegura el comportamiento correcto del max-w-7xl con el mx-auto */}
+    <section className="bg-neutral-50 py-20 px-6 w-full flex justify-center border-t border-neutral-100 font-sans text-neutral-800">
         <div className="w-full max-w-7xl mx-auto">
             
             {/* Heading */}
-            <div className="mb-14 text-center animate-fadeInUp">
-                <p className="section-label mb-3">Lo que dicen nuestros alumnos</p>
-                <h2 className="section-title">Historias reales, resultados reales.</h2>
+            <div className="mb-14 text-center animate-fadeInUp flex flex-col items-center">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-100 text-xs font-bold text-primary-600 uppercase tracking-wide mb-3">
+                    💬 Testimonios
+                </span>
+                <h2 className="text-3xl font-extrabold tracking-tight text-neutral-900 md:text-4xl font-display">
+                    Lo que dicen nuestros alumnos
+                </h2>
+                <p className="mt-3 text-neutral-700 max-w-xl mx-auto text-sm">
+                    Historias reales, resultados reales. Descubre cómo impacta InscribeMe en nuestra comunidad.
+                </p>
             </div>
 
-            {/* Cards */}
-            {/* CAMBIO CLAVE: Cambiamos gap-6 por gap-x-10 y gap-y-6 para dar más separación 
-                horizontal a las tres columnas en pantallas anchas */}
-            <div className="separador-hero-contenido2 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Cards Grid */}
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {testimonials.map((t, i) => (
-                    <div key={t.name}
-                        className="card p-7 animate-fadeInUp flex flex-col justify-between"
+                    <article key={t.name}
+                        className="group relative rounded-3xl border border-neutral-200 bg-white p-7 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20 flex flex-col justify-between"
                         style={{ animationDelay: `${i * 100}ms` }}>
                         
                         <div>
                             <Stars count={t.stars} />
-                            <p className="my-5 text-[#37474F] leading-relaxed text-sm">
-                                "{t.quote}"
-                            </p>
+                            <div className="relative mt-4">
+                                <span className="absolute -top-3 -left-2 text-3xl text-primary-200/50 select-none font-serif">“</span>
+                                <p className="text-sm leading-relaxed text-neutral-700 pl-4 italic">
+                                    {t.quote}
+                                </p>
+                            </div>
                         </div>
                         
-                        <div className="mt-auto flex items-center gap-3 pt-4 border-t border-gray-100">
-                            <div className={`flex h-10 w-10 items-center justify-center rounded-full ${t.color} text-sm font-black text-white`}>
+                        <div className="mt-6 flex items-center gap-3 pt-4 border-t border-neutral-100">
+                            <div className={`flex h-9 w-9 items-center justify-center rounded-full ${t.color} text-xs font-bold text-white border border-white/10 shadow-sm transition-transform duration-300 group-hover:scale-105`}>
                                 {t.init}
                             </div>
-                            <div className="text-left"> {/* Asegura alineación limpia a la izquierda del texto del autor */}
-                                <p className="text-sm font-bold text-[#37474F]">{t.name}</p>
-                                <p className="text-xs text-[#455A64]">{t.role}</p>
+                            <div className="text-left">
+                                <p className="text-sm font-bold text-neutral-900 font-display">{t.name}</p>
+                                <p className="text-xs text-neutral-600">{t.role}</p>
                             </div>
                         </div>
-                    </div>
+                    </article>
                 ))}
             </div>
         </div>
