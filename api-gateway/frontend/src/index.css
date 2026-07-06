@@ -592,6 +592,22 @@ body {
   fill: #071527 !important;
 }
 
+/* Corrección de la barra de filtros en ProductPage.tsx */
+.dark section.sticky.top-20 {
+  background-color: rgba(7, 21, 39, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dark section.sticky.top-20 button {
+  color: #E2E8F0 !important;
+}
+
+.dark section.sticky.top-20 button:hover {
+  color: #38BDF8 !important;
+  background-color: rgba(56, 189, 248, 0.15) !important;
+}
+
+
 
 
 
