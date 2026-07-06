@@ -587,6 +587,12 @@ body {
   color: #38BDF8 !important;
 }
 
+/* Corrección de la ola/separador del Hero en modo oscuro */
+.dark .hero-bg svg path {
+  fill: #071527 !important;
+}
+
+
 
 
 /* Separación controlada entre el Hero y la primera sección de contenido */
