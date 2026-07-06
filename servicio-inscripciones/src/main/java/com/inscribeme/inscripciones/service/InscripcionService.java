@@ -6,6 +6,7 @@ import com.inscribeme.inscripciones.model.Inscripcion;
 import com.inscribeme.inscripciones.repository.InscripcionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 public class InscripcionService {
 
     private final InscripcionRepository inscripcionRepository;
+    private final RestTemplate restTemplate;
 
     public List<Inscripcion> obtenerTodas() {
         return inscripcionRepository.findAll();
@@ -31,6 +33,13 @@ public class InscripcionService {
             throw new IllegalStateException(
                 "El usuario ya está inscrito en este curso.");
         }
+        
+        try {
+            restTemplate.put("http://SERVICIO-CURSOS/api/cursos/" + inscripcion.getCursoId() + "/decrementar-cupo", null);
+        } catch (Exception e) {
+            throw new IllegalStateException("No se pudo completar la inscripción: " + e.getMessage());
+        }
+        
         return inscripcionRepository.save(inscripcion);
     }
 
@@ -43,7 +52,14 @@ public class InscripcionService {
     }
 
     public void eliminar(Long id) {
-        inscripcionRepository.deleteById(id);
+        inscripcionRepository.findById(id).ifPresent(i -> {
+            try {
+                restTemplate.put("http://SERVICIO-CURSOS/api/cursos/" + i.getCursoId() + "/incrementar-cupo", null);
+            } catch (Exception e) {
+                // Silently log or ignore to prevent blocking deletion
+            }
+            inscripcionRepository.delete(i);
+        });
     }
 
     public List<InscripcionDTO> obtenerInscripcionesPorUsuario(Long usuarioId) {

@@ -68,4 +68,18 @@ public class CursoController {
         cursoService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Decrementar cupo de un curso")
+    @PutMapping("/{id}/decrementar-cupo")
+    public ResponseEntity<Void> decrementarCupo(@PathVariable Long id) {
+        cursoService.decrementarCupo(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Incrementar cupo de un curso")
+    @PutMapping("/{id}/incrementar-cupo")
+    public ResponseEntity<Void> incrementarCupo(@PathVariable Long id) {
+        cursoService.incrementarCupo(id);
+        return ResponseEntity.ok().build();
+    }
 }

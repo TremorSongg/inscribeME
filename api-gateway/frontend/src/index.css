@@ -389,23 +389,44 @@ body {
   background-color: #071527 !important;
 }
 
-.dark .text-\[\#212121\] {
-  color: #F5F5F5 !important;
+/* Overrides para textos neutrales y primarios en modo oscuro */
+.dark .text-neutral-900,
+.dark .text-neutral-800,
+.dark .text-sky-950,
+.dark .text-sky-900,
+.dark .text-\[\#212121\],
+.dark .text-\[\#37474F\],
+.dark .text-primary-950,
+.dark .text-primary-900 {
+  color: #F8FAFF !important; /* Casi blanco de alto contraste */
 }
 
-.dark .text-\[\#37474F\] {
-  color: #E2E8F0 !important;
+.dark .text-neutral-700,
+.dark .text-neutral-600,
+.dark .text-sky-800,
+.dark .text-sky-700,
+.dark .text-\[\#455A64\],
+.dark .text-primary-800,
+.dark .text-primary-700 {
+  color: #E2E8F0 !important; /* Gris claro / celeste claro */
 }
 
-.dark .text-\[\#455A64\] {
-  color: #94A3B8 !important;
+.dark .text-neutral-500,
+.dark .text-sky-600,
+.dark .text-sky-500,
+.dark .text-primary-600,
+.dark .text-primary-500 {
+  color: #94A3B8 !important; /* Gris medio */
 }
 
-.dark .text-\[\#455A64\]\/60 {
-  color: rgba(245, 245, 245, 0.5) !important;
+.dark .text-neutral-400,
+.dark .text-sky-400,
+.dark .text-primary-400 {
+  color: #38BDF8 !important; /* Celeste vivo */
 }
 
 .dark .border-gray-100, 
+.dark .border-neutral-100,
 .dark .border-\[\#455A64\]\/10,
 .dark .border-gray-200,
 .dark .border-gray-300 {
@@ -446,29 +467,63 @@ body {
   background: #455A64;
 }
 
-/* Alertas y fondos sutiles */
-.dark .bg-amber-50,
-.dark .bg-blue-50,
-.dark .bg-green-50,
-.dark .bg-red-50,
-.dark .bg-\[\#FFF8E1\],
-.dark .bg-emerald-100,
-.dark .bg-blue-100,
+/* Alertas y fondos sutiles por categoría */
 .dark .bg-sky-50,
-.dark .bg-sky-100 {
-  background-color: rgba(56,189,248,0.06) !important;
+.dark .bg-sky-100,
+.dark .bg-blue-50,
+.dark .bg-blue-100 {
+  background-color: #0E223D !important; /* Azul oscuro */
+  color: #E2E8F0 !important;
+  border-color: rgba(56, 189, 248, 0.2) !important;
 }
 
-.dark .text-blue-700,
-.dark .text-blue-900,
-.dark .text-sky-700,
-.dark .text-sky-900,
-.dark .text-amber-700,
-.dark .text-amber-900,
-.dark .text-green-700,
+.dark .bg-emerald-50,
+.dark .bg-emerald-100,
+.dark .bg-green-50,
+.dark .bg-green-100 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+  color: #34D399 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+
 .dark .text-emerald-700,
+.dark .text-green-700 {
+  color: #34D399 !important;
+}
+
+.dark .bg-violet-50,
+.dark .bg-violet-100 {
+  background-color: rgba(139, 92, 246, 0.12) !important;
+  color: #C084FC !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+}
+
+.dark .text-violet-700 {
+  color: #C084FC !important;
+}
+
+.dark .bg-red-50,
+.dark .bg-red-100 {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  color: #F87171 !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+.dark .text-red-700,
 .dark .text-red-600 {
-  color: #38BDF8 !important;
+  color: #F87171 !important;
+}
+
+.dark .bg-amber-50,
+.dark .bg-\[\#FFF8E1\] {
+  background-color: rgba(245, 158, 11, 0.1) !important;
+  color: #FBBF24 !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+
+.dark .text-amber-700,
+.dark .text-amber-900 {
+  color: #FBBF24 !important;
 }
 
 .dark .border-blue-200,
@@ -477,7 +532,7 @@ body {
 .dark .border-red-200,
 .dark .border-\[\#FFA000\]\/40,
 .dark .border-sky-200 {
-  border-color: rgba(56,189,248,0.2) !important;
+  border-color: rgba(56, 189, 248, 0.2) !important;
 }
 
 .dark .bg-white\/8,

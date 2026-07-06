@@ -28,7 +28,14 @@ INSERT IGNORE INTO usuarios (id, nombre, email, password, telefono, rol) VALUES
 -- Estudiantes
 (5, 'Juan Rodriguez',   'juan@inscribeme.cl',       'estudiante1', '+56944444444', 'ESTUDIANTE'),
 (6, 'Valentina Cruz',   'valentina@inscribeme.cl',  'estudiante2', '+56955555555', 'ESTUDIANTE'),
-(7, 'Pedro Soto',       'pedro@inscribeme.cl',      'estudiante3', '+56966666666', 'ESTUDIANTE');
+(7, 'Pedro Soto',       'pedro@inscribeme.cl',      'estudiante3', '+56966666666', 'ESTUDIANTE'),
+(8, 'Sofia Silva',      'sofia@inscribeme.cl',      'estudiante4', '+56977777777', 'ESTUDIANTE'),
+(9, 'Lucas Andrade',    'lucas@inscribeme.cl',      'estudiante5', '+56988888888', 'ESTUDIANTE'),
+(10, 'Gabriela Lopez',  'gabriela@inscribeme.cl',   'estudiante6', '+56999999999', 'ESTUDIANTE'),
+(11, 'Mateo Diaz',      'mateo@inscribeme.cl',      'estudiante7', '+56912344321', 'ESTUDIANTE'),
+(12, 'Florencia Herrera','florencia@inscribeme.cl',  'estudiante8', '+56998765432', 'ESTUDIANTE'),
+(13, 'Benjamin Castro', 'benjamin@inscribeme.cl',   'estudiante9', '+56911223344', 'ESTUDIANTE'),
+(14, 'Isidora Fuentes', 'isidora@inscribeme.cl',    'estudiante10', '+56955667788', 'ESTUDIANTE');
 
 -- ── CURSOS ────────────────────────────────────────────────────
 USE inscribeme_cursos;
@@ -49,31 +56,35 @@ CREATE TABLE IF NOT EXISTS cursos (
 INSERT IGNORE INTO cursos (id, nombre, descripcion, precio, cupo_total, cupo_disponible, fecha_inicio, fecha_fin, instructor_id, nombre_instructor) VALUES
 (1, 'Futbol Infantil',
  'Actividad deportiva orientada a ninos que buscan aprender fundamentos del futbol en un ambiente seguro y entretenido.',
- 0, 15, 12, '2025-07-01', '2025-08-31', 2, 'Carlos Rojas'),
+ 0, 15, 13, '2025-07-01', '2025-08-31', 2, 'Carlos Rojas'),
 
 (2, 'Zumba Femenino',
  'Clases grupales de zumba para mejorar la condicion fisica mediante baile, musica y entrenamiento dinamico.',
- 5000, 20, 18, '2025-08-01', '2025-09-30', 3, 'Maria Gonzalez'),
+ 5000, 20, 19, '2025-08-01', '2025-09-30', 3, 'Maria Gonzalez'),
 
 (3, 'Escalada Grupal',
  'Experiencia grupal de escalada guiada para principiantes, enfocada en trabajo en equipo y superacion personal.',
- 12000, 10, 8, '2025-09-01', '2025-10-31', 4, 'Ana Munoz'),
+ 12000, 10, 9, '2025-09-01', '2025-10-31', 4, 'Ana Munoz'),
 
 (4, 'Taller de Natacion',
  'Taller practico para aprender y mejorar tecnicas basicas de natacion, respiracion y seguridad en el agua.',
- 8000, 12, 10, '2025-10-01', '2025-11-30', 2, 'Carlos Rojas'),
+ 8000, 12, 12, '2025-10-01', '2025-11-30', 2, 'Carlos Rojas'),
 
 (5, 'Yoga Inicial',
  'Sesiones de yoga para principiantes enfocadas en respiracion, movilidad, equilibrio y relajacion.',
- 6000, 20, 15, '2025-11-01', '2025-12-31', 3, 'Maria Gonzalez'),
+ 6000, 20, 19, '2025-11-01', '2025-12-31', 3, 'Maria Gonzalez'),
 
 (6, 'Taller de Arte',
  'Actividad formativa para desarrollar habilidades artisticas basicas mediante pintura, dibujo y expresion creativa.',
- 7000, 25, 20, '2025-12-01', '2026-01-31', 4, 'Ana Munoz'),
+ 7000, 25, 24, '2025-12-01', '2026-01-31', 4, 'Ana Munoz'),
 
 (7, 'Karate Tradicional',
  'Fortalece cuerpo y mente mediante las tecnicas del karate tradicional. Ideal para todos los niveles.',
- 9000, 18, 14, '2025-07-15', '2025-10-15', 2, 'Carlos Rojas');
+ 9000, 18, 17, '2025-07-15', '2025-10-15', 2, 'Carlos Rojas'),
+
+(8, 'Spinning Pro',
+ 'Clases de spinning de alta intensidad y acondicionamiento cardiovascular.',
+ 10000, 2, 0, '2025-07-01', '2025-09-30', 3, 'Maria Gonzalez');
 
 -- ── INSCRIPCIONES ─────────────────────────────────────────────
 USE inscribeme_inscripciones;
@@ -105,7 +116,10 @@ VALUES
 (5, 6, 6, 'Valentina Cruz',  'Taller de Arte',     'Actividad formativa artistica.',           '2025-12-01', '2026-01-31',  'Ana Munoz',      '2025-06-02', 'INSCRITO'),
 -- Pedro Soto (id=7) → Futbol Infantil, Escalada Grupal
 (6, 7, 1, 'Pedro Soto',      'Futbol Infantil',    'Actividad deportiva orientada a ninos.',  '2025-07-01', '2025-08-31',  'Carlos Rojas',   '2025-06-03', 'INSCRITO'),
-(7, 7, 3, 'Pedro Soto',      'Escalada Grupal',    'Escalada guiada para principiantes.',     '2025-09-01', '2025-10-31',  'Ana Munoz',      '2025-06-03', 'INSCRITO');
+(7, 7, 3, 'Pedro Soto',      'Escalada Grupal',    'Escalada guiada para principiantes.',     '2025-09-01', '2025-10-31',  'Ana Munoz',      '2025-06-03', 'INSCRITO'),
+-- Sofia Silva (id=8) & Lucas Andrade (id=9) → Spinning Pro (id=8)
+(8, 8, 8, 'Sofia Silva',     'Spinning Pro',       'Clases de spinning.',                     '2025-07-01', '2025-09-30',  'Maria Gonzalez', '2025-06-01', 'INSCRITO'),
+(9, 9, 8, 'Lucas Andrade',   'Spinning Pro',       'Clases de spinning.',                     '2025-07-01', '2025-09-30',  'Maria Gonzalez', '2025-06-01', 'INSCRITO');
 
 -- ── ASISTENCIAS ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS asistencias (

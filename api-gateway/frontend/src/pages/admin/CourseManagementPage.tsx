@@ -342,16 +342,22 @@ const CourseManagementPage = () => {
                                 <select id="assign-student-select"
                                     value={assignUserId}
                                     onChange={e => setAssignUserId(e.target.value === "" ? "" : Number(e.target.value))}
-                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all">
+                                    disabled={assignCourse.cupoDisponible === 0}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all disabled:bg-neutral-100 disabled:text-neutral-400">
                                     <option value="">Selecciona un estudiante de la lista…</option>
                                     {allUsers.map(u => (
                                         <option key={u.id} value={u.id}>{u.nombre} ({u.email})</option>
                                     ))}
                                 </select>
                             </div>
+                            {assignCourse.cupoDisponible === 0 && (
+                                <div className="mb-6 rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-bold text-red-700 animate-fadeIn">
+                                    ⚠️ El curso seleccionado se encuentra completo (sin cupos disponibles).
+                                </div>
+                            )}
                             <div className="flex gap-3">
                                 <button type="button" onClick={() => setAssignCourse(null)} className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer">Cancelar</button>
-                                <button id="btn-confirm-assign" type="button" onClick={handleAssign} disabled={assignUserId === "" || assigning}
+                                <button id="btn-confirm-assign" type="button" onClick={handleAssign} disabled={assignUserId === "" || assigning || assignCourse.cupoDisponible === 0}
                                     className="flex-1 rounded-xl bg-sky-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition disabled:opacity-60 cursor-pointer">
                                     {assigning ? "Inscribiendo…" : "Confirmar Inscripción"}
                                 </button>

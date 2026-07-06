@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { usuariosService, type UsuarioBackend } from "../../services/authService";
 import { inscripcionesService, type InscripcionDTO, type AsistenciaDTO } from "../../services/inscripcionesService";
@@ -219,21 +220,42 @@ const StudentDetailPanel = ({
 // ── PÁGINA PRINCIPAL DE ESTUDIANTES ───────────────────────────────────────────
 const AdminStudentsPage = () => {
     const { user } = useAuth();
-    const [students, setStudents] = useState<UsuarioBackend[]>([]);
+    const [searchParams, setSearchParams] = useSearchParams();
+    const roleParam = searchParams.get("role");
+
+    const [allUsers, setAllUsers] = useState<UsuarioBackend[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [selected, setSelected] = useState<UsuarioBackend | null>(null);
+    const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR">(
+        roleParam === "instructor" ? "INSTRUCTOR" : "ESTUDIANTE"
+    );
+
+    useEffect(() => {
+        if (roleParam === "instructor") {
+            setActiveTab("INSTRUCTOR");
+        } else {
+            setActiveTab("ESTUDIANTE");
+        }
+    }, [roleParam]);
 
     useEffect(() => {
         usuariosService.listarTodos()
             .then(data => {
-                setStudents(data.filter(u => u.rol === "ESTUDIANTE"));
+                setAllUsers(data);
                 setLoading(false);
             })
             .catch(() => setLoading(false));
     }, [user]);
 
-    const filtered = students.filter(s =>
+    const handleTabChange = (role: "ESTUDIANTE" | "INSTRUCTOR") => {
+        setActiveTab(role);
+        setSearchParams({ role: role === "INSTRUCTOR" ? "instructor" : "student" });
+    };
+
+    const filteredUsers = allUsers.filter(u => u.rol === activeTab);
+
+    const filtered = filteredUsers.filter(s =>
         s.nombre.toLowerCase().includes(search.toLowerCase()) ||
         s.email.toLowerCase().includes(search.toLowerCase())
     );
@@ -246,15 +268,49 @@ const AdminStudentsPage = () => {
                 {/* Header Unificado */}
                 <div className="mb-14 text-left animate-fadeInUp">
                     <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-600">Administración</p>
-                    <h1 className="mt-2 text-5xl font-black text-sky-900 md:text-6xl tracking-tight">Estudiantes</h1>
-                    <p className="mt-3 !py-4 text-lg text-sky-600">Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema.</p>
+                    <h1 className="mt-2 text-5xl font-black text-sky-900 md:text-6xl tracking-tight">
+                        {activeTab === "ESTUDIANTE" ? "Estudiantes" : "Instructores"}
+                    </h1>
+                    <p className="mt-3 !py-4 text-lg text-sky-600">
+                        {activeTab === "ESTUDIANTE" 
+                            ? "Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema."
+                            : "Consulta la lista de instructores y profesores activos que dictan clases en el ecosistema."}
+                    </p>
+                </div>
+
+                {/* Tabs de Selección Estudiantes vs Instructores */}
+                <div className="flex gap-4 mb-8 border-b border-sky-100 pb-px w-full max-w-2xl text-left animate-fadeInUp">
+                    <button
+                        type="button"
+                        onClick={() => handleTabChange("ESTUDIANTE")}
+                        className={`px-6 py-3 font-bold text-sm border-b-2 transition-all cursor-pointer ${
+                            activeTab === "ESTUDIANTE"
+                                ? "border-sky-600 text-sky-600 font-black"
+                                : "border-transparent text-neutral-500 hover:text-neutral-700"
+                        }`}
+                    >
+                        🎒 Estudiantes ({allUsers.filter(u => u.rol === "ESTUDIANTE").length})
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => handleTabChange("INSTRUCTOR")}
+                        className={`px-6 py-3 font-bold text-sm border-b-2 transition-all cursor-pointer ${
+                            activeTab === "INSTRUCTOR"
+                                ? "border-violet-600 text-violet-600 font-black"
+                                : "border-transparent text-neutral-500 hover:text-neutral-700"
+                        }`}
+                    >
+                        🏫 Instructores ({allUsers.filter(u => u.rol === "INSTRUCTOR").length})
+                    </button>
                 </div>
 
                 {/* Search Bar Refinada */}
                 <div className="mb-10 animate-fadeInUp" style={{ animationDelay: "80ms" }}>
                     <div className="relative w-full max-w-2xl text-left">                        
                         <input id="student-search" type="text" value={search} onChange={e => setSearch(e.target.value)}
-                            placeholder="🔍 Buscar por nombre o correo electrónico institucional…"
+                            placeholder={activeTab === "ESTUDIANTE" 
+                                ? "🔍 Buscar estudiantes por nombre o correo electrónico..."
+                                : "🔍 Buscar instructores por nombre o correo electrónico..."}
                             className="w-full rounded-xl border border-neutral-300 bg-white py-4 pl-12 pr-4 text-sm shadow-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
                     </div>
                 </div>
@@ -270,7 +326,7 @@ const AdminStudentsPage = () => {
                     <div className="rounded-xl bg-white p-14 text-center shadow-md border border-neutral-200">
                         <p className="text-5xl mb-3">👤</p>
                         <p className="text-xl font-bold text-neutral-900">
-                            {search ? "Sin resultados coincidentes" : "No hay estudiantes registrados"}
+                            {search ? "Sin resultados coincidentes" : "No hay registros disponibles"}
                         </p>
                         <p className="mt-2 text-sm text-neutral-600">Verifica los criterios ingresados en la caja de búsqueda.</p>
                     </div>
@@ -278,20 +334,27 @@ const AdminStudentsPage = () => {
                     <div className="grid gap-x-6 !py-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {filtered.map((s, i) => {
                             const studentPhoto = localStorage.getItem(`profilePhoto_${s.id}`);
+                            const isStudent = activeTab === "ESTUDIANTE";
                             return (
-                                <button key={s.id} id={`student-card-${s.id}`}
+                                <button key={s.id} id={`${isStudent ? 'student' : 'instructor'}-card-${s.id}`}
                                     type="button"
-                                    onClick={() => setSelected(s)}
-                                    className="group w-full rounded-xl bg-sky-100 p-6 shadow-sm border border-sky-300 text-left hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 transition-all duration-300 animate-fadeInUp flex flex-col justify-between cursor-pointer"
+                                    onClick={() => { if (isStudent) setSelected(s); }}
+                                    className={`group w-full rounded-xl p-6 shadow-sm border text-left transition-all duration-300 animate-fadeInUp flex flex-col justify-between ${
+                                        isStudent 
+                                            ? "bg-sky-100 border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 cursor-pointer"
+                                            : "bg-violet-100 border-violet-300 cursor-default"
+                                    }`}
                                     style={{ animationDelay: `${i * 50}ms` }}>
                                     
                                     <div>
                                         <div className="flex items-center gap-4">
                                             {studentPhoto ? (
                                                 <img src={studentPhoto} alt={s.nombre}
-                                                    className="h-12 w-12 rounded-full object-cover border-2 border-sky-500/30 shadow-sm" />
+                                                    className={`h-12 w-12 rounded-full object-cover border-2 shadow-sm ${isStudent ? 'border-sky-500/30' : 'border-violet-500/30'}`} />
                                             ) : (
-                                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-900 to-sky-950 text-xl font-bold text-white shadow-sm">
+                                                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white shadow-sm bg-gradient-to-br ${
+                                                    isStudent ? 'from-sky-900 to-sky-950' : 'from-violet-900 to-violet-950'
+                                                }`}>
                                                     {s.nombre.charAt(0).toUpperCase()}
                                                 </div>
                                             )}
@@ -309,10 +372,18 @@ const AdminStudentsPage = () => {
                                     </div>
                                     
                                     <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between w-full">
-                                        <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-bold text-emerald-700 tracking-wide">Estudiante</span>
-                                        <span className="text-xs font-bold text-sky-600 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                                            Ver detalle →
-                                        </span>
+                                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
+                                            isStudent ? 'bg-emerald-50 text-emerald-700' : 'bg-violet-50 text-violet-700'
+                                        }`}>{isStudent ? "Estudiante" : "Instructor"}</span>
+                                        {isStudent ? (
+                                            <span className="text-xs font-bold text-sky-600 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                                                Ver detalle →
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs font-bold text-violet-600">
+                                                Docente Activo
+                                            </span>
+                                        )}
                                     </div>
                                 </button>
                             );

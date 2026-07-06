@@ -52,6 +52,27 @@ public class CursoService {
         cursoRepository.deleteById(id);
     }
 
+    public void decrementarCupo(Long id) {
+        cursoRepository.findById(id).map(c -> {
+            if (c.getCupoDisponible() > 0) {
+                c.setCupoDisponible(c.getCupoDisponible() - 1);
+                return cursoRepository.save(c);
+            } else {
+                throw new IllegalStateException("No hay cupos disponibles para el curso " + id);
+            }
+        }).orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+    }
+
+    public void incrementarCupo(Long id) {
+        cursoRepository.findById(id).map(c -> {
+            if (c.getCupoDisponible() < c.getCupoTotal()) {
+                c.setCupoDisponible(c.getCupoDisponible() + 1);
+                return cursoRepository.save(c);
+            }
+            return c;
+        }).orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+    }
+
     private CursoDTO toDTO(Curso c) {
         return CursoDTO.builder()
                 .id(c.getId())

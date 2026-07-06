@@ -30,10 +30,10 @@ const AdminDashboardPage = () => {
     const unreadCount = notifs.filter(n => !n.leido).length;
 
     const stats = [
-        { label: "Cursos activos", value: loading ? "…" : courses.length,       icon: "📚", from: "from-blue-500",    to: "to-blue-700"    },
-        { label: "Estudiantes",    value: loading ? "…" : students.length,      icon: "🎒", from: "from-emerald-500", to: "to-emerald-700" },
-        { label: "Instructores",   value: loading ? "…" : instructors.length,   icon: "🏫", from: "from-violet-500",  to: "to-violet-700"  },
-        { label: "Sin leer",       value: loading ? "…" : unreadCount,          icon: "🔔", from: "from-amber-400",   to: "to-orange-500"  },
+        { label: "Cursos activos", value: loading ? "…" : courses.length,       icon: "📚", from: "from-blue-500",    to: "to-blue-700",    link: "/admin/cursos" },
+        { label: "Estudiantes",    value: loading ? "…" : students.length,      icon: "🎒", from: "from-emerald-500", to: "to-emerald-700", link: "/admin/estudiantes?role=student" },
+        { label: "Instructores",   value: loading ? "…" : instructors.length,   icon: "🏫", from: "from-violet-500",  to: "to-violet-700",  link: "/admin/estudiantes?role=instructor" },
+        { label: "Sin leer",       value: loading ? "…" : unreadCount,          icon: "🔔", from: "from-amber-400",   to: "to-orange-500",  link: "/admin/notificaciones" },
     ];
 
     const quickLinks = [
@@ -91,8 +91,8 @@ const AdminDashboardPage = () => {
                 {/* Agregamos gap-x-6 gap-y-4 para dar más holgura lateral a los contadores rápidos */}
                 <div className="grid gap-x-6 gap-y-4 !py-6 sm:grid-cols-2 lg:grid-cols-4 mb-16">
                     {stats.map((s, i) => (
-                        <div key={s.label}
-                            className={`relative overflow-hidden rounded-2xl !px-6 bg-gradient-to-br ${s.from} ${s.to} px-6 py-8 shadow-md transition-transform hover:scale-[1.02] duration-300 animate-fadeInUp`}
+                        <Link key={s.label} to={s.link}
+                            className={`relative overflow-hidden rounded-2xl !px-6 bg-gradient-to-br ${s.from} ${s.to} px-6 py-8 shadow-md transition-transform hover:scale-[1.02] duration-300 animate-fadeInUp block cursor-pointer`}
                             style={{ animationDelay: `${i * 80}ms` }}>
                             
                             <div className="absolute -right-4 -top-4 text-8xl opacity-10 select-none pointer-events-none">
@@ -100,7 +100,7 @@ const AdminDashboardPage = () => {
                             </div>
                             <p className="text-6xl font-black text-white tracking-tight leading-none">{s.value}</p>
                             <p className="mt-3 text-xs font-bold uppercase tracking-wider text-white/90">{s.label}</p>
-                        </div>
+                        </Link>
                     ))}
                 </div>
 

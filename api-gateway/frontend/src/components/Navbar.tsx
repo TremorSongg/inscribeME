@@ -18,8 +18,10 @@ const Navbar = () => {
     useEffect(() => {
         if (theme === "dark") {
             document.documentElement.classList.add("dark");
+            document.documentElement.setAttribute("data-theme", "dark");
         } else {
             document.documentElement.classList.remove("dark");
+            document.documentElement.removeAttribute("data-theme");
         }
         localStorage.setItem("theme", theme);
     }, [theme]);

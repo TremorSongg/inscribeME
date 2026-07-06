@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { cursosService, getIcon, getCategory, type CursoDTO } from "../services/cursosService";
 import { carritoService } from "../services/carritoService";
+import { inscripcionesService } from "../services/inscripcionesService";
 
 const CATEGORIES = ["Todos", "Deporte", "Fitness", "Aventura", "Bienestar", "Arte", "General"];
 
@@ -12,6 +13,7 @@ const ProductPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState("Todos");
     const [cartIds, setCartIds] = useState<number[]>([]);
+    const [enrolledIds, setEnrolledIds] = useState<number[]>([]);
     const [notification, setNotification] = useState<string | null>(null);
 
     // Cargar cursos del backend
@@ -21,12 +23,38 @@ const ProductPage = () => {
             .catch(() => { setError("No se pudo cargar los cursos."); setLoading(false); });
     }, []);
 
+    // Cargar carrito e inscripciones si está logueado
+    useEffect(() => {
+        if (!user) {
+            setCartIds([]);
+            setEnrolledIds([]);
+            return;
+        }
+
+        // Cargar el carrito
+        carritoService.obtener(user.id)
+            .then((data) => {
+                setCartIds((data.items ?? []).map(item => item.cursoId));
+            })
+            .catch(() => setCartIds([]));
+
+        // Cargar inscripciones
+        inscripcionesService.listarPorUsuario(user.id)
+            .then((data) => {
+                setEnrolledIds((data ?? [])
+                    .filter(ins => ins.estado === "INSCRITO" || ins.estado === "COMPLETADO")
+                    .map(ins => ins.cursoId)
+                );
+            })
+            .catch(() => setEnrolledIds([]));
+    }, [user]);
+
     const filtered = selectedCategory === "Todos"
         ? courses
         : courses.filter((c) => getCategory(c.nombre) === selectedCategory);
 
     const handleAddToCart = async (course: CursoDTO) => {
-        if (cartIds.includes(course.id)) return;
+        if (cartIds.includes(course.id) || enrolledIds.includes(course.id)) return;
 
         if (user) {
             try {
@@ -36,14 +64,18 @@ const ProductPage = () => {
                     course.nombre,
                     course.precio
                 );
-            } catch {
-                // Falla backend fallback
+                setCartIds((prev) => [...prev, course.id]);
+                setNotification(`✅ "${course.nombre}" agregado al carrito`);
+                setTimeout(() => setNotification(null), 3000);
+            } catch (err) {
+                setNotification(`⚠️ Ya estás inscrito en este curso o ya se encuentra en tu carrito`);
+                setTimeout(() => setNotification(null), 4000);
             }
+        } else {
+            setCartIds((prev) => [...prev, course.id]);
+            setNotification(`✅ "${course.nombre}" agregado al carrito`);
+            setTimeout(() => setNotification(null), 3000);
         }
-
-        setCartIds((prev) => [...prev, course.id]);
-        setNotification(`✅ "${course.nombre}" agregado al carrito`);
-        setTimeout(() => setNotification(null), 3000);
     };
 
     const canEnroll = !user || user.role === "ESTUDIANTE";
@@ -144,20 +176,33 @@ const ProductPage = () => {
                                     <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                                         {filtered.map((course) => {
                                             const inCart = cartIds.includes(course.id);
+                                            const enrolled = enrolledIds.includes(course.id);
                                             const icon = getIcon(course.nombre);
                                             const category = getCategory(course.nombre);
+                                            const isFull = course.cupoDisponible === 0;
+
                                             return (
                                                 <article
                                                     key={course.id}
-                                                    className="group flex h-full flex-col rounded-3xl border border-neutral-200 bg-white p-6 shadow-[0_2px_8px_rgba(0,0,0,0.02)] transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20"
+                                                    className={`group flex h-full flex-col rounded-3xl border p-6 transition-all duration-300 ${
+                                                        isFull
+                                                            ? "border-red-200 bg-red-50/5 opacity-90 shadow-sm"
+                                                            : "border-neutral-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20"
+                                                    }`}
                                                 >
                                                     <div className="mb-5 flex items-center justify-between">
                                                         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-3xl shadow-inner">
                                                             {icon}
                                                         </div>
-                                                        <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-600">
-                                                            {category}
-                                                        </span>
+                                                        {isFull ? (
+                                                            <span className="rounded-full bg-red-100 px-3 py-1 text-xs font-bold text-red-700 border border-red-200">
+                                                                🔴 Sin cupos
+                                                            </span>
+                                                        ) : (
+                                                            <span className="rounded-full bg-primary-100 px-3 py-1 text-xs font-bold text-primary-600">
+                                                                {category}
+                                                            </span>
+                                                        )}
                                                     </div>
 
                                                     <h3 className="mb-2 text-xl font-bold text-neutral-900 font-display">
@@ -178,19 +223,19 @@ const ProductPage = () => {
                                                         <div className="flex justify-between">
                                                             <span className="font-medium text-neutral-700">Inicio</span>
                                                             <span className="font-semibold text-neutral-800">
-                                                                {course.fechaInicio ? new Date(course.fechaInicio).toLocaleDateString("es-CL") : "—"}
+                                                                {course.fechaInicio ? new Date(course.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
                                                             <span className="font-medium text-neutral-700">Término</span>
                                                             <span className="font-semibold text-neutral-800">
-                                                                {course.fechaFin ? new Date(course.fechaFin).toLocaleDateString("es-CL") : "—"}
+                                                                {course.fechaFin ? new Date(course.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : "—"}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
                                                             <span className="font-medium text-neutral-700">Cupos</span>
-                                                            <span className={`font-bold ${course.cupoDisponible <= 5 ? "text-red-600" : "text-green-600"}`}>
-                                                                {course.cupoDisponible}
+                                                            <span className={`font-bold ${isFull ? "text-red-600" : course.cupoDisponible <= 5 ? "text-amber-600" : "text-green-600"}`}>
+                                                                {isFull ? "Agotados (0)" : `${course.cupoDisponible} disponibles`}
                                                             </span>
                                                         </div>
                                                         <div className="flex justify-between">
@@ -204,20 +249,24 @@ const ProductPage = () => {
                                                             id={`btn-add-cart-${course.id}`}
                                                             type="button"
                                                             onClick={() => handleAddToCart(course)}
-                                                            disabled={inCart || course.cupoDisponible === 0}
+                                                            disabled={inCart || enrolled || isFull}
                                                             className={`mt-auto rounded-full px-5 py-3.5 text-sm font-bold transition-all duration-200 cursor-pointer text-center ${
-                                                                inCart
-                                                                    ? "bg-green-50 text-green-700 border border-green-200 cursor-default"
-                                                                    : course.cupoDisponible === 0
-                                                                        ? "bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed shadow-none"
-                                                                        : "btn btn-primary shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                                                                enrolled
+                                                                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-not-allowed shadow-none"
+                                                                    : inCart
+                                                                        ? "bg-green-50 text-green-700 border border-green-200 cursor-default"
+                                                                        : isFull
+                                                                            ? "bg-neutral-100 text-neutral-400 border border-neutral-200 cursor-not-allowed shadow-none"
+                                                                            : "btn btn-primary shadow-md hover:shadow-lg hover:-translate-y-0.5"
                                                             }`}
                                                         >
-                                                            {inCart
-                                                                ? "✓ En carrito"
-                                                                : course.cupoDisponible === 0
-                                                                    ? "Sin cupos"
-                                                                    : "Agregar al carrito"}
+                                                            {enrolled
+                                                                ? "Ya inscrito"
+                                                                : inCart
+                                                                    ? "✓ En carrito"
+                                                                    : isFull
+                                                                        ? "Sin cupos"
+                                                                        : "Agregar al carrito"}
                                                         </button>
                                                     ) : (
                                                         <div className="mt-auto rounded-2xl bg-neutral-100 border border-neutral-200 py-3 text-center text-xs font-semibold text-neutral-500">
