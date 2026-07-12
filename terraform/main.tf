@@ -156,18 +156,18 @@ resource "aws_instance" "inscribeme_instance" {
               apt-get update -y
               apt-get install -y apt-transport-https ca-certificates curl software-properties-common git
 
-              # Instalar Docker
+              # Instalar Docker (usamos amd64 y jammy directamente)
               curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-              echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \$(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+              echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
               apt-get update -y
               apt-get install -y docker-ce docker-ce-cli containerd.io
 
               # Permitir ejecutar docker sin sudo al usuario ubuntu
               usermod -aG docker ubuntu
 
-              # Instalar Docker Compose v2 como plugin de Docker
+              # Instalar Docker Compose v2 como plugin de Docker (usando linux-x86_64 directamente)
               mkdir -p /usr/local/lib/docker/cli-plugins
-              curl -SL "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-\$(uname -s)-\$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              curl -SL "https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64" -o /usr/local/lib/docker/cli-plugins/docker-compose
               chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
               ln -s /usr/local/lib/docker/cli-plugins/docker-compose /usr/bin/docker-compose
 

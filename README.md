@@ -185,6 +185,56 @@ El frontend se levantará en `http://localhost:5173`. Las llamadas a `/api/*` se
 
 ---
 
+### Opción C: Despliegue en AWS con Terraform (Laboratorio ☁️)
+
+Este método automatiza por completo el aprovisionamiento de la infraestructura en AWS (VPC, Subred, Security Group e Instancia EC2) y levanta de forma automatizada todo el stack de contenedores de **InscribeMe** con Docker.
+
+#### 1. Preparar las Variables Locales
+1. Accede al directorio `terraform/`.
+2. Crea el archivo de variables locales `terraform.tfvars` copiando la plantilla de ejemplo:
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+3. Abre `terraform.tfvars` y edítalo para configurar el nombre de tu Key Pair de AWS y las contraseñas que desees utilizar.
+
+#### 2. Exportar Credenciales de AWS
+En la terminal donde vas a ejecutar Terraform, exporta las credenciales temporales de tu laboratorio de AWS:
+
+*   **En Windows (PowerShell):**
+    ```powershell
+    $env:AWS_ACCESS_KEY_ID="ASIARCK..."
+    $env:AWS_SECRET_ACCESS_KEY="..."
+    $env:AWS_SESSION_TOKEN="..."
+    $env:AWS_DEFAULT_REGION="us-east-1"
+    ```
+*   **En Linux/macOS (Bash):**
+    ```bash
+    export AWS_ACCESS_KEY_ID="ASIARCK..."
+    export AWS_SECRET_ACCESS_KEY="..."
+    export AWS_SESSION_TOKEN="..."
+    export AWS_DEFAULT_REGION="us-east-1"
+    ```
+
+#### 3. Ejecutar el Despliegue
+Desde la carpeta `terraform/`, ejecuta en orden:
+1.  **Inicializar Terraform:**
+    ```bash
+    terraform init
+    ```
+2.  **Verificar el Plan:**
+    ```bash
+    terraform plan
+    ```
+3.  **Desplegar Recursos:**
+    ```bash
+    terraform apply
+    ```
+    *(Escribe `yes` cuando lo solicite para confirmar el despliegue)*
+
+*Nota: Una vez completado el comando de Terraform, la máquina EC2 en AWS tomará unos 3 a 5 minutos en instalar Docker, clonar el repositorio, compilar el frontend y los microservicios Java, y levantar la aplicación. Al finalizar, Terraform imprimirá en la consola las URLs públicas para acceder al Frontend, Eureka Server y Admin Dashboard.*
+
+---
+
 ## 🔍 Direcciones y Puertos Útiles
 
 Una vez desplegada la aplicación, podrás acceder a los siguientes paneles e interfaces:

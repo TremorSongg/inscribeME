@@ -35,3 +35,11 @@ db.crypt
 *.bak
 *~
 .DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfvars.json
+terraform.tfvars
