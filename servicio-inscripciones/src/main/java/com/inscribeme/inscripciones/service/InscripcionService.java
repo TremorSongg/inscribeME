@@ -65,6 +65,7 @@ public class InscripcionService {
     public List<InscripcionDTO> obtenerInscripcionesPorUsuario(Long usuarioId) {
         return inscripcionRepository.findByUsuarioId(usuarioId).stream()
                 .map(i -> InscripcionDTO.builder()
+                        .id(i.getId())
                         .cursoId(i.getCursoId())
                         .nombreCurso(i.getNombreCurso())
                         .descripcionCurso(i.getDescripcionCurso())
@@ -80,6 +81,7 @@ public class InscripcionService {
     public List<AlumnoCursoDTO> obtenerAlumnosPorCurso(Long cursoId) {
         return inscripcionRepository.findByCursoId(cursoId).stream()
                 .map(i -> AlumnoCursoDTO.builder()
+                        .inscripcionId(i.getId())
                         .usuarioId(i.getUsuarioId())
                         .nombreUsuario(i.getNombreUsuario() != null ? i.getNombreUsuario() : "Alumno #" + i.getUsuarioId())
                         .cursoId(i.getCursoId())

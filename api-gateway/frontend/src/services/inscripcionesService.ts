@@ -4,6 +4,7 @@ import { api } from "./api";
 export type EstadoInscripcion = "INSCRITO" | "COMPLETADO" | "CANCELADO";
 
 export type InscripcionDTO = {
+    id?: number;
     cursoId: number;
     nombreCurso: string;
     descripcionCurso: string;
@@ -15,6 +16,7 @@ export type InscripcionDTO = {
 };
 
 export type AlumnoCursoDTO = {
+    inscripcionId?: number;
     usuarioId: number;
     nombreUsuario: string;
     cursoId: number;
@@ -72,6 +74,10 @@ export const inscripcionesService = {
     /** Admin: crear inscripción directa sin carrito */
     crear: (payload: InscripcionPayload) =>
         api.post<{ id: number }>("/api/inscripciones", payload),
+
+    /** Dar de baja / eliminar inscripción */
+    eliminar: (id: number) =>
+        api.delete<void>(`/api/inscripciones/${id}`),
 
     /** Registrar asistencia individual (upsert) */
     registrarAsistencia: (dto: AsistenciaDTO) =>

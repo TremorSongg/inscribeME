@@ -37,5 +37,6 @@ export const usuariosService = {
     listarTodos: () => api.get<UsuarioBackend[]>("/api/usuarios"),
     obtenerPorId: (id: number) => api.get<UsuarioBackend>(`/api/usuarios/${id}`),
     listarInstructores: () => api.get<UsuarioBackend[]>("/api/usuarios/instructores"),
+    actualizar: (id: number, payload: Partial<RegisterPayload>) => api.put<UsuarioBackend>(`/api/usuarios/${id}`, payload),
     eliminar: (id: number) => api.delete<void>(`/api/usuarios/${id}`),
 };

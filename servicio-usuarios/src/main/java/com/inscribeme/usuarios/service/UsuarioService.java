@@ -17,11 +17,11 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
 
     public List<Usuario> listarUsuarios() {
-        return usuarioRepository.findAll();
+        return usuarioRepository.findByEliminadoFalse();
     }
 
     public Optional<Usuario> obtenerPorId(Long id) {
-        return usuarioRepository.findById(id);
+        return usuarioRepository.findByIdAndEliminadoFalse(id);
     }
 
     public Usuario crearUsuario(Usuario usuario) {
@@ -34,15 +34,19 @@ public class UsuarioService {
         if (usuario.getTelefono() == null) {
             usuario.setTelefono("");
         }
+        usuario.setEliminado(false);
         return usuarioRepository.save(usuario);
     }
 
     public void eliminarUsuario(Long id) {
-        usuarioRepository.deleteById(id);
+        usuarioRepository.findById(id).ifPresent(u -> {
+            u.setEliminado(true);
+            usuarioRepository.save(u);
+        });
     }
 
     public Usuario actualizarUsuario(Long id, Usuario datosActualizados) {
-        return usuarioRepository.findById(id).map(u -> {
+        return usuarioRepository.findByIdAndEliminadoFalse(id).map(u -> {
             if (datosActualizados.getEmail() != null && !u.getEmail().equalsIgnoreCase(datosActualizados.getEmail())) {
                 if (usuarioRepository.findByEmail(datosActualizados.getEmail()).isPresent()) {
                     throw new EmailAlreadyExistsException("El correo ya está registrado");
@@ -60,11 +64,11 @@ public class UsuarioService {
     }
 
     public Optional<Usuario> autenticar(String email, String password) {
-        return usuarioRepository.findByEmail(email)
+        return usuarioRepository.findByEmailAndEliminadoFalse(email)
                 .filter(u -> u.getPassword().equals(password));
     }
 
     public List<Usuario> obtenerInstructores() {
-        return usuarioRepository.findByRol(Rol.INSTRUCTOR);
+        return usuarioRepository.findByRolAndEliminadoFalse(Rol.INSTRUCTOR);
     }
 }

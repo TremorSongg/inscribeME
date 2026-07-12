@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 const Footer = () => {
+    const { isAuthenticated } = useAuth();
     return (
         <footer className="w-full flex flex-col items-center">
             <section className="mt-16 bg-gradient-to-b from-sky-50 to-white border-t-2 border-sky-100 py-16 px-6 md:px-12 lg:px-20 font-sans text-neutral-800 w-full flex flex-col items-center">
@@ -30,8 +32,12 @@ const Footer = () => {
                                 <li><Link to="/" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Inicio</Link></li>
                                 <li><Link to="/cursos" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Cursos</Link></li>
                                 <li><Link to="/nosotros" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Nosotros</Link></li>
-                                <li><Link to="/login" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Iniciar sesión</Link></li>
-                                <li><Link to="/registro" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Registrarse</Link></li>
+                                {!isAuthenticated && (
+                                    <>
+                                        <li><Link to="/login" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Iniciar sesión</Link></li>
+                                        <li><Link to="/registro" className="text-neutral-800 hover:text-sky-600 font-medium transition-all duration-300">Registrarse</Link></li>
+                                    </>
+                                )}
                             </ul>
                         </div>
 

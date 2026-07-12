@@ -17,24 +17,25 @@ public class CursoService {
     private final CursoRepository cursoRepository;
 
     public List<CursoDTO> obtenerTodosComoDTO() {
-        return cursoRepository.findAll().stream()
+        return cursoRepository.findByEliminadoFalse().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
     public Optional<Curso> obtenerPorId(Long id) {
-        return cursoRepository.findById(id);
+        return cursoRepository.findByIdAndEliminadoFalse(id);
     }
 
     public Curso crear(Curso curso) {
         if (curso.getCupoDisponible() == 0) {
             curso.setCupoDisponible(curso.getCupoTotal());
         }
+        curso.setEliminado(false);
         return cursoRepository.save(curso);
     }
 
     public Curso actualizar(Long id, Curso cursoActualizado) {
-        return cursoRepository.findById(id).map(c -> {
+        return cursoRepository.findByIdAndEliminadoFalse(id).map(c -> {
             c.setNombre(cursoActualizado.getNombre());
             c.setDescripcion(cursoActualizado.getDescripcion());
             c.setPrecio(cursoActualizado.getPrecio());
@@ -49,7 +50,10 @@ public class CursoService {
     }
 
     public void eliminar(Long id) {
-        cursoRepository.deleteById(id);
+        cursoRepository.findById(id).ifPresent(c -> {
+            c.setEliminado(true);
+            cursoRepository.save(c);
+        });
     }
 
     public void decrementarCupo(Long id) {

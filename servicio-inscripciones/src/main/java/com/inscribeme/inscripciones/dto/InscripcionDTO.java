@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class InscripcionDTO {
+    private Long id;
     private Long cursoId;
     private String nombreCurso;
     private String descripcionCurso;

@@ -29,7 +29,10 @@ public class Curso {
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
 
-    // Referencia al instructor por ID (no JPA cross-service join)
     private Long instructorId;
     private String nombreInstructor; // Desnormalizado para consultas rápidas
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean eliminado = false;
 }

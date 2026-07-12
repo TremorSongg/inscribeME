@@ -184,7 +184,7 @@ const ProductPage = () => {
                                             return (
                                                 <article
                                                     key={course.id}
-                                                    className={`group flex h-full flex-col rounded-3xl border p-6 transition-all duration-300 ${
+                                                    className={`group flex h-full flex-col rounded-3xl border p-8 transition-all duration-300 ${
                                                         isFull
                                                             ? "border-red-200 bg-red-50/5 opacity-90 shadow-sm"
                                                             : "border-neutral-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20"

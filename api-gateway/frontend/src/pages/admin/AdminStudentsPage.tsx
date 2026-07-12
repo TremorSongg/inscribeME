@@ -8,14 +8,28 @@ import { inscripcionesService, type InscripcionDTO, type AsistenciaDTO } from ".
 const StudentDetailPanel = ({
     student,
     onClose,
+    onCancelInscripcion,
 }: {
     student: UsuarioBackend;
     onClose: () => void;
+    onCancelInscripcion?: () => void;
 }) => {
     const [inscripciones, setInscripciones] = useState<InscripcionDTO[]>([]);
     const [attendance, setAttendance] = useState<AsistenciaDTO[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<"cursos" | "asistencia">("cursos");
+
+    const handleCancelInscripcion = async (inscripcionId: number, nombreCurso: string) => {
+        if (!window.confirm(`¿Estás seguro de que deseas dar de baja al estudiante del curso «${nombreCurso}»?`)) return;
+        try {
+            await inscripcionesService.eliminar(inscripcionId);
+            setInscripciones(prev => prev.filter(ins => ins.id !== inscripcionId));
+            alert(`El estudiante fue dado de baja de «${nombreCurso}» correctamente.`);
+            if (onCancelInscripcion) onCancelInscripcion();
+        } catch {
+            alert("Error al intentar dar de baja.");
+        }
+    };
 
     useEffect(() => {
         inscripcionesService.listarPorUsuario(student.id)
@@ -144,12 +158,23 @@ const StudentDetailPanel = ({
                                                         : ""}
                                                 </p>
                                             </div>
-                                            <span className={`shrink-0 self-start rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
-                                                ins.estado === "INSCRITO" ? "bg-green-50 text-green-700" :
-                                                ins.estado === "COMPLETADO" ? "bg-blue-50 text-blue-700" :
-                                                "bg-neutral-50 text-neutral-600"}`}>
-                                                {ins.estado}
-                                            </span>
+                                            <div className="flex flex-col gap-2 items-end justify-between shrink-0">
+                                                <span className={`shrink-0 self-start rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
+                                                    ins.estado === "INSCRITO" ? "bg-green-50 text-green-700" :
+                                                    ins.estado === "COMPLETADO" ? "bg-blue-50 text-blue-700" :
+                                                    "bg-neutral-50 text-neutral-600"}`}>
+                                                    {ins.estado}
+                                                </span>
+                                                {ins.id && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleCancelInscripcion(ins.id!, ins.nombreCurso)}
+                                                        className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm"
+                                                    >
+                                                        Dar de baja
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -227,9 +252,47 @@ const AdminStudentsPage = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [selected, setSelected] = useState<UsuarioBackend | null>(null);
-    const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR">(
-        roleParam === "instructor" ? "INSTRUCTOR" : "ESTUDIANTE"
+    const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR" | "ADMIN">(
+        roleParam === "admin" ? "ADMIN" : roleParam === "instructor" ? "INSTRUCTOR" : "ESTUDIANTE"
     );
+
+    const [editingUser, setEditingUser] = useState<UsuarioBackend | null>(null);
+    const [editForm, setEditForm] = useState<{ nombre: string; email: string; telefono: string; rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" }>({
+        nombre: "", email: "", telefono: "", rol: "ESTUDIANTE"
+    });
+
+    const handleOpenEditModal = (u: UsuarioBackend) => {
+        setEditingUser(u);
+        setEditForm({
+            nombre: u.nombre,
+            email: u.email,
+            telefono: u.telefono || "",
+            rol: u.rol
+        });
+    };
+
+    const handleSaveUser = async () => {
+        if (!editingUser) return;
+        try {
+            const updated = await usuariosService.actualizar(editingUser.id, editForm);
+            setAllUsers(prev => prev.map(u => u.id === editingUser.id ? updated : u));
+            setEditingUser(null);
+            alert("Usuario actualizado correctamente.");
+        } catch (err: any) {
+            alert(err?.response?.data?.message || "Error al actualizar el usuario.");
+        }
+    };
+
+    const handleConfirmDeleteUser = async (userId: number) => {
+        if (!window.confirm("¿Estás seguro de que deseas eliminar a este usuario? Esta acción lo desactivará del sistema.")) return;
+        try {
+            await usuariosService.eliminar(userId);
+            setAllUsers(prev => prev.filter(u => u.id !== userId));
+            alert("Usuario eliminado correctamente.");
+        } catch {
+            alert("Error al eliminar el usuario.");
+        }
+    };
 
     useEffect(() => {
         if (roleParam === "instructor") {
@@ -248,9 +311,9 @@ const AdminStudentsPage = () => {
             .catch(() => setLoading(false));
     }, [user]);
 
-    const handleTabChange = (role: "ESTUDIANTE" | "INSTRUCTOR") => {
+    const handleTabChange = (role: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN") => {
         setActiveTab(role);
-        setSearchParams({ role: role === "INSTRUCTOR" ? "instructor" : "student" });
+        setSearchParams({ role: role === "ADMIN" ? "admin" : role === "INSTRUCTOR" ? "instructor" : "student" });
     };
 
     const filteredUsers = allUsers.filter(u => u.rol === activeTab);
@@ -302,6 +365,17 @@ const AdminStudentsPage = () => {
                     >
                         🏫 Instructores ({allUsers.filter(u => u.rol === "INSTRUCTOR").length})
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => handleTabChange("ADMIN")}
+                        className={`px-6 py-3 font-bold text-sm border-b-2 transition-all cursor-pointer ${
+                            activeTab === "ADMIN"
+                                ? "border-amber-600 text-amber-600 font-black"
+                                : "border-transparent text-neutral-500 hover:text-neutral-700"
+                        }`}
+                    >
+                        🛠️ Administradores ({allUsers.filter(u => u.rol === "ADMIN").length})
+                    </button>
                 </div>
 
                 {/* Search Bar Refinada */}
@@ -310,7 +384,9 @@ const AdminStudentsPage = () => {
                         <input id="student-search" type="text" value={search} onChange={e => setSearch(e.target.value)}
                             placeholder={activeTab === "ESTUDIANTE" 
                                 ? "🔍 Buscar estudiantes por nombre o correo electrónico..."
-                                : "🔍 Buscar instructores por nombre o correo electrónico..."}
+                                : activeTab === "INSTRUCTOR"
+                                    ? "🔍 Buscar instructores por nombre o correo electrónico..."
+                                    : "🔍 Buscar administradores por nombre o correo electrónico..."}
                             className="w-full rounded-xl border border-neutral-300 bg-white py-4 pl-12 pr-4 text-sm shadow-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
                     </div>
                 </div>
@@ -334,15 +410,19 @@ const AdminStudentsPage = () => {
                     <div className="grid gap-x-6 !py-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {filtered.map((s, i) => {
                             const studentPhoto = localStorage.getItem(`profilePhoto_${s.id}`);
-                            const isStudent = activeTab === "ESTUDIANTE";
+                            const isStudent = s.rol === "ESTUDIANTE";
+                            const isInstructor = s.rol === "INSTRUCTOR";
+                            const isAdmin = s.rol === "ADMIN";
                             return (
-                                <button key={s.id} id={`${isStudent ? 'student' : 'instructor'}-card-${s.id}`}
+                                <button key={s.id} id={`${isStudent ? 'student' : isInstructor ? 'instructor' : 'admin'}-card-${s.id}`}
                                     type="button"
                                     onClick={() => { if (isStudent) setSelected(s); }}
                                     className={`group w-full rounded-xl p-6 shadow-sm border text-left transition-all duration-300 animate-fadeInUp flex flex-col justify-between ${
                                         isStudent 
                                             ? "bg-sky-100 border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 cursor-pointer"
-                                            : "bg-violet-100 border-violet-300 cursor-default"
+                                            : isInstructor
+                                                ? "bg-violet-100 border-violet-300 hover:-translate-y-1 hover:shadow-lg hover:border-violet-500/30 cursor-pointer"
+                                                : "bg-amber-100 border-amber-300 hover:-translate-y-1 hover:shadow-lg hover:border-amber-500/30 cursor-pointer"
                                     }`}
                                     style={{ animationDelay: `${i * 50}ms` }}>
                                     
@@ -350,10 +430,12 @@ const AdminStudentsPage = () => {
                                         <div className="flex items-center gap-4">
                                             {studentPhoto ? (
                                                 <img src={studentPhoto} alt={s.nombre}
-                                                    className={`h-12 w-12 rounded-full object-cover border-2 shadow-sm ${isStudent ? 'border-sky-500/30' : 'border-violet-500/30'}`} />
+                                                    className={`h-12 w-12 rounded-full object-cover border-2 shadow-sm ${
+                                                        isStudent ? 'border-sky-500/30' : isInstructor ? 'border-violet-500/30' : 'border-amber-500/30'
+                                                    }`} />
                                             ) : (
                                                 <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-xl font-bold text-white shadow-sm bg-gradient-to-br ${
-                                                    isStudent ? 'from-sky-900 to-sky-950' : 'from-violet-900 to-violet-950'
+                                                    isStudent ? 'from-sky-900 to-sky-950' : isInstructor ? 'from-violet-900 to-violet-950' : 'from-amber-900 to-amber-950'
                                                 }`}>
                                                     {s.nombre.charAt(0).toUpperCase()}
                                                 </div>
@@ -373,17 +455,25 @@ const AdminStudentsPage = () => {
                                     
                                     <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between w-full">
                                         <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
-                                            isStudent ? 'bg-emerald-50 text-emerald-700' : 'bg-violet-50 text-violet-700'
-                                        }`}>{isStudent ? "Estudiante" : "Instructor"}</span>
-                                        {isStudent ? (
-                                            <span className="text-xs font-bold text-sky-600 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                                                Ver detalle →
-                                            </span>
-                                        ) : (
-                                            <span className="text-xs font-bold text-violet-600">
-                                                Docente Activo
-                                            </span>
-                                        )}
+                                            isStudent ? 'bg-emerald-50 text-emerald-700' :
+                                            isInstructor ? 'bg-violet-50 text-violet-700' : 'bg-amber-50 text-amber-700'
+                                        }`}>{isStudent ? "Estudiante" : isInstructor ? "Instructor" : "Admin"}</span>
+                                        <div className="flex gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); handleOpenEditModal(s); }}
+                                                className="rounded-lg border border-sky-200 bg-sky-50 px-2.5 py-1 text-xs font-bold text-sky-700 hover:bg-sky-100 hover:border-sky-300 transition-all cursor-pointer shadow-sm"
+                                            >
+                                                Editar
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={(e) => { e.stopPropagation(); handleConfirmDeleteUser(s.id); }}
+                                                className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm"
+                                            >
+                                                Eliminar
+                                            </button>
+                                        </div>
                                     </div>
                                 </button>
                             );
@@ -394,7 +484,82 @@ const AdminStudentsPage = () => {
 
             {/* Panel detalle modal */}
             {selected && (
-                <StudentDetailPanel student={selected} onClose={() => setSelected(null)} />
+                <StudentDetailPanel
+                    student={selected}
+                    onClose={() => setSelected(null)}
+                    onCancelInscripcion={() => {
+                        usuariosService.listarTodos().then(setAllUsers).catch(() => {});
+                    }}
+                />
+            )}
+
+            {/* Modal de Edición de Usuario */}
+            {editingUser && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
+                    <div className="w-full max-w-md rounded-xl bg-white p-7 shadow-2xl border border-neutral-100 text-left animate-scaleIn">
+                        <h2 className="text-2xl font-black text-neutral-900">Editar Usuario</h2>
+                        <p className="mt-1 text-sm text-neutral-600">Modifica los detalles del usuario en el ecosistema.</p>
+                        
+                        <div className="mt-5 space-y-4">
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Nombre completo</label>
+                                <input
+                                    type="text"
+                                    value={editForm.nombre}
+                                    onChange={e => setEditForm({ ...editForm, nombre: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    value={editForm.email}
+                                    onChange={e => setEditForm({ ...editForm, email: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Teléfono</label>
+                                <input
+                                    type="text"
+                                    value={editForm.telefono}
+                                    onChange={e => setEditForm({ ...editForm, telefono: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Rol del sistema</label>
+                                <select
+                                    value={editForm.rol}
+                                    onChange={e => setEditForm({ ...editForm, rol: e.target.value as any })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                >
+                                    <option value="ESTUDIANTE">Estudiante</option>
+                                    <option value="INSTRUCTOR">Instructor</option>
+                                    <option value="ADMIN">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setEditingUser(null)}
+                                className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleSaveUser}
+                                className="flex-1 rounded-xl bg-sky-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition cursor-pointer"
+                            >
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </main>
     );

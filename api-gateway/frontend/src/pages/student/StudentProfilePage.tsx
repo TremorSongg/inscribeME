@@ -95,6 +95,21 @@ const StudentProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [notificaciones, setNotificaciones] = useState<NotificacionDTO[]>([]);
     const [loadingNotifs, setLoadingNotifs] = useState(false);
+    const [unsubscribingId, setUnsubscribingId] = useState<number | null>(null);
+
+    const handleDarseBaja = async (inscripcionId: number, nombreCurso: string) => {
+        if (!window.confirm(`¿Estás seguro de que deseas darte de baja del curso «${nombreCurso}»?`)) return;
+        setUnsubscribingId(inscripcionId);
+        try {
+            await inscripcionesService.eliminar(inscripcionId);
+            setInscripciones(prev => prev.filter(ins => ins.id !== inscripcionId));
+            alert(`Te has dado de baja de «${nombreCurso}» correctamente.`);
+        } catch (err) {
+            alert("Error al intentar darse de baja. Inténtalo de nuevo.");
+        } finally {
+            setUnsubscribingId(null);
+        }
+    };
 
     // Sincronizar pestaña activa de sessionStorage si se hace click en la campana
     useEffect(() => {
@@ -332,6 +347,19 @@ const StudentProfilePage = () => {
                                                     </p>
                                                 </div>
                                             </div>
+
+                                            {ins.id && (
+                                                <div className="flex justify-end mb-4">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDarseBaja(ins.id!, ins.nombreCurso)}
+                                                        disabled={unsubscribingId === ins.id}
+                                                        className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-xs font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                                                    >
+                                                        {unsubscribingId === ins.id ? "Cancelando..." : "Darse de baja"}
+                                                    </button>
+                                                </div>
+                                            )}
 
                                             {ins.fechaInicioCurso && ins.fechaFinCurso && (
                                                 <MiniCalendar ins={ins} />
