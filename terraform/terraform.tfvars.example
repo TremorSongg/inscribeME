@@ -1,0 +1,28 @@
+# ── Región de AWS ──────────────────────────────────────────────
+aws_region = "us-east-1"
+
+# ── Tipo de Instancia ──────────────────────────────────────────
+# Se recomienda t3.medium (4GB RAM) o t3.large (8GB RAM).
+# t2.micro no cuenta con recursos suficientes para compilar y ejecutar todo el stack.
+instance_type = "t3.medium"
+
+# ── Clave SSH ──────────────────────────────────────────────────
+# Nombre exacto de la llave que creaste en AWS console (ej. inscribeme-key)
+key_name = "inscribeme-key"
+
+# ── Almacenamiento ──────────────────────────────────────────────
+volume_size = 20
+
+# ── Repositorio Git ─────────────────────────────────────────────
+# Si tu repositorio es PRIVADO, debes usar una URL con token:
+# repository_url = "https://<TU_GITHUB_PERSONAL_ACCESS_TOKEN>@github.com/TremorSongg/inscribeME.git"
+repository_url = "https://github.com/TremorSongg/inscribeME.git"
+
+# ── Secretos y Contraseñas de la Aplicación ──────────────────────
+mysql_root_password = "TuPasswordSeguroDeMySQL123!"
+jwt_secret          = "UnaLlaveSecretaMuyLargaYSeguraDeMasDe256BitsDeLongitud!!"
+sba_password        = "PasswordDeSeguridadParaSpringBootAdmin123!"
+
+# ── Configuración de Laboratorio (AWS Academy) ──────────────────
+# Asocia el perfil pre-creado LabInstanceProfile a la instancia EC2.
+use_aws_academy_role = true
