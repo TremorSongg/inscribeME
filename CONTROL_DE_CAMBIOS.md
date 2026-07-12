@@ -4,6 +4,19 @@ Este documento registra de manera detallada el historial de versiones, modificac
 
 ---
 
+## [v2.1.1] - 2026-07-12
+
+Esta versión introduce el control y manejo de excepciones para el registro de correos electrónicos duplicados en el microservicio de usuarios.
+
+### 🚀 Novedades y Mejoras Principales
+
+#### 🛡️ 1. Control de Correos Duplicados en Registro
+*   **Validación de Correo Único:** Modificado [UsuarioService.java](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/servicio-usuarios/src/main/java/com/inscribeme/usuarios/service/UsuarioService.java) para verificar la existencia del correo electrónico previo al registro (`crearUsuario`) o actualización (`actualizarUsuario`), lanzando una excepción personalizada si ya existe.
+*   **Excepción de Negocio:** Creación de la excepción [EmailAlreadyExistsException.java](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/servicio-usuarios/src/main/java/com/inscribeme/usuarios/exception/EmailAlreadyExistsException.java) para diferenciar los conflictos de correo duplicado.
+*   **Manejo Global de Excepciones:** Implementado [GlobalExceptionHandler.java](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/servicio-usuarios/src/main/java/com/inscribeme/usuarios/exception/GlobalExceptionHandler.java) para interceptar `EmailAlreadyExistsException` y `DataIntegrityViolationException`, retornando un estado `400 Bad Request` y un cuerpo JSON con el mensaje `"El correo ya está registrado"`.
+
+---
+
 ## [v2.1.0] - 2026-07-06
 
 Esta versión incorpora el control de stock de cupos en tiempo real sincronizado entre microservicios, bloqueo de duplicaciones en carrito, mejoras en el panel administrativo y estandarización global del modo oscuro.

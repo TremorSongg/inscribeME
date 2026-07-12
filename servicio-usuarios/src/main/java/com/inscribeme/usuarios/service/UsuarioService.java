@@ -1,5 +1,6 @@
 package com.inscribeme.usuarios.service;
 
+import com.inscribeme.usuarios.exception.EmailAlreadyExistsException;
 import com.inscribeme.usuarios.model.Rol;
 import com.inscribeme.usuarios.model.Usuario;
 import com.inscribeme.usuarios.repository.UsuarioRepository;
@@ -24,6 +25,9 @@ public class UsuarioService {
     }
 
     public Usuario crearUsuario(Usuario usuario) {
+        if (usuario.getEmail() != null && usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("El correo ya está registrado");
+        }
         if (usuario.getRol() == null) {
             usuario.setRol(Rol.ESTUDIANTE);
         }
@@ -39,6 +43,11 @@ public class UsuarioService {
 
     public Usuario actualizarUsuario(Long id, Usuario datosActualizados) {
         return usuarioRepository.findById(id).map(u -> {
+            if (datosActualizados.getEmail() != null && !u.getEmail().equalsIgnoreCase(datosActualizados.getEmail())) {
+                if (usuarioRepository.findByEmail(datosActualizados.getEmail()).isPresent()) {
+                    throw new EmailAlreadyExistsException("El correo ya está registrado");
+                }
+            }
             u.setNombre(datosActualizados.getNombre());
             u.setEmail(datosActualizados.getEmail());
             if (datosActualizados.getPassword() != null && !datosActualizados.getPassword().isBlank()) {
