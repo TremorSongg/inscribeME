@@ -4,6 +4,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { inscripcionesService, type InscripcionDTO } from "../../services/inscripcionesService";
 import { getIcon } from "../../services/cursosService";
 import { notificacionesService, type NotificacionDTO } from "../../services/notificacionesService";
+import { usuariosService } from "../../services/authService";
 
 // ── MINI CALENDARIO FORMATEADO ────────────────────────────────────────────
 const MiniCalendar = ({ ins }: { ins: InscripcionDTO }) => {
@@ -52,20 +53,23 @@ const MiniCalendar = ({ ins }: { ins: InscripcionDTO }) => {
 };
 
 // ── SUBIDA DE FOTO DE PERFIL COMPARTIDA ───────────────────────────────────
-const ProfilePhoto = ({ userId, username }: { userId: number; username: string }) => {
-    const storageKey = `profilePhoto_${userId}`;
-    const [photo, setPhoto] = useState<string | null>(() => localStorage.getItem(storageKey));
+const ProfilePhoto = ({ username }: { username: string }) => {
+    const { user, updateUserPhoto } = useAuth();
+    const photo = user?.fotoPerfil || null;
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = async (ev) => {
             const base64 = ev.target?.result as string;
-            localStorage.setItem(storageKey, base64);
-            setPhoto(base64);
-            window.dispatchEvent(new Event("profilePhotoUpdated"));
+            try {
+                await usuariosService.actualizar(user!.id, { fotoPerfil: base64 });
+                updateUserPhoto(base64);
+            } catch (err) {
+                alert("Error al guardar la foto de perfil en el servidor.");
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -82,7 +86,7 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="text-white text-xs font-bold">📷 Cambiar</span>
             </div>
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} id={`photo-input-${userId}`} />
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} id={`photo-input-${user?.id}`} />
         </div>
     );
 };
@@ -220,7 +224,7 @@ const StudentProfilePage = () => {
                     {/* ── BARRA LATERAL (SIDEBAR) ─────────────────────────────── */}
                     <aside className="space-y-5 h-fit">
                         <div className="rounded-[24px] bg-sky-100 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 text-center flex flex-col items-center">
-                            <ProfilePhoto userId={user.id} username={user.username} />
+                            <ProfilePhoto username={user.username} />
                             <h2 className="text-lg font-bold text-sky-800 font-display tracking-tight truncate">{user.username}</h2>
                             <p className="text-xs font-semibold text-sky-600 truncate mt-0.5">{user.email}</p>
                             

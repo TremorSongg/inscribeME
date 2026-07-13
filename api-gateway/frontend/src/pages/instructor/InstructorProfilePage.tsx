@@ -7,22 +7,26 @@ import {
     type AlumnoCursoDTO,
     type AsistenciaDTO,
 } from "../../services/inscripcionesService";
+import { usuariosService } from "../../services/authService";
 
 // ── Foto de perfil compartida ──────────────────────────────────
-const ProfilePhoto = ({ userId, username }: { userId: number; username: string }) => {
-    const storageKey = `profilePhoto_${userId}`;
-    const [photo, setPhoto] = useState<string | null>(() => localStorage.getItem(storageKey));
+const ProfilePhoto = ({ username }: { username: string }) => {
+    const { user, updateUserPhoto } = useAuth();
+    const photo = user?.fotoPerfil || null;
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = (ev) => {
+        reader.onload = async (ev) => {
             const base64 = ev.target?.result as string;
-            localStorage.setItem(storageKey, base64);
-            setPhoto(base64);
-            window.dispatchEvent(new Event("profilePhotoUpdated"));
+            try {
+                await usuariosService.actualizar(user!.id, { fotoPerfil: base64 });
+                updateUserPhoto(base64);
+            } catch (err) {
+                alert("Error al guardar la foto de perfil en el servidor.");
+            }
         };
         reader.readAsDataURL(file);
     };
@@ -39,7 +43,7 @@ const ProfilePhoto = ({ userId, username }: { userId: number; username: string }
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <span className="text-white text-xs font-bold">📷 Cambiar</span>
             </div>
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} id={`photo-input-${userId}`} />
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} id={`photo-input-${user?.id}`} />
         </div>
     );
 };
@@ -267,7 +271,7 @@ const InstructorProfilePage = () => {
                     <aside className="space-y-5">
                         {/* Perfil rápido tarjeta */}
                         <div className="rounded-2xl bg-sky-200 p-6 shadow-md border border-neutral-200 text-center flex flex-col items-center">
-                            <ProfilePhoto userId={user.id} username={user.username} />
+                            <ProfilePhoto username={user.username} />
                             <p className="font-bold text-sky-800 text-lg tracking-tight">{user.username}</p>
                             <p className="text-xs font-semibold text-sky-600 mt-0.5 truncate">{user.email}</p>
                             <span className="mt-3 mx-auto w-fit rounded-full bg-blue-50 !px-3 !py-0.5 text-xs font-bold text-blue-700 tracking-wide border border-blue-100">

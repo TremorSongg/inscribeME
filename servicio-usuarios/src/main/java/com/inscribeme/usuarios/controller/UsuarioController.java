@@ -83,6 +83,7 @@ public class UsuarioController {
                     response.put("nombre", usuario.getNombre());
                     response.put("email", usuario.getEmail());
                     response.put("rol", usuario.getRol().name());
+                    response.put("fotoPerfil", usuario.getFotoPerfil());
                     return ResponseEntity.ok(response);
                 })
                 .orElseGet(() -> {

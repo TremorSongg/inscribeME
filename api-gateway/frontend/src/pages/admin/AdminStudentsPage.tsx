@@ -56,7 +56,7 @@ const StudentDetailPanel = ({
         if (inscripciones.length > 0) fetchAll();
     }, [activeTab, inscripciones, student.id]);
 
-    const photo = localStorage.getItem(`profilePhoto_${student.id}`);
+    const photo = student.fotoPerfil || null;
 
     // Agrupar asistencia por curso
     const attendanceByCourse: Record<string, AsistenciaDTO[]> = {};
@@ -460,7 +460,7 @@ const AdminStudentsPage = () => {
                 ) : (
                     <div className="grid gap-x-6 !py-4 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
                         {filtered.map((s, i) => {
-                            const studentPhoto = localStorage.getItem(`profilePhoto_${s.id}`);
+                            const studentPhoto = s.fotoPerfil || null;
                             const isStudent = s.rol === "ESTUDIANTE";
                             const isInstructor = s.rol === "INSTRUCTOR";
                             const isAdmin = s.rol === "ADMIN";

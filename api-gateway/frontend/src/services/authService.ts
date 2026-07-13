@@ -7,6 +7,7 @@ export type LoginResponse = {
     nombre: string;
     email: string;
     rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN";
+    fotoPerfil?: string;
 };
 
 export type RegisterPayload = {
@@ -15,6 +16,7 @@ export type RegisterPayload = {
     password: string;
     telefono: string;
     rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN";
+    fotoPerfil?: string;
 };
 
 export type UsuarioBackend = {
@@ -23,6 +25,7 @@ export type UsuarioBackend = {
     email: string;
     telefono: string;
     rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN";
+    fotoPerfil?: string;
 };
 
 export const authService = {
@@ -37,6 +40,6 @@ export const usuariosService = {
     listarTodos: () => api.get<UsuarioBackend[]>("/api/usuarios"),
     obtenerPorId: (id: number) => api.get<UsuarioBackend>(`/api/usuarios/${id}`),
     listarInstructores: () => api.get<UsuarioBackend[]>("/api/usuarios/instructores"),
-    actualizar: (id: number, payload: Partial<RegisterPayload>) => api.put<UsuarioBackend>(`/api/usuarios/${id}`, payload),
+    actualizar: (id: number, payload: Partial<RegisterPayload & { fotoPerfil?: string }>) => api.put<UsuarioBackend>(`/api/usuarios/${id}`, payload),
     eliminar: (id: number) => api.delete<void>(`/api/usuarios/${id}`),
 };

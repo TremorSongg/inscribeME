@@ -33,4 +33,8 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
+
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String fotoPerfil;
 }

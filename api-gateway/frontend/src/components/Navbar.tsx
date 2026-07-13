@@ -10,7 +10,7 @@ const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
-    const [photo, setPhoto] = useState<string | null>(null);
+    const photo = user?.fotoPerfil || null;
     const [unreadCount, setUnreadCount] = useState(0);
     const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
@@ -39,24 +39,6 @@ const Navbar = () => {
     useEffect(() => { setMenuOpen(false); setUserMenuOpen(false); }, [location.pathname]);
 
     const handleLogout = () => { logout(); navigate("/login"); };
-
-    // Sincronizar foto de perfil reactivamente
-    useEffect(() => {
-        if (user) {
-            setPhoto(localStorage.getItem(`profilePhoto_${user.id}`));
-        } else {
-            setPhoto(null);
-        }
-
-        const handlePhotoUpdate = () => {
-            if (user) {
-                setPhoto(localStorage.getItem(`profilePhoto_${user.id}`));
-            }
-        };
-
-        window.addEventListener("profilePhotoUpdated", handlePhotoUpdate);
-        return () => window.removeEventListener("profilePhotoUpdated", handlePhotoUpdate);
-    }, [user]);
 
     // Cargar notificaciones sin leer reactivamente
     useEffect(() => {

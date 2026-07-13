@@ -59,6 +59,9 @@ public class UsuarioService {
             }
             u.setTelefono(datosActualizados.getTelefono());
             u.setRol(datosActualizados.getRol());
+            if (datosActualizados.getFotoPerfil() != null) {
+                u.setFotoPerfil(datosActualizados.getFotoPerfil());
+            }
             return usuarioRepository.save(u);
         }).orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
     }

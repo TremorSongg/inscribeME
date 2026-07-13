@@ -10,6 +10,7 @@ export type AuthUser = {
     email: string;
     phone: string;    // = telefono del backend
     role: UserRole;
+    fotoPerfil?: string;
 };
 
 type AuthContextType = {
@@ -19,6 +20,7 @@ type AuthContextType = {
     register: (payload: RegisterPayload) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
+    updateUserPhoto: (photoBase64: string) => void;
 };
 
 // ── Contexto ───────────────────────────────────────────────────
@@ -29,6 +31,7 @@ export const AuthContext = createContext<AuthContextType>({
     register: async () => {},
     logout: () => {},
     isAuthenticated: false,
+    updateUserPhoto: () => {},
 });
 
 // ── Provider ───────────────────────────────────────────────────
@@ -67,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             email: data.email,
             phone: "",
             role: data.rol,
+            fotoPerfil: data.fotoPerfil,
         };
         setToken(data.token);
         setUser(authUser);
@@ -85,6 +89,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem("cartCourses");
     };
 
+    const updateUserPhoto = (photoBase64: string) => {
+        setUser(prev => prev ? { ...prev, fotoPerfil: photoBase64 } : null);
+    };
+
     return (
         <AuthContext.Provider
             value={{
@@ -94,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 register,
                 logout,
                 isAuthenticated: user !== null && token !== null,
+                updateUserPhoto,
             }}
         >
             {children}
