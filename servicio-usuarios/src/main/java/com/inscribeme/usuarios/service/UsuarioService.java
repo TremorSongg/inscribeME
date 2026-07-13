@@ -52,13 +52,21 @@ public class UsuarioService {
                     throw new EmailAlreadyExistsException("El correo ya está registrado");
                 }
             }
-            u.setNombre(datosActualizados.getNombre());
-            u.setEmail(datosActualizados.getEmail());
+            if (datosActualizados.getNombre() != null) {
+                u.setNombre(datosActualizados.getNombre());
+            }
+            if (datosActualizados.getEmail() != null) {
+                u.setEmail(datosActualizados.getEmail());
+            }
             if (datosActualizados.getPassword() != null && !datosActualizados.getPassword().isBlank()) {
                 u.setPassword(datosActualizados.getPassword());
             }
-            u.setTelefono(datosActualizados.getTelefono());
-            u.setRol(datosActualizados.getRol());
+            if (datosActualizados.getTelefono() != null) {
+                u.setTelefono(datosActualizados.getTelefono());
+            }
+            if (datosActualizados.getRol() != null) {
+                u.setRol(datosActualizados.getRol());
+            }
             if (datosActualizados.getFotoPerfil() != null) {
                 u.setFotoPerfil(datosActualizados.getFotoPerfil());
             }
