@@ -113,13 +113,17 @@ body {
 .delay-600 { animation-delay: 600ms; }
 
 /* ── Layout ─────────────────────────────────────────────────── */
-/* ── Layout ─────────────────────────────────────────────────── */
-.App { 
-  min-height: 100vh; 
-  width: 100%; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; /* Centra geométricamente todo el árbol de páginas en Ultra-Wides */
+.App {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Aire uniforme entre el contenido de cada página y el footer */
+.App > main {
+  padding-bottom: 4rem !important;
 }
 
 /* ── Card ───────────────────────────────────────────────────── */
@@ -174,18 +178,20 @@ body {
 
 /* ── Buttons ────────────────────────────────────────────────── */
 .btn-primary {
-  display: inline-block;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   background: linear-gradient(135deg, #006397 0%, #0EA5E9 100%);
   color: white;
   font-weight: 700;
-  padding: 0.75rem 1.75rem;
-  border-radius: 0.875rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.75rem;
   border: none;
   cursor: pointer;
   transition: var(--transition);
   box-shadow: var(--shadow-blue-sm);
+  white-space: nowrap;
 }
 .btn-primary:hover {
   background: linear-gradient(135deg, #004F78 0%, #0284C7 100%);
@@ -193,21 +199,31 @@ body {
   box-shadow: var(--shadow-blue-md);
 }
 .btn-ghost {
-  display: inline-block;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
   background: transparent;
   color: white;
   font-weight: 600;
-  padding: 0.75rem 1.75rem;
-  border-radius: 0.875rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 0.75rem;
   border: 2px solid rgba(255,255,255,0.45);
   cursor: pointer;
   transition: var(--transition);
+  white-space: nowrap;
 }
 .btn-ghost:hover {
   border-color: rgba(255,255,255,0.85);
   background: rgba(255,255,255,0.1);
+}
+
+/* Botones pequeños dentro de cards — override para no romper los big CTAs */
+.card .btn-primary,
+.card-flat .btn-primary {
+  padding: 0.35rem 1rem;
+  font-size: 0.8125rem;
+  border-radius: 0.625rem;
 }
 
 /* ── Form ───────────────────────────────────────────────────── */
@@ -362,6 +378,31 @@ body {
   transition: width 0.6s ease;
 }
 
+/* ── Contraste modo claro — grises legibles (WCAG AA) ──────── */
+:root:not(.dark) .text-neutral-400,
+:root:not(.dark) .text-gray-400,
+:root:not(.dark) .text-slate-400 {
+  color: #475569 !important;
+}
+:root:not(.dark) .text-neutral-500,
+:root:not(.dark) .text-gray-500,
+:root:not(.dark) .text-slate-500 {
+  color: #64748B !important;
+}
+:root:not(.dark) .text-neutral-300,
+:root:not(.dark) .text-gray-300 {
+  color: #64748B !important;
+}
+:root:not(.dark) .text-\[\#497a96\] {
+  color: #3B6B87 !important;
+}
+:root:not(.dark) .text-sky-400 {
+  color: #0369A1 !important;
+}
+:root:not(.dark) .text-sky-500 {
+  color: #0284C7 !important;
+}
+
 /* ── Modo Oscuro (Dark Mode overrides) ─────────────────────── */
 /*
   Paleta dark: gris neutro con tinte frío, no navy saturado.
@@ -485,46 +526,54 @@ body {
   background: #38BDF8;
 }
 
-/* Alertas y fondos sutiles por categoría */
+/* Fondos neutros (iconos, skeletons, containers) */
+.dark .bg-neutral-100,
+.dark .bg-neutral-200,
+.dark .bg-gray-100,
+.dark .bg-gray-200 {
+  background-color: #23262F !important;
+}
+
+/* Alertas y fondos de tarjetas de usuario por rol */
 .dark .bg-sky-50,
 .dark .bg-sky-100,
 .dark .bg-blue-50,
 .dark .bg-blue-100 {
-  background-color: rgba(56,189,248,0.08) !important;
+  background-color: rgba(56,189,248,0.07) !important;
   color: #BAE6FD !important;
-  border-color: rgba(56,189,248,0.18) !important;
+  border-color: rgba(56,189,248,0.15) !important;
 }
 
 .dark .bg-emerald-50,
 .dark .bg-emerald-100,
 .dark .bg-green-50,
 .dark .bg-green-100 {
-  background-color: rgba(16,185,129,0.08) !important;
-  color: #6EE7B7 !important;
-  border-color: rgba(16,185,129,0.20) !important;
+  background-color: rgba(16,185,129,0.18) !important;
+  border-color: rgba(16,185,129,0.30) !important;
 }
 
 .dark .text-emerald-700,
 .dark .text-green-700 {
-  color: #34D399 !important;
+  color: #6EE7B7 !important;
 }
 
 .dark .bg-violet-50,
 .dark .bg-violet-100 {
-  background-color: rgba(139,92,246,0.08) !important;
+  background-color: rgba(139,92,246,0.07) !important;
   color: #DDD6FE !important;
-  border-color: rgba(139,92,246,0.20) !important;
+  border-color: rgba(139,92,246,0.15) !important;
 }
 
-.dark .text-violet-700 {
+.dark .text-violet-700,
+.dark .text-violet-600 {
   color: #C084FC !important;
 }
 
 .dark .bg-red-50,
 .dark .bg-red-100 {
-  background-color: rgba(239,68,68,0.08) !important;
+  background-color: rgba(239,68,68,0.07) !important;
   color: #FCA5A5 !important;
-  border-color: rgba(239,68,68,0.20) !important;
+  border-color: rgba(239,68,68,0.15) !important;
 }
 
 .dark .text-red-700,
@@ -533,10 +582,11 @@ body {
 }
 
 .dark .bg-amber-50,
+.dark .bg-amber-100,
 .dark .bg-\[\#FFF8E1\] {
-  background-color: rgba(245,158,11,0.08) !important;
+  background-color: rgba(245,158,11,0.07) !important;
   color: #FDE68A !important;
-  border-color: rgba(245,158,11,0.20) !important;
+  border-color: rgba(245,158,11,0.15) !important;
 }
 
 .dark .text-amber-700,
@@ -544,13 +594,25 @@ body {
   color: #FBBF24 !important;
 }
 
+/* Bordes sutiles — cubre todas las variantes de neutral/gray/color usadas */
+.dark .border-neutral-100,
+.dark .border-neutral-200,
+.dark .border-neutral-300,
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300,
 .dark .border-blue-200,
 .dark .border-amber-200,
+.dark .border-violet-200,
+.dark .border-violet-300,
+.dark .border-sky-100,
+.dark .border-sky-200,
+.dark .border-sky-300,
 .dark .border-green-200,
 .dark .border-red-200,
 .dark .border-\[\#FFA000\]\/40,
-.dark .border-sky-200 {
-  border-color: rgba(255,255,255,0.10) !important;
+.dark .border-\[\#455A64\]\/10 {
+  border-color: rgba(255,255,255,0.09) !important;
 }
 
 .dark .bg-white\/8,
@@ -609,18 +671,25 @@ body {
 .dark .hero-bg svg path {
   fill: #0F1117 !important;
 }
+/* Ola de transición hero→contenido en HomePage */
+.dark svg path[d*="M0 80L1440"] {
+  fill: #0F1117 !important;
+}
+.dark .absolute.bottom-0.left-0.right-0 svg path {
+  fill: #0F1117 !important;
+}
 
 /* Barra de filtros sticky (ProductPage) */
-.dark section.sticky.top-20 {
+.dark section.sticky.top-16, .dark section.sticky.top-20 {
   background-color: rgba(15,17,23,0.96) !important;
   border-color: rgba(255,255,255,0.07) !important;
 }
 
-.dark section.sticky.top-20 button {
+.dark section.sticky.top-16 button, .dark section.sticky.top-20 button {
   color: #CBD5E1 !important;
 }
 
-.dark section.sticky.top-20 button:hover {
+.dark section.sticky.top-16 button:hover, .dark section.sticky.top-20 button:hover {
   color: #38BDF8 !important;
   background-color: rgba(56,189,248,0.12) !important;
 }
@@ -629,6 +698,366 @@ body {
 
 
 
+/* ── ProductPage: course cards ─────────────────────────────── */
+/* Ajustes de espaciado interno — Tailwind JIT no genera clases nuevas en runtime */
+article.group.rounded-3xl {
+  padding: 1.75rem !important;
+  overflow: hidden;
+}
+article.group.rounded-3xl > div:first-child {
+  margin-bottom: 1.5rem !important;
+}
+article.group.rounded-3xl h3 {
+  margin-bottom: 0.625rem !important;
+}
+article.group.rounded-3xl > p {
+  margin-bottom: 1.25rem !important;
+}
+article.group.rounded-3xl .border-t {
+  margin-bottom: 1.5rem !important;
+  padding-top: 1rem !important;
+  row-gap: 0.625rem !important;
+}
+article.group.rounded-3xl .border-t > div {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+
+/* ── Login / Register forms (contienen .owl-wrapper) ────────── */
+/* Usamos :has() para apuntar solo a estos contenedores sin tocar el búho */
+div:has(> .owl-wrapper) {
+  padding: 2rem 2.25rem 1.75rem !important;
+  padding-top: 2.5rem !important; /* aire extra bajo el búho */
+}
+
+div:has(> .owl-wrapper) h1 {
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+div:has(> .owl-wrapper) > p {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Inputs y selects más compactos */
+div:has(> .owl-wrapper) input,
+div:has(> .owl-wrapper) select {
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+  border-radius: 0.75rem !important;
+}
+
+/* Separación entre campos del formulario */
+div:has(> .owl-wrapper) form {
+  row-gap: 1rem !important;
+}
+
+div:has(> .owl-wrapper) form > div {
+  margin-bottom: 0.25rem !important;
+}
+
+/* Botón submit */
+div:has(> .owl-wrapper) button[type="submit"] {
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Botones de rol (selector Estudiante/Instructor) */
+div:has(> .owl-wrapper) .grid.grid-cols-2 button {
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+
+/* Bloque de credenciales demo */
+div:has(> .owl-wrapper) .rounded-2xl.bg-primary-50 {
+  margin-top: 1.25rem !important;
+  padding: 0.875rem 1rem !important;
+}
+
+/* Marca flotante login/registro */
+.brand-logo-text {
+  font-size: 2.75rem !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+.brand-logo-box {
+  width: 3rem !important;
+  height: 3rem !important;
+  font-size: 1.1rem !important;
+}
+/* Botones de rol — apilados verticalmente */
+div:has(> .owl-wrapper) .mb-6.grid {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.5rem !important;
+}
+div:has(> .owl-wrapper) .mb-6.grid button {
+  width: 100% !important;
+  height: 2.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 1rem !important;
+  box-sizing: border-box !important;
+}
+
+/* Botones de rol (Estudiante / Instructor) — mismo tamaño y alineación */
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) .grid.grid-cols-2 button {
+  height: 4.5rem !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.25rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) .grid.grid-cols-2 button > div {
+  margin-bottom: 0 !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* Register form — más campos, compactamos verticalmente */
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) {
+  padding: 1rem 2rem 1.25rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) h1 {
+  margin-top: 0 !important;
+  margin-bottom: 0.25rem !important;
+  font-size: 1.5rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) > p {
+  margin-bottom: 0.75rem !important;
+  font-size: 0.8rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) .grid.grid-cols-2 {
+  margin-bottom: 0.5rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) .grid.grid-cols-2 button {
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) form {
+  row-gap: 0.5rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) input {
+  padding-top: 0.45rem !important;
+  padding-bottom: 0.45rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) button[type="submit"] {
+  margin-top: 0.375rem !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+div:has(> .owl-wrapper):has(> .grid.grid-cols-2) > p:last-of-type {
+  margin-top: 0.625rem !important;
+  margin-bottom: 0 !important;
+}
+
+
+/* ── Modales (AdminStudentsPage + CourseManagementPage) ─────── */
+/* Contenedor común: rounded-xl bg-white shadow-2xl con p-7 o p-8 */
+.fixed.inset-0.z-50 > div[class*="rounded-xl"],
+.fixed.inset-0.z-50 > div[class*="rounded-xs"] {
+  padding: 2rem !important;
+}
+
+/* Header del modal (título + botón cerrar) */
+.fixed.inset-0.z-50 > div > div:first-child {
+  margin-bottom: 1.5rem !important;
+}
+
+/* Campos de formulario dentro del modal */
+.fixed.inset-0.z-50 input,
+.fixed.inset-0.z-50 select,
+.fixed.inset-0.z-50 textarea {
+  padding: 0.625rem 0.875rem !important;
+}
+
+/* Separación entre campos */
+.fixed.inset-0.z-50 label + input,
+.fixed.inset-0.z-50 label + select,
+.fixed.inset-0.z-50 label + textarea {
+  margin-top: 0.375rem !important;
+}
+
+/* Fila de botones de acción al pie del modal */
+.fixed.inset-0.z-50 .flex.gap-3,
+.fixed.inset-0.z-50 .flex.gap-4 {
+  margin-top: 1.75rem !important;
+  padding-top: 1.25rem !important;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Dark mode: borde separador del footer del modal */
+.dark .fixed.inset-0.z-50 .flex.gap-3,
+.dark .fixed.inset-0.z-50 .flex.gap-4 {
+  border-top-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Modal de detalle de estudiante (max-w-2xl, sin fixed inset-0 directo) */
+div.relative.mt-12.rounded-xl.bg-white {
+  overflow: hidden;
+}
+div.relative.mt-12.rounded-xl.bg-white .p-6 {
+  padding: 1.75rem !important;
+}
+
+/* ── SeccionCupos: tarjeta "Inscríbete hoy mismo" ───────────── */
+.rounded-\[40px\].shadow-2xl {
+  padding-top: 4rem !important;
+  padding-bottom: 4rem !important;
+  border-radius: 1.75rem !important;
+}
+.rounded-\[40px\].shadow-2xl .absolute.inset-0.rounded-\[40px\] {
+  border-radius: 1.75rem !important;
+}
+/* Stats internas */
+.rounded-\[40px\].shadow-2xl .rounded-3xl.py-8 {
+  padding-top: 1.5rem !important;
+  padding-bottom: 1.5rem !important;
+  padding-left: 1.25rem !important;
+  padding-right: 1.25rem !important;
+}
+/* Botones CTA */
+.rounded-\[40px\].shadow-2xl a[class*="py-5"],
+.rounded-\[40px\].shadow-2xl button[class*="py-5"] {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+/* Título y párrafo */
+.rounded-\[40px\].shadow-2xl h2 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.rounded-\[40px\].shadow-2xl > div > p {
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+}
+/* Grid de stats */
+.rounded-\[40px\].shadow-2xl .grid {
+  margin-top: 2rem !important;
+  margin-bottom: 1.5rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+/* Fila de botones */
+.rounded-\[40px\].shadow-2xl .flex.flex-col {
+  margin-top: 1.5rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* ── ProductPage: botones de categoría ─────────────────────── */
+section.sticky.top-16 button, section.sticky.top-20 button {
+  padding: 0.375rem 0.875rem !important;
+  font-size: 0.875rem !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* ── CourseManagementPage: fechas en tabla ──────────────────── */
+:root:not(.dark) .overflow-hidden.rounded-tl-lg td.text-neutral-600 {
+  color: #334155 !important;  /* slate-700: 7.4:1 en blanco — legible en text-xs */
+  font-size: 0.8rem !important;
+}
+
+/* ── CourseManagementPage: tabla de cursos ──────────────────── */
+/* Contenedor de la tabla — redondear todas las esquinas */
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md {
+  border-radius: 1.25rem !important;
+}
+/* Header de la tabla */
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md thead tr {
+  border-radius: 1.25rem 1.25rem 0 0 !important;
+}
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md thead th:first-child {
+  border-radius: 1.25rem 0 0 0 !important;
+}
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md thead th:last-child {
+  border-radius: 0 1.25rem 0 0 !important;
+}
+/* Padding de celdas — más compacto */
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md th,
+.overflow-hidden.rounded-tl-lg.bg-white.shadow-md td {
+  padding: 0.875rem 1.25rem !important;
+}
+/* Modal crear/editar curso — rounded-xs → redondeado */
+.fixed.inset-0.z-50 .rounded-xs {
+  border-radius: 1.25rem !important;
+}
+
+/* Dark mode tabla */
+.dark .overflow-hidden.rounded-tl-lg.bg-white.shadow-md {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* ── AdminDashboardPage: usuarios recientes ─────────────────── */
+.bg-sky-100.shadow-sm.border.border-gray-100 {
+  padding: 0.5rem 0 !important;
+  border-radius: 1.25rem !important;
+}
+.bg-sky-100.shadow-sm.border.border-gray-100 .flex.items-center.gap-4 {
+  padding: 0.875rem 1.5rem !important;
+  gap: 1rem !important;
+}
+.bg-sky-100.shadow-sm.border.border-gray-100 .flex.items-center.gap-4:first-child {
+  padding-top: 1rem !important;
+}
+.bg-sky-100.shadow-sm.border.border-gray-100 .flex.items-center.gap-4:last-child {
+  padding-bottom: 1rem !important;
+}
+
+/* Dark mode */
+.dark .bg-sky-100.shadow-sm.border.border-gray-100 {
+  background-color: rgba(56,189,248,0.07) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .bg-sky-100.shadow-sm.border.border-gray-100 .flex.items-center.gap-4:hover {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+
+/* ── AdminStudentsPage: user cards ─────────────────────────── */
+button.group.rounded-xl.shadow-sm.border.text-left {
+  padding: 1.5rem !important;
+  overflow: hidden;
+}
+button.group.rounded-xl.shadow-sm.border.text-left > div:first-child {
+  margin-bottom: 0 !important;
+}
+button.group.rounded-xl.shadow-sm.border.text-left .flex.items-center.gap-4 {
+  gap: 1rem !important;
+}
+button.group.rounded-xl.shadow-sm.border.text-left .mt-5.pt-4 {
+  margin-top: 1.25rem !important;
+  padding-top: 1rem !important;
+}
+
+/* ── Cards con rounded-3xl (ProductPage) en dark mode ──────── */
+.dark .rounded-3xl.border,
+.dark .rounded-3xl.bg-white {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Texto sobre fondos de color en cards de rol (admin students) */
+.dark .bg-sky-100 .text-neutral-900,
+.dark .bg-violet-100 .text-neutral-900,
+.dark .bg-amber-100 .text-neutral-900 {
+  color: #F0F4FC !important;
+}
+.dark .bg-sky-100 .text-neutral-800,
+.dark .bg-violet-100 .text-neutral-800,
+.dark .bg-amber-100 .text-neutral-800,
+.dark .bg-sky-100 .text-neutral-600,
+.dark .bg-violet-100 .text-neutral-600,
+.dark .bg-amber-100 .text-neutral-600 {
+  color: #CBD5E1 !important;
+}
+
 /* ── Separadores de sección (usan tokens de spacing) ───────── */
 .separador-hero-contenido   { margin-top:    var(--space-hero-gap)   !important; }
 .separador-hero-contenido2  { margin-top:    calc(var(--space-hero-gap) / 2) !important; }
@@ -636,6 +1065,26 @@ body {
 .separador-contenido-footer2{ margin-bottom: calc(var(--space-footer-gap) / 2) !important; }
 .espaciado-secciones        { margin-top: var(--space-section) !important; margin-bottom: var(--space-section) !important; }
 .separador-stats-botones    { margin-bottom: calc(var(--space-section) * 1.1) !important; }
+
+/* ── Spacing responsivo: reduce tokens en móvil ─────────────── */
+@media (max-width: 640px) {
+  :root {
+    --space-section:    2.5rem;
+    --space-hero-gap:   2rem;
+    --space-footer-gap: 2.5rem;
+    --space-card-pad:   1.25rem;
+  }
+  article.group.rounded-3xl { padding: 1.25rem !important; }
+  .modal-card, .rounded-3xl.p-8, .rounded-3xl.p-10 { padding: 1.25rem !important; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  :root {
+    --space-section:    3.5rem;
+    --space-hero-gap:   3rem;
+    --space-footer-gap: 3.5rem;
+  }
+}
 
 
 /* Buho */
@@ -650,6 +1099,85 @@ body {
 .animate-cloud-2 { animation: cloudMove 38s linear infinite; }
 .animate-cloud-3 { animation: cloudMove 46s linear infinite; }
 .animate-cloud-4 { animation: cloudMove 28s linear infinite; }
+
+/* ── Pájaros volando (siluetas) ─────────────────────────────── */
+@keyframes birdFly {
+  0%   { transform: translateX(-60px) translateY(0px); }
+  25%  { transform: translateX(25vw)  translateY(-12px); }
+  50%  { transform: translateX(50vw)  translateY(4px); }
+  75%  { transform: translateX(75vw)  translateY(-8px); }
+  100% { transform: translateX(105vw) translateY(0px); }
+}
+
+@keyframes wingFlap {
+  0%, 100% { transform: scaleY(1); }
+  50%       { transform: scaleY(-0.4); }
+}
+
+/* Silueta de pájaro: dos arcos (alas) con clip-path */
+.bird {
+  position: absolute;
+  width: 26px;
+  height: 9px;
+  opacity: 0.7;
+  animation: birdFly linear infinite;
+}
+
+/* Alas */
+.bird::before,
+.bird::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  border-top: 3px solid rgba(0,0,0,0.7);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  animation: wingFlap ease-in-out infinite;
+}
+.bird::before { left: 0; border-right: none; transform-origin: right center; }
+.bird::after  { right: 0; border-left: none; transform-origin: left center; }
+
+/* Variantes de tamaño */
+.bird-sm { width: 16px; height: 6px; opacity: 0.55; }
+.bird-sm::before, .bird-sm::after { border-top-width: 2px; }
+
+.bird-md { width: 22px; height: 8px; opacity: 0.65; }
+.bird-md::before, .bird-md::after { border-top-width: 2.5px; }
+
+.bird-lg { width: 32px; height: 11px; opacity: 0.75; }
+.bird-lg::before, .bird-lg::after { border-top-width: 3.5px; }
+
+/* Velocidades con delays negativos — cada pájaro arranca en un punto distinto del ciclo */
+.bird-1  { animation: birdFly 22s  -5s   linear infinite; }
+.bird-1::before,  .bird-1::after  { animation-duration: 0.55s; }
+
+.bird-2  { animation: birdFly 30s  -18s  linear infinite; }
+.bird-2::before,  .bird-2::after  { animation-duration: 0.7s; }
+
+.bird-3  { animation: birdFly 18s  -3s   linear infinite; }
+.bird-3::before,  .bird-3::after  { animation-duration: 0.45s; }
+
+.bird-4  { animation: birdFly 26s  -20s  linear infinite; }
+.bird-4::before,  .bird-4::after  { animation-duration: 0.62s; }
+
+.bird-5  { animation: birdFly 34s  -28s  linear infinite; }
+.bird-5::before,  .bird-5::after  { animation-duration: 0.8s; }
+
+.bird-6  { animation: birdFly 20s  -10s  linear infinite; }
+.bird-6::before,  .bird-6::after  { animation-duration: 0.5s; }
+
+.bird-7  { animation: birdFly 24s  -7s   linear infinite; }
+.bird-7::before,  .bird-7::after  { animation-duration: 0.58s; }
+
+.bird-8  { animation: birdFly 16s  -13s  linear infinite; }
+.bird-8::before,  .bird-8::after  { animation-duration: 0.42s; }
+
+.bird-9  { animation: birdFly 28s  -22s  linear infinite; }
+.bird-9::before,  .bird-9::after  { animation-duration: 0.67s; }
+
+.bird-10 { animation: birdFly 36s  -31s  linear infinite; }
+.bird-10::before, .bird-10::after { animation-duration: 0.85s; }
 
 /* ── Estilos del Búho Interactivo (Owl Body Match) ─────────── */
 .owl-wrapper {

@@ -156,8 +156,7 @@ const RegisterForm = () => {
                                 : "border-neutral-200 text-neutral-500 hover:border-primary-500/50"
                         }`}
                     >
-                        <div className="text-xl mb-1">{opt.emoji}</div>
-                        {opt.label}
+                        <span style={{ fontSize: '1.1rem', lineHeight: '1', marginRight: '0.4rem' }}>{opt.emoji}</span>{opt.label}
                     </button>
                 ))}
             </div>

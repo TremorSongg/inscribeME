@@ -22,11 +22,11 @@ const features = [
 ];
 
 const Destacados = () => (
-    <section className="bg-white py-29 px-6 w-full flex justify-center border-t border-sky-50 font-sans text-neutral-800">
+    <section className="bg-white py-14 md:py-20 lg:py-28 px-4 md:px-6 w-full flex justify-center border-t border-sky-50 font-sans text-neutral-800">
         <div className="w-full max-w-7xl mx-auto">
             
             {/* Heading */}
-            <div className="mb-16 text-center animate-fadeInUp flex flex-col items-center">
+            <div className="mb-10 md:mb-16 text-center animate-fadeInUp flex flex-col items-center">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sky-50 border border-sky-100 text-xs font-bold text-sky-600 uppercase tracking-wide mb-4">
                     ✨ ¿Por qué elegirnos?
                 </span>

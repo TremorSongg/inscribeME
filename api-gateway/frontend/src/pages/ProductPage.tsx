@@ -95,16 +95,16 @@ const ProductPage = () => {
             <main className="flex-1 w-full flex flex-col items-center">
                 
                 {/* Hero Banner */}
-                <section className="relative overflow-hidden px-6 py-24 text-white w-full flex justify-center" style={{background: 'linear-gradient(135deg, #00395C 0%, #006397 50%, #0284C7 100%)'}}>
+                <section className="relative overflow-hidden px-4 md:px-6 py-14 md:py-24 text-white w-full flex justify-center" style={{background: 'linear-gradient(135deg, #00395C 0%, #006397 50%, #0284C7 100%)'}}>
                     <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 70% 50%, rgba(255,255,255,0.15) 0%, transparent 60%), radial-gradient(circle at 20% 80%, rgba(14,165,233,0.2) 0%, transparent 50%)'}} />
-                    
+
                     <div className="relative z-10 w-full max-w-7xl mx-auto flex justify-center">
                         <div className="max-w-3xl text-center mx-auto">
                             <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/15 text-xs font-bold text-sky-200 uppercase tracking-wide mb-4 border border-white/10">
                                 Actividades disponibles
                             </span>
 
-                            <h1 className="mb-6 text-4xl font-extrabold text-sky-200 leading-tight md:text-5xl font-display">
+                            <h1 className="mb-4 md:mb-6 text-3xl md:text-4xl lg:text-5xl font-extrabold text-sky-200 leading-tight font-display">
                                 Explora nuestras actividades e inscríbete fácilmente.
                             </h1>
 
@@ -116,14 +116,14 @@ const ProductPage = () => {
                 </section>
 
                 {/* Filtros Sticky */}
-                <section className="sticky top-20 z-30 border-b border-sky-100 bg-white/95 backdrop-blur-md px-6 !py-4 shadow-sm w-full flex justify-center">
-                    <div className="w-full max-w-7xl mx-auto flex justify-center gap-12 overflow-x-auto pb-1 scrollbar-none text-sm">
+                <section className="sticky top-16 md:top-20 lg:top-28 z-30 border-b border-sky-100 bg-white/95 backdrop-blur-md px-4 md:px-6 !py-3 md:!py-4 shadow-sm w-full flex justify-center">
+                    <div className="w-full max-w-7xl mx-auto flex justify-start md:justify-center gap-2 md:gap-6 lg:gap-10 overflow-x-auto pb-1 scrollbar-none text-sm">
                         {CATEGORIES.map((cat) => (
                             <button
                                 key={cat}
                                 id={`filter-${cat.toLowerCase()}`}
                                 onClick={() => setSelectedCategory(cat)}
-                                className={`rounded-full px-5 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                                className={`rounded-full px-3 py-1.5 md:px-5 md:py-2 text-xs md:text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                                     selectedCategory === cat
                                         ? "bg-sky-600 text-white shadow-sm"
                                         : "bg-sky-50 text-sky-700 hover:bg-sky-100"
@@ -184,13 +184,13 @@ const ProductPage = () => {
                                             return (
                                                 <article
                                                     key={course.id}
-                                                    className={`group flex h-full flex-col rounded-3xl border p-8 transition-all duration-300 ${
+                                                    className={`group flex h-full flex-col rounded-3xl border p-7 overflow-hidden transition-all duration-300 ${
                                                         isFull
                                                             ? "border-red-200 bg-red-50/5 opacity-90 shadow-sm"
                                                             : "border-neutral-200 bg-white shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:-translate-y-1.5 hover:shadow-[0_16px_32px_rgba(0,0,0,0.05)] hover:border-primary-500/20"
                                                     }`}
                                                 >
-                                                    <div className="mb-5 flex items-center justify-between">
+                                                    <div className="mb-6 flex items-center justify-between">
                                                         <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-neutral-100 text-3xl shadow-inner">
                                                             {icon}
                                                         </div>
@@ -208,18 +208,18 @@ const ProductPage = () => {
                                                     <h3 className="mb-2 text-xl font-bold text-neutral-900 font-display">
                                                         {course.nombre}
                                                     </h3>
-                                                    
-                                                    <p className="mb-4 text-sm leading-relaxed text-neutral-700 flex-1">
+
+                                                    <p className="mb-5 text-sm leading-relaxed text-neutral-700 flex-1">
                                                         {course.descripcion}
                                                     </p>
-                                                    
-                                                    <p className="mb-4 text-xs font-medium text-neutral-700 flex items-center gap-1.5">
+
+                                                    <p className="mb-5 text-xs font-medium text-neutral-700 flex items-center gap-1.5">
                                                         <i className="ti ti-school text-primary-500 text-base"></i>
                                                         <span>Instructor: <strong className="text-neutral-800 font-semibold">{course.nombreInstructor}</strong></span>
                                                     </p>
 
                                                     {/* Detalles */}
-                                                    <div className="mb-5 space-y-2 border-t border-neutral-100 pt-4 text-xs">
+                                                    <div className="mb-6 space-y-2.5 border-t border-neutral-100 pt-4 text-xs">
                                                         <div className="flex justify-between">
                                                             <span className="font-medium text-neutral-700">Inicio</span>
                                                             <span className="font-semibold text-neutral-800">
@@ -250,7 +250,7 @@ const ProductPage = () => {
                                                             type="button"
                                                             onClick={() => handleAddToCart(course)}
                                                             disabled={inCart || enrolled || isFull}
-                                                            className={`mt-auto rounded-full px-5 py-3.5 text-sm font-bold transition-all duration-200 cursor-pointer text-center ${
+                                                            className={`mt-auto rounded-full px-5 py-2 text-sm font-bold transition-all duration-200 cursor-pointer text-center ${
                                                                 enrolled
                                                                     ? "bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-not-allowed shadow-none"
                                                                     : inCart
@@ -269,7 +269,7 @@ const ProductPage = () => {
                                                                         : "Agregar al carrito"}
                                                         </button>
                                                     ) : (
-                                                        <div className="mt-auto rounded-2xl bg-neutral-100 border border-neutral-200 py-3 text-center text-xs font-semibold text-neutral-500">
+                                                        <div className="mt-auto rounded-xl bg-neutral-100 border border-neutral-200 py-2.5 text-center text-xs font-semibold text-neutral-500">
                                                             Vista de {user?.role === "INSTRUCTOR" ? "instructor" : "administrador"}
                                                         </div>
                                                     )}

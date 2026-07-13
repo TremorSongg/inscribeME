@@ -112,14 +112,14 @@ const Navbar = () => {
                 ? "bg-white/95 backdrop-blur-md border-sky-100 shadow-sm"
                 : "bg-white/80 backdrop-blur-md border-sky-100/50"
         }`}>
-            <nav className="w-full max-w-7xl mx-auto flex h-28 items-center justify-between px-6 gap-8">
+            <nav className="w-full max-w-7xl mx-auto flex h-16 md:h-20 lg:h-28 items-center justify-between px-4 md:px-6 gap-4 md:gap-8">
 
                 {/* ── Logo ─────────────────────────────────────── */}
-                <Link to="/" className="flex items-center gap-3 group" onClick={() => setMenuOpen(false)}>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-500 font-black text-white text-base shadow-md transition-transform group-hover:scale-105 duration-200">
+                <Link to="/" className="flex items-center gap-2 md:gap-3 group" onClick={() => setMenuOpen(false)}>
+                    <div className="flex h-8 w-8 md:h-11 md:w-11 items-center justify-center rounded-lg md:rounded-xl bg-primary-500 font-black text-white text-sm md:text-base shadow-md transition-transform group-hover:scale-105 duration-200">
                         IM
                     </div>
-                    <span className="text-2xl font-bold tracking-tight text-neutral-900 font-display">
+                    <span className="text-lg md:text-2xl font-bold tracking-tight text-neutral-900 font-display">
                         Inscribe<span className="text-primary-500">Me</span>
                     </span>
                 </Link>

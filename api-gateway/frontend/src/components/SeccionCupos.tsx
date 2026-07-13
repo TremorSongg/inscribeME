@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const SeccionCupos = () => (
     <section
-        className="relative overflow-hidden rounded-[40px] py-32 sm:py-28 md:py-32 lg:py-40 px-6 w-full flex justify-center shadow-2xl font-sans text-white my-10 max-w-7xl mx-auto min-h-[300px]"
+        className="relative overflow-hidden rounded-[24px] md:rounded-[40px] py-14 sm:py-20 md:py-28 lg:py-36 px-4 md:px-6 w-full flex justify-center shadow-2xl font-sans text-white my-6 md:my-10 max-w-7xl mx-auto min-h-[300px]"
         style={{ background: 'linear-gradient(135deg, #00395C 0%, #006397 45%, #0284C7 100%)' }}
     >
         {/* Decorative background shapes */}
@@ -18,7 +18,7 @@ const SeccionCupos = () => (
                 Cupos limitados
             </span>
             
-            <h2 className="text-3xl font-extrabold text-white sm:text-5xl lg:text-6xl font-display leading-tight py-3 animate-fadeInUp delay-100">
+            <h2 className="text-2xl font-extrabold text-white sm:text-4xl lg:text-6xl font-display leading-tight py-2 md:py-3 animate-fadeInUp delay-100">
                 Inscríbete <span className="text-sky-200">hoy mismo.</span>
             </h2>
             

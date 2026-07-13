@@ -34,7 +34,7 @@ const Stars = ({ count }: { count: number }) => (
 );
 
 const Testimonios = () => (
-    <section className="bg-neutral-50 py-20 px-6 w-full flex justify-center border-t border-neutral-100 font-sans text-neutral-800">
+    <section className="bg-neutral-50 py-14 md:py-20 px-4 md:px-6 w-full flex justify-center border-t border-neutral-100 font-sans text-neutral-800">
         <div className="w-full max-w-7xl mx-auto">
             
             {/* Heading */}
