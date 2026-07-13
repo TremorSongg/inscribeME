@@ -422,7 +422,9 @@ const AdminStudentsPage = () => {
                                             ? "bg-sky-100 border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 cursor-pointer"
                                             : isInstructor
                                                 ? "bg-violet-100 border-violet-300 hover:-translate-y-1 hover:shadow-lg hover:border-violet-500/30 cursor-pointer"
-                                                : "bg-amber-100 border-amber-300 hover:-translate-y-1 hover:shadow-lg hover:border-amber-500/30 cursor-pointer"
+                                                : isAdmin
+                                                    ? "bg-amber-100 border-amber-300 hover:-translate-y-1 hover:shadow-lg hover:border-amber-500/30 cursor-pointer"
+                                                    : "bg-gray-100 border-gray-300"
                                     }`}
                                     style={{ animationDelay: `${i * 50}ms` }}>
                                     
