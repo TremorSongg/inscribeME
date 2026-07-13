@@ -4,6 +4,19 @@ Este documento registra de manera detallada el historial de versiones, modificac
 
 ---
 
+## [v2.1.2] - 2026-07-13
+
+Esta versión introduce ajustes finos de diseño en las interfaces principales del frontend, incluyendo animaciones y la estandarización de componentes de la página de registro e inicio.
+
+### 🚀 Novedades y Mejoras Principales
+
+#### 🎨 1. Ajustes y Mejoras de Diseño en el FrontEnd
+*   **Página de Registro:** Se añadieron animaciones fluidas de nubes y siluetas de pájaros de fondo, ajuste de márgenes, y desactivación temporal del tema oscuro en esta pantalla para optimizar el contraste de los degradados del cielo. Se incorporó una marca de agua flotante de "InscribeMe" en la esquina inferior.
+*   **Alineación de Componentes:** Corrección de espaciados (padding y margins) en [Navbar.tsx](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/api-gateway/frontend/src/components/Navbar.tsx), [Destacados.tsx](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/api-gateway/frontend/src/components/Destacados.tsx), [Testimonios.tsx](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/api-gateway/frontend/src/components/Testimonios.tsx) y [SeccionCupos.tsx](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/api-gateway/frontend/src/components/SeccionCupos.tsx).
+*   **Fichas de Cursos y Tienda:** Optimización del espaciado, reducción de paddings en botones para evitar desbordamientos de texto en resoluciones pequeñas y redondeo de botones en [ProductPage.tsx](file:///c:/Users/User/OneDrive/Documentos/inscribeME_REPO/inscribeME/api-gateway/frontend/src/pages/ProductPage.tsx).
+
+---
+
 ## [v2.1.1] - 2026-07-12
 
 Esta versión introduce el control y manejo de excepciones para el registro de correos electrónicos duplicados en el microservicio de usuarios.
