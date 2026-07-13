@@ -64,11 +64,13 @@ const Navbar = () => {
             setUnreadCount(0);
             return;
         }
-
         const fetchUnread = () => {
-            notificacionesService.listarPorUsuario(user.id)
-                .then(notifs => {
-                    const count = notifs.filter(n => !n.leido).length;
+            const promise = user.role === "ADMIN"
+                ? notificacionesService.listarTodas()
+                : notificacionesService.listarPorUsuario(user.id);
+
+            promise.then(notifs => {
+                    const count = (notifs ?? []).filter(n => !n.leido).length;
                     setUnreadCount(count);
                 })
                 .catch(() => {});

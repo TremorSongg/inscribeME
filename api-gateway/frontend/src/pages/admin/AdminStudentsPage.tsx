@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
-import { usuariosService, type UsuarioBackend } from "../../services/authService";
+import { usuariosService, authService, type UsuarioBackend } from "../../services/authService";
 import { inscripcionesService, type InscripcionDTO, type AsistenciaDTO } from "../../services/inscripcionesService";
 
 // ── COMPONENTE DETALLE DE UN ESTUDIANTE (MODAL) ───────────────────────
@@ -252,13 +252,18 @@ const AdminStudentsPage = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [selected, setSelected] = useState<UsuarioBackend | null>(null);
-    const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR" | "ADMIN">(
-        roleParam === "admin" ? "ADMIN" : roleParam === "instructor" ? "INSTRUCTOR" : "ESTUDIANTE"
+    const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" | "TODOS">(
+        roleParam === "admin" ? "ADMIN" : roleParam === "instructor" ? "INSTRUCTOR" : roleParam === "all" ? "TODOS" : "ESTUDIANTE"
     );
 
     const [editingUser, setEditingUser] = useState<UsuarioBackend | null>(null);
     const [editForm, setEditForm] = useState<{ nombre: string; email: string; telefono: string; rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" }>({
         nombre: "", email: "", telefono: "", rol: "ESTUDIANTE"
+    });
+
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [createForm, setCreateForm] = useState({
+        nombre: "", email: "", telefono: "", password: "", rol: "ESTUDIANTE" as "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN"
     });
 
     const handleOpenEditModal = (u: UsuarioBackend) => {
@@ -294,9 +299,29 @@ const AdminStudentsPage = () => {
         }
     };
 
+    const handleCreateUser = async () => {
+        if (!createForm.nombre || !createForm.email || !createForm.password) {
+            alert("Nombre, Email y Contraseña son obligatorios.");
+            return;
+        }
+        try {
+            const created = await authService.registrar(createForm);
+            setAllUsers(prev => [...prev, created]);
+            setShowCreateModal(false);
+            setCreateForm({ nombre: "", email: "", telefono: "", password: "", rol: "ESTUDIANTE" });
+            alert("Usuario creado exitosamente.");
+        } catch (err: any) {
+            alert(err?.response?.data?.message || "Error al crear el usuario.");
+        }
+    };
+
     useEffect(() => {
         if (roleParam === "instructor") {
             setActiveTab("INSTRUCTOR");
+        } else if (roleParam === "admin") {
+            setActiveTab("ADMIN");
+        } else if (roleParam === "all") {
+            setActiveTab("TODOS");
         } else {
             setActiveTab("ESTUDIANTE");
         }
@@ -311,12 +336,12 @@ const AdminStudentsPage = () => {
             .catch(() => setLoading(false));
     }, [user]);
 
-    const handleTabChange = (role: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN") => {
+    const handleTabChange = (role: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" | "TODOS") => {
         setActiveTab(role);
-        setSearchParams({ role: role === "ADMIN" ? "admin" : role === "INSTRUCTOR" ? "instructor" : "student" });
+        setSearchParams({ role: role === "ADMIN" ? "admin" : role === "INSTRUCTOR" ? "instructor" : role === "TODOS" ? "all" : "student" });
     };
 
-    const filteredUsers = allUsers.filter(u => u.rol === activeTab);
+    const filteredUsers = activeTab === "TODOS" ? allUsers : allUsers.filter(u => u.rol === activeTab);
 
     const filtered = filteredUsers.filter(s =>
         s.nombre.toLowerCase().includes(search.toLowerCase()) ||
@@ -329,19 +354,32 @@ const AdminStudentsPage = () => {
             <section className="w-full max-w-7xl mx-auto">
                 
                 {/* Header Unificado */}
-                <div className="mb-14 text-left animate-fadeInUp">
-                    <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-600">Administración</p>
-                    <h1 className="mt-2 text-5xl font-black text-sky-900 md:text-6xl tracking-tight">
-                        {activeTab === "ESTUDIANTE" ? "Estudiantes" : "Instructores"}
-                    </h1>
-                    <p className="mt-3 !py-4 text-lg text-sky-600">
-                        {activeTab === "ESTUDIANTE" 
-                            ? "Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema."
-                            : "Consulta la lista de instructores y profesores activos que dictan clases en el ecosistema."}
-                    </p>
+                <div className="mb-14 flex flex-wrap items-center justify-between gap-6 animate-fadeInUp">
+                    <div className="text-left">
+                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-600">Administración</p>
+                        <h1 className="mt-2 text-5xl font-black text-sky-900 md:text-6xl tracking-tight">
+                            {activeTab === "ESTUDIANTE" ? "Estudiantes" : activeTab === "INSTRUCTOR" ? "Instructores" : activeTab === "ADMIN" ? "Administradores" : "Todos los Usuarios"}
+                        </h1>
+                        <p className="mt-3 !py-4 text-lg text-sky-600">
+                            {activeTab === "ESTUDIANTE" 
+                                ? "Consulta el perfil, cursos y asistencia de cada alumno registrado en el ecosistema."
+                                : activeTab === "INSTRUCTOR"
+                                    ? "Consulta la lista de instructores y profesores activos que dictan clases en el ecosistema."
+                                    : activeTab === "ADMIN"
+                                        ? "Administradores del sistema con privilegios de gestión de datos."
+                                        : "Directorio completo de usuarios registrados en el ecosistema."}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setShowCreateModal(true)}
+                        className="rounded-xl bg-sky-600 !px-6 py-3 font-bold text-white shadow-lg shadow-sky-600/20 hover:bg-sky-700 transition-all hover:-translate-y-0.5 cursor-pointer animate-scaleIn"
+                    >
+                        ＋ Nuevo Usuario
+                    </button>
                 </div>
 
-                {/* Tabs de Selección Estudiantes vs Instructores */}
+                {/* Tabs de Selección */}
                 <div className="flex gap-4 mb-8 border-b border-sky-100 pb-px w-full max-w-2xl text-left animate-fadeInUp">
                     <button
                         type="button"
@@ -376,6 +414,17 @@ const AdminStudentsPage = () => {
                     >
                         🛠️ Administradores ({allUsers.filter(u => u.rol === "ADMIN").length})
                     </button>
+                    <button
+                        type="button"
+                        onClick={() => handleTabChange("TODOS")}
+                        className={`px-6 py-3 font-bold text-sm border-b-2 transition-all cursor-pointer ${
+                            activeTab === "TODOS"
+                                ? "border-neutral-805 text-neutral-800 font-black"
+                                : "border-transparent text-neutral-500 hover:text-neutral-700"
+                        }`}
+                    >
+                        👥 Todos ({allUsers.length})
+                    </button>
                 </div>
 
                 {/* Search Bar Refinada */}
@@ -386,7 +435,9 @@ const AdminStudentsPage = () => {
                                 ? "🔍 Buscar estudiantes por nombre o correo electrónico..."
                                 : activeTab === "INSTRUCTOR"
                                     ? "🔍 Buscar instructores por nombre o correo electrónico..."
-                                    : "🔍 Buscar administradores por nombre o correo electrónico..."}
+                                    : activeTab === "ADMIN"
+                                        ? "🔍 Buscar administradores por nombre o correo electrónico..."
+                                        : "🔍 Buscar usuarios por nombre o correo electrónico..."}
                             className="w-full rounded-xl border border-neutral-300 bg-white py-4 pl-12 pr-4 text-sm shadow-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
                     </div>
                 </div>
@@ -558,6 +609,88 @@ const AdminStudentsPage = () => {
                                 className="flex-1 rounded-xl bg-sky-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition cursor-pointer"
                             >
                                 Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal de Crear Usuario */}
+            {showCreateModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
+                    <div className="w-full max-w-md rounded-xl bg-white p-7 shadow-2xl border border-neutral-100 text-left animate-scaleIn">
+                        <h2 className="text-2xl font-black text-neutral-900">Crear Nuevo Usuario</h2>
+                        <p className="mt-1 text-sm text-neutral-600">Completa los datos para registrar un nuevo usuario.</p>
+                        
+                        <div className="mt-5 space-y-4">
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Nombre completo *</label>
+                                <input
+                                    type="text"
+                                    value={createForm.nombre}
+                                    onChange={e => setCreateForm({ ...createForm, nombre: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    placeholder="Ej. Juan Pérez"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Correo electrónico *</label>
+                                <input
+                                    type="email"
+                                    value={createForm.email}
+                                    onChange={e => setCreateForm({ ...createForm, email: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    placeholder="correo@ejemplo.com"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Contraseña *</label>
+                                <input
+                                    type="password"
+                                    value={createForm.password}
+                                    onChange={e => setCreateForm({ ...createForm, password: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Teléfono</label>
+                                <input
+                                    type="text"
+                                    value={createForm.telefono}
+                                    onChange={e => setCreateForm({ ...createForm, telefono: e.target.value })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    placeholder="+56 9 ..."
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Rol del sistema</label>
+                                <select
+                                    value={createForm.rol}
+                                    onChange={e => setCreateForm({ ...createForm, rol: e.target.value as any })}
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                >
+                                    <option value="ESTUDIANTE">Estudiante</option>
+                                    <option value="INSTRUCTOR">Instructor</option>
+                                    <option value="ADMIN">Administrador</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="mt-8 flex gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setShowCreateModal(false)}
+                                className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleCreateUser}
+                                className="flex-1 rounded-xl bg-sky-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition cursor-pointer"
+                            >
+                                Crear Usuario
                             </button>
                         </div>
                     </div>
