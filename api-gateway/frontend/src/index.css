@@ -7,23 +7,30 @@ html { scroll-behavior: smooth; }
 /* ── Variables ─────────────────────────────────────────────────────── */
 :root {
   /* ── Paleta Celeste/Blanco (primary brand) ── */
-  --color-primary:       #006397; /* Sky blue – primary-500 */
-  --color-primary-light: #0284C7; /* Lighter sky */
-  --color-primary-dark:  #004F78; /* Deep blue */
-  --color-accent:        #0EA5E9; /* Bright sky – call-to-action */
+  --color-primary:       #006397;
+  --color-primary-light: #0284C7;
+  --color-primary-dark:  #004F78;
+  --color-accent:        #0EA5E9;
   --color-accent-hover:  #0284C7;
-  --color-sky-pale:      #E0F2FE; /* Ultra-light celeste background tint */
-  --color-sky-soft:      #BAE6FD; /* Soft celeste for badges */
-  --color-bg:            #F8FAFF; /* Near-white with a hint of blue */
+  --color-sky-pale:      #E0F2FE;
+  --color-sky-soft:      #BAE6FD;
+  --color-bg:            #F8FAFF;
   --color-text:          #0F172A;
+  --color-text-muted:    #475569; /* texto secundario con contraste WCAG AA */
   --font-sans:           "Figtree", "sans-serif";
   --shadow-card:         0 2px 16px rgba(0,99,151,0.06);
   --shadow-hover:        0 16px 40px rgba(0,99,151,0.14);
   --shadow-blue-sm:      0 4px 14px rgba(14,165,233,0.25);
   --shadow-blue-md:      0 8px 28px rgba(14,165,233,0.32);
-  --radius-xl:           1.5rem;
-  --radius-2xl:          2rem;
+  --radius-xl:           1rem;
+  --radius-2xl:          1.25rem;  /* reducido de 2rem → menos "globoso" */
   --transition:          all 0.22s cubic-bezier(0.4,0,0.2,1);
+
+  /* ── Spacing semántico ── */
+  --space-section:    5rem;    /* entre secciones de página */
+  --space-hero-gap:   4rem;    /* hero → primer contenido */
+  --space-footer-gap: 5rem;    /* último contenido → footer */
+  --space-card-pad:   1.75rem; /* padding interno estándar de cards */
 }
 
 body {
@@ -120,19 +127,21 @@ body {
   background: white;
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-card);
-  border: 1px solid rgba(0,99,151,0.08);
+  border: 1px solid rgba(0,99,151,0.10);
   transition: var(--transition);
+  padding: var(--space-card-pad);
 }
 .card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-4px);
   box-shadow: var(--shadow-hover);
-  border-color: rgba(14,165,233,0.18);
+  border-color: rgba(14,165,233,0.22);
 }
 .card-flat {
   background: white;
   border-radius: var(--radius-2xl);
-  border: 1px solid rgba(0,99,151,0.08);
+  border: 1px solid rgba(0,99,151,0.10);
   transition: var(--transition);
+  padding: var(--space-card-pad);
 }
 
 /* ── Gradient text ──────────────────────────────────────────── */
@@ -354,42 +363,50 @@ body {
 }
 
 /* ── Modo Oscuro (Dark Mode overrides) ─────────────────────── */
+/*
+  Paleta dark: gris neutro con tinte frío, no navy saturado.
+  bg:    #0F1117  (casi negro neutro)
+  paper: #1A1D27  (gris oscuro para cards/surfaces)
+  border: rgba(255,255,255,0.08) neutro en vez de azul
+*/
 .dark {
-  --color-bg:            #071527; /* Deep navy dark */
-  --color-text:          #E2F0FF;
+  --color-bg:            #0F1117;
+  --color-text:          #E8EDF5;
+  --color-text-muted:    #94A3B8;
   --color-primary:       #38BDF8;
   --color-primary-light: #7DD3FC;
   --color-primary-dark:  #0EA5E9;
   --color-accent:        #38BDF8;
   --color-accent-hover:  #7DD3FC;
-  --shadow-card:         0 2px 16px rgba(0,0,0,0.25);
+  --shadow-card:         0 2px 16px rgba(0,0,0,0.40);
+  --shadow-hover:        0 12px 36px rgba(0,0,0,0.55);
 }
 
-/* Adaptar backgrounds con Tailwind duro en modo oscuro */
+/* Fondos base */
 .dark .bg-white {
-  background-color: #0C1E35 !important;
+  background-color: #1A1D27 !important;
 }
 
 .dark .card, .dark .card-flat {
-  background-color: #0C1E35 !important;
-  border-color: rgba(56,189,248,0.12) !important;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35) !important;
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.40) !important;
 }
 
 .dark .card:hover {
-  box-shadow: 0 12px 40px rgba(14,165,233,0.15) !important;
-  border-color: rgba(56,189,248,0.25) !important;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.55) !important;
+  border-color: rgba(56,189,248,0.20) !important;
 }
 
-.dark .bg-\[\#FAFAFA\], 
-.dark .bg-\[\#FAFAFA\]\/90, 
+.dark .bg-\[\#FAFAFA\],
+.dark .bg-\[\#FAFAFA\]\/90,
 .dark .bg-\[\#F8F9FA\],
 .dark .bg-neutral-50,
 .dark main {
-  background-color: #071527 !important;
+  background-color: #0F1117 !important;
 }
 
-/* Overrides para textos neutrales y primarios en modo oscuro */
+/* Textos — escala de luminosidad coherente */
 .dark .text-neutral-900,
 .dark .text-neutral-800,
 .dark .text-sky-950,
@@ -398,7 +415,7 @@ body {
 .dark .text-\[\#37474F\],
 .dark .text-primary-950,
 .dark .text-primary-900 {
-  color: #F8FAFF !important; /* Casi blanco de alto contraste */
+  color: #F0F4FC !important;
 }
 
 .dark .text-neutral-700,
@@ -408,7 +425,7 @@ body {
 .dark .text-\[\#455A64\],
 .dark .text-primary-800,
 .dark .text-primary-700 {
-  color: #E2E8F0 !important; /* Gris claro / celeste claro */
+  color: #CBD5E1 !important;
 }
 
 .dark .text-neutral-500,
@@ -416,55 +433,56 @@ body {
 .dark .text-sky-500,
 .dark .text-primary-600,
 .dark .text-primary-500 {
-  color: #94A3B8 !important; /* Gris medio */
+  color: #94A3B8 !important;
 }
 
 .dark .text-neutral-400,
 .dark .text-sky-400,
 .dark .text-primary-400 {
-  color: #38BDF8 !important; /* Celeste vivo */
+  color: #38BDF8 !important;
 }
 
-.dark .border-gray-100, 
+/* Bordes sutiles */
+.dark .border-gray-100,
 .dark .border-neutral-100,
 .dark .border-\[\#455A64\]\/10,
 .dark .border-gray-200,
 .dark .border-gray-300 {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255,255,255,0.08) !important;
 }
 
 /* Inputs, Selects y Textareas */
-.dark select, 
-.dark input, 
+.dark select,
+.dark input,
 .dark textarea {
-  background-color: #1A2830 !important;
-  color: #F5F5F5 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #23262F !important;
+  color: #E8EDF5 !important;
+  border-color: rgba(255,255,255,0.12) !important;
 }
 
 .dark select option {
-  background-color: #1E2C34 !important;
-  color: #F5F5F5 !important;
+  background-color: #23262F !important;
+  color: #E8EDF5 !important;
 }
 
-.dark input:focus, 
-.dark select:focus, 
+.dark input:focus,
+.dark select:focus,
 .dark textarea:focus {
   border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 3px rgba(255, 160, 0, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(56,189,248,0.18) !important;
 }
 
 /* Scrollbar en tema oscuro */
 .dark ::-webkit-scrollbar-track {
-  background: #121D24;
+  background: #0F1117;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #37474F;
+  background: #2D3748;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #455A64;
+  background: #38BDF8;
 }
 
 /* Alertas y fondos sutiles por categoría */
@@ -472,18 +490,18 @@ body {
 .dark .bg-sky-100,
 .dark .bg-blue-50,
 .dark .bg-blue-100 {
-  background-color: #0E223D !important; /* Azul oscuro */
-  color: #E2E8F0 !important;
-  border-color: rgba(56, 189, 248, 0.2) !important;
+  background-color: rgba(56,189,248,0.08) !important;
+  color: #BAE6FD !important;
+  border-color: rgba(56,189,248,0.18) !important;
 }
 
 .dark .bg-emerald-50,
 .dark .bg-emerald-100,
 .dark .bg-green-50,
 .dark .bg-green-100 {
-  background-color: rgba(16, 185, 129, 0.1) !important;
-  color: #34D399 !important;
-  border-color: rgba(16, 185, 129, 0.25) !important;
+  background-color: rgba(16,185,129,0.08) !important;
+  color: #6EE7B7 !important;
+  border-color: rgba(16,185,129,0.20) !important;
 }
 
 .dark .text-emerald-700,
@@ -493,9 +511,9 @@ body {
 
 .dark .bg-violet-50,
 .dark .bg-violet-100 {
-  background-color: rgba(139, 92, 246, 0.12) !important;
-  color: #C084FC !important;
-  border-color: rgba(139, 92, 246, 0.25) !important;
+  background-color: rgba(139,92,246,0.08) !important;
+  color: #DDD6FE !important;
+  border-color: rgba(139,92,246,0.20) !important;
 }
 
 .dark .text-violet-700 {
@@ -504,9 +522,9 @@ body {
 
 .dark .bg-red-50,
 .dark .bg-red-100 {
-  background-color: rgba(239, 68, 68, 0.1) !important;
-  color: #F87171 !important;
-  border-color: rgba(239, 68, 68, 0.25) !important;
+  background-color: rgba(239,68,68,0.08) !important;
+  color: #FCA5A5 !important;
+  border-color: rgba(239,68,68,0.20) !important;
 }
 
 .dark .text-red-700,
@@ -516,9 +534,9 @@ body {
 
 .dark .bg-amber-50,
 .dark .bg-\[\#FFF8E1\] {
-  background-color: rgba(245, 158, 11, 0.1) !important;
-  color: #FBBF24 !important;
-  border-color: rgba(245, 158, 11, 0.25) !important;
+  background-color: rgba(245,158,11,0.08) !important;
+  color: #FDE68A !important;
+  border-color: rgba(245,158,11,0.20) !important;
 }
 
 .dark .text-amber-700,
@@ -532,50 +550,50 @@ body {
 .dark .border-red-200,
 .dark .border-\[\#FFA000\]\/40,
 .dark .border-sky-200 {
-  border-color: rgba(56, 189, 248, 0.2) !important;
+  border-color: rgba(255,255,255,0.10) !important;
 }
 
 .dark .bg-white\/8,
 .dark .bg-white\/10 {
-  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255,255,255,0.05) !important;
 }
 
 .dark .divide-gray-100 > * + * {
-  border-color: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255,255,255,0.06) !important;
 }
 
-/* Gradientes específicos para Login/Registro en modo oscuro */
-.dark .from-\[\#37474F\], 
+/* Gradientes Login/Registro en modo oscuro */
+.dark .from-\[\#37474F\],
 .dark .from-\[\#263238\] {
-  background-image: linear-gradient(135deg, #071527 0%, #0C1E35 50%, #071527 100%) !important;
+  background-image: linear-gradient(135deg, #0F1117 0%, #1A1D27 50%, #0F1117 100%) !important;
 }
 
-/* Específicos para Navbar (Header) en modo oscuro */
+/* Navbar en modo oscuro */
 .dark header,
 .dark header.bg-white\/95,
 .dark header.bg-white\/80 {
-  background-color: #071527 !important;
+  background-color: rgba(15,17,23,0.97) !important;
   background-image: none !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255,255,255,0.07) !important;
 }
 
 /* Hamburguesa en modo oscuro */
 .dark #btn-menu-mobile span {
-  background-color: #F8FAFF !important;
+  background-color: #E8EDF5 !important;
 }
 
-/* Específicos para Footer en modo oscuro */
+/* Footer en modo oscuro */
 .dark footer,
 .dark footer section,
 .dark footer .from-sky-50 {
-  background-image: linear-gradient(to bottom, #0C1E35, #071527) !important;
-  background-color: #071527 !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-image: linear-gradient(to bottom, #1A1D27, #0F1117) !important;
+  background-color: #0F1117 !important;
+  border-color: rgba(255,255,255,0.07) !important;
 }
 
 .dark footer .bg-sky-50 {
-  background-color: #0E223D !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(56,189,248,0.06) !important;
+  border-color: rgba(255,255,255,0.07) !important;
 }
 
 .dark footer .text-sky-600 {
@@ -583,63 +601,41 @@ body {
 }
 
 .dark footer .hover\:bg-sky-100:hover {
-  background-color: rgba(56, 189, 248, 0.1) !important;
+  background-color: rgba(56,189,248,0.10) !important;
   color: #38BDF8 !important;
 }
 
-/* Corrección de la ola/separador del Hero en modo oscuro */
+/* Ola/separador del Hero en modo oscuro */
 .dark .hero-bg svg path {
-  fill: #071527 !important;
+  fill: #0F1117 !important;
 }
 
-/* Corrección de la barra de filtros en ProductPage.tsx */
+/* Barra de filtros sticky (ProductPage) */
 .dark section.sticky.top-20 {
-  background-color: rgba(7, 21, 39, 0.95) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(15,17,23,0.96) !important;
+  border-color: rgba(255,255,255,0.07) !important;
 }
 
 .dark section.sticky.top-20 button {
-  color: #E2E8F0 !important;
+  color: #CBD5E1 !important;
 }
 
 .dark section.sticky.top-20 button:hover {
   color: #38BDF8 !important;
-  background-color: rgba(56, 189, 248, 0.15) !important;
+  background-color: rgba(56,189,248,0.12) !important;
 }
 
 
 
 
 
-/* Separación controlada entre el Hero y la primera sección de contenido */
-.separador-hero-contenido {
-  margin-top: 4rem !important; /* ~112px de aire real debajo del Hero */
-}
-
-/* Separación controlada entre la última sección de contenido y el Footer */
-.separador-contenido-footer {
-  margin-bottom: 5rem !important; /* ~144px de aire real antes del Footer */
-}
-
-/* Separación uniforme entre las secciones intermedias de la página */
-.espaciado-secciones {
-  margin-top: 3rem !important;    /* ~96px de aire arriba */
-  margin-bottom: 3rem !important; /* ~96px de aire abajo */
-}
-
-/* Forzar la separación entre las tarjetas de estadísticas y los botones en SeccionCupos */
-.separador-stats-botones {
-  margin-bottom: 5.5rem !important; /* Genera un aire masivo y real hacia abajo */
-}
-
-.separador-hero-contenido2 {
-  margin-top: 2rem !important; /* ~112px de aire real debajo del Hero */
-}
-
-/* Separación controlada entre la última sección de contenido y el Footer */
-.separador-contenido-footer2 {
-  margin-bottom: 2rem !important; /* ~144px de aire real antes del Footer */
-}
+/* ── Separadores de sección (usan tokens de spacing) ───────── */
+.separador-hero-contenido   { margin-top:    var(--space-hero-gap)   !important; }
+.separador-hero-contenido2  { margin-top:    calc(var(--space-hero-gap) / 2) !important; }
+.separador-contenido-footer { margin-bottom: var(--space-footer-gap) !important; }
+.separador-contenido-footer2{ margin-bottom: calc(var(--space-footer-gap) / 2) !important; }
+.espaciado-secciones        { margin-top: var(--space-section) !important; margin-bottom: var(--space-section) !important; }
+.separador-stats-botones    { margin-bottom: calc(var(--space-section) * 1.1) !important; }
 
 
 /* Buho */
