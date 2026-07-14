@@ -156,7 +156,7 @@ const CourseManagementPage = () => {
 
     const fieldClass = (field: keyof CourseForm) =>
         `w-full rounded-xl border px-4 py-3 text-sm outline-none transition focus:ring-2 ${
-            errors[field] ? "input-error focus:ring-red-200" : "border-gray-300 bg-white focus:border-sky-500 focus:ring-sky-500/30"
+            errors[field] ? "input-error focus:ring-red-200" : "border-neutral-200 bg-white focus:border-sky-500 focus:ring-sky-500/20"
         }`;
 
     const handleInstructorChange = (instructorId: string) => {
@@ -200,7 +200,7 @@ const CourseManagementPage = () => {
                         <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp overflow-hidden">
 
                             {/* Header coloreado */}
-                            <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-8 py-6 flex items-center justify-between">
+                            <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Cursos</p>
                                     <h2 className="mt-1 text-2xl font-black text-white">
@@ -214,15 +214,15 @@ const CourseManagementPage = () => {
                             </div>
 
                             {/* Body */}
-                            <div className="bg-neutral-50 px-8 py-7">
-                                <div className="grid gap-5 sm:grid-cols-2">
+                            <div className="bg-white px-10 py-9">
+                                <div className="grid gap-6 sm:grid-cols-2">
                                     <div className="sm:col-span-2">
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Nombre *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Nombre *</label>
                                         <input id="form-course-name" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} className={fieldClass("nombre")} placeholder="Ej. Escalada Deportiva Avanzada" />
                                         {errors.nombre && <p className="field-error-msg">⚠ {errors.nombre}</p>}
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Instructor *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Instructor *</label>
                                         <select id="form-course-instructor" value={form.instructorId} onChange={(e) => handleInstructorChange(e.target.value)} className={fieldClass("nombreInstructor")}>
                                             <option value="">Seleccionar instructor</option>
                                             {instructors.map((i) => <option key={i.id} value={i.id}>{i.nombre}</option>)}
@@ -230,25 +230,25 @@ const CourseManagementPage = () => {
                                         {errors.nombreInstructor && <p className="field-error-msg">⚠ {errors.nombreInstructor}</p>}
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Precio ($)</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Precio ($)</label>
                                         <input id="form-course-price" type="number" min={0} value={form.precio} onChange={(e) => setForm({ ...form, precio: parseFloat(e.target.value) || 0 })} className={fieldClass("precio")} placeholder="0 para asignar como Gratis" />
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Cupo total</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Cupo total</label>
                                         <input id="form-course-slots" type="number" min={1} value={form.cupoTotal} onChange={(e) => setForm({ ...form, cupoTotal: parseInt(e.target.value) || 1, cupoDisponible: parseInt(e.target.value) || 1 })} className={fieldClass("cupoTotal")} />
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Fecha inicio *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha inicio *</label>
                                         <input id="form-course-date" type="date" value={form.fechaInicio} onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })} className={fieldClass("fechaInicio")} />
                                         {errors.fechaInicio && <p className="field-error-msg">⚠ {errors.fechaInicio}</p>}
                                     </div>
                                     <div className="sm:col-span-2">
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Fecha término *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha término *</label>
                                         <input id="form-course-end-date" type="date" value={form.fechaFin} onChange={(e) => setForm({ ...form, fechaFin: e.target.value })} className={fieldClass("fechaFin")} />
                                         {errors.fechaFin && <p className="field-error-msg">⚠ {errors.fechaFin}</p>}
                                     </div>
                                     <div className="sm:col-span-2">
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Descripción *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Descripción *</label>
                                         <textarea id="form-course-description" rows={3} value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} className={`${fieldClass("descripcion")} resize-none`} placeholder="Describe detalladamente los alcances del taller..." />
                                         {errors.descripcion && <p className="field-error-msg">⚠ {errors.descripcion}</p>}
                                     </div>
@@ -261,7 +261,7 @@ const CourseManagementPage = () => {
                                 )}
 
                                 <div className="mt-6 flex justify-end gap-3">
-                                    <button type="button" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }} className="rounded-xl border border-neutral-300 bg-white px-5 py-2.5 text-sm font-bold text-neutral-600 hover:bg-neutral-50 transition-all cursor-pointer">
+                                    <button type="button" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }} className="rounded-xl border border-neutral-300 bg-white px-5 py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer">
                                         Cancelar
                                     </button>
                                     <button id="btn-save-course" type="button" onClick={handleSave} disabled={saving} className="rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition-all disabled:opacity-60 cursor-pointer">
@@ -385,7 +385,7 @@ const CourseManagementPage = () => {
                 {assignCourse && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
                         <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
-                            <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 px-7 py-5 flex items-center justify-between">
+                            <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 px-10 py-7 flex items-center justify-between">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Inscripción Manual</p>
                                     <h2 className="mt-1 text-xl font-black text-white">Asignar alumno</h2>
@@ -396,14 +396,14 @@ const CourseManagementPage = () => {
                                     ✕
                                 </button>
                             </div>
-                            <div className="px-7 py-6">
-                                <div className="mb-5">
-                                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Seleccionar estudiante</label>
+                            <div className="px-10 py-9 space-y-6">
+                                <div>
+                                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Seleccionar estudiante</label>
                                     <select id="assign-student-select"
                                         value={assignUserId}
                                         onChange={e => setAssignUserId(e.target.value === "" ? "" : Number(e.target.value))}
                                         disabled={assignCourse.cupoDisponible === 0}
-                                        className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 transition-all disabled:bg-neutral-100 disabled:text-neutral-400">
+                                        className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all disabled:bg-neutral-100 disabled:text-neutral-400">
                                         <option value="">Selecciona un estudiante de la lista…</option>
                                         {allUsers.map(u => (
                                             <option key={u.id} value={u.id}>{u.nombre} ({u.email})</option>
@@ -411,17 +411,17 @@ const CourseManagementPage = () => {
                                     </select>
                                 </div>
                                 {assignCourse.cupoDisponible === 0 && (
-                                    <div className="mb-5 rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-bold text-red-700">
+                                    <div className="rounded-xl bg-red-50 border border-red-100 p-3.5 text-xs font-bold text-red-700">
                                         ⚠️ El curso seleccionado se encuentra completo (sin cupos disponibles).
                                     </div>
                                 )}
                                 {assignErr && (
-                                    <div className="mb-5 rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm font-semibold text-red-700">
+                                    <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-sm font-semibold text-red-700">
                                         ⚠️ {assignErr}
                                     </div>
                                 )}
                                 <div className="flex gap-3">
-                                    <button type="button" onClick={() => setAssignCourse(null)} className="flex-1 rounded-xl border border-gray-300 py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer">Cancelar</button>
+                                    <button type="button" onClick={() => setAssignCourse(null)} className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">Cancelar</button>
                                     <button id="btn-confirm-assign" type="button" onClick={handleAssign} disabled={assignUserId === "" || assigning || assignCourse.cupoDisponible === 0}
                                         className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/10 hover:bg-emerald-700 transition disabled:opacity-60 cursor-pointer">
                                         {assigning ? "Inscribiendo…" : "Confirmar Inscripción"}

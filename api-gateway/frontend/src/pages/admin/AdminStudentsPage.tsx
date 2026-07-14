@@ -576,7 +576,7 @@ const AdminStudentsPage = () => {
         s.email.toLowerCase().includes(search.toLowerCase())
     );
 
-    const inputClass = "w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all";
+    const inputClass = "w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all";
 
     return (
         <main className="min-h-[calc(100vh-64px)] bg-[#FAFAFA] px-6 pt-14 pb-28 text-neutral-800 w-full flex flex-col items-center">
@@ -753,7 +753,7 @@ const AdminStudentsPage = () => {
             {editingUser && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
                     <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
-                        <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-7 py-5 flex items-center justify-between">
+                        <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Usuarios</p>
                                 <h2 className="mt-1 text-xl font-black text-white">Editar Usuario</h2>
@@ -765,28 +765,28 @@ const AdminStudentsPage = () => {
                             </button>
                         </div>
 
-                        <div className="px-7 py-6 space-y-4 bg-neutral-50">
+                        <div className="px-10 py-9 space-y-6 bg-white">
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Nombre completo</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Nombre completo</label>
                                 <input type="text" value={editForm.nombre} onChange={e => setEditForm({ ...editForm, nombre: e.target.value })} className={inputClass} />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Correo electrónico</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Correo electrónico</label>
                                 <input type="email" value={editForm.email} onChange={e => setEditForm({ ...editForm, email: e.target.value })} className={inputClass} />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Teléfono</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Teléfono</label>
                                 <div className="flex">
-                                    <span className="flex items-center rounded-l-xl border border-r-0 border-gray-300 bg-neutral-200 px-3 text-sm font-bold text-neutral-700 select-none">+569</span>
+                                    <span className="flex items-center rounded-l-xl border border-r-0 border-neutral-200 bg-neutral-100 px-3 text-sm font-bold text-neutral-600 select-none">+569</span>
                                     <input type="tel" inputMode="numeric"
                                         value={editForm.telefono.replace(/^\+?569?/, "")}
                                         onChange={e => { const d = e.target.value.replace(/\D/g, "").slice(0, 8); setEditForm({ ...editForm, telefono: d }); }}
                                         maxLength={8} placeholder="12345678"
-                                        className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
+                                        className="w-full rounded-r-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all" />
                                 </div>
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Rol del sistema</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Rol del sistema</label>
                                 <select value={editForm.rol} onChange={e => setEditForm({ ...editForm, rol: e.target.value as any })} className={inputClass}>
                                     <option value="ESTUDIANTE">Estudiante</option>
                                     <option value="INSTRUCTOR">Instructor</option>
@@ -794,7 +794,7 @@ const AdminStudentsPage = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">
                                     Nueva contraseña <span className="normal-case font-normal text-neutral-400">(vacío = sin cambio)</span>
                                 </label>
                                 <input type="password" value={editForm.nuevaPassword} onChange={e => setEditForm({ ...editForm, nuevaPassword: e.target.value })}
@@ -807,9 +807,9 @@ const AdminStudentsPage = () => {
                                 </div>
                             )}
 
-                            <div className="flex gap-3 pt-2">
+                            <div className="flex gap-3 pt-1">
                                 <button type="button" onClick={() => setEditingUser(null)}
-                                    className="flex-1 rounded-xl border border-gray-300 bg-white py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer">
+                                    className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">
                                     Cancelar
                                 </button>
                                 <button type="button" onClick={handleSaveUser}
@@ -826,7 +826,7 @@ const AdminStudentsPage = () => {
             {showCreateModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
                     <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
-                        <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-7 py-5 flex items-center justify-between">
+                        <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Usuarios</p>
                                 <h2 className="mt-1 text-xl font-black text-white">Nuevo Usuario</h2>
@@ -837,36 +837,36 @@ const AdminStudentsPage = () => {
                             </button>
                         </div>
 
-                        <div className="px-7 py-6 space-y-4 bg-neutral-50">
+                        <div className="px-10 py-9 space-y-6 bg-white">
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Nombre completo *</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Nombre completo *</label>
                                 <input type="text" value={createForm.nombre} onChange={e => setCreateForm({ ...createForm, nombre: e.target.value })}
                                     className={inputClass} placeholder="Ej. Juan Pérez" />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Correo electrónico *</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Correo electrónico *</label>
                                 <input type="email" value={createForm.email} onChange={e => setCreateForm({ ...createForm, email: e.target.value })}
                                     className={inputClass} placeholder="correo@ejemplo.com" />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Contraseña *</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Contraseña *</label>
                                 <input type="password" value={createForm.password} onChange={e => setCreateForm({ ...createForm, password: e.target.value })}
                                     className={inputClass} placeholder="••••••••" />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">
                                     Teléfono <span className="normal-case font-normal text-neutral-400">(opcional)</span>
                                 </label>
                                 <div className="flex">
-                                    <span className="flex items-center rounded-l-xl border border-r-0 border-gray-300 bg-neutral-200 px-3 text-sm font-bold text-neutral-700 select-none">+569</span>
+                                    <span className="flex items-center rounded-l-xl border border-r-0 border-neutral-200 bg-neutral-100 px-3 text-sm font-bold text-neutral-600 select-none">+569</span>
                                     <input type="tel" inputMode="numeric" value={createForm.telefono}
                                         onChange={e => { const d = e.target.value.replace(/\D/g, "").slice(0, 8); setCreateForm({ ...createForm, telefono: d }); }}
                                         maxLength={8} placeholder="12345678"
-                                        className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all" />
+                                        className="w-full rounded-r-xl border border-neutral-200 bg-white px-4 py-3 text-sm text-neutral-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all" />
                                 </div>
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-500">Rol del sistema</label>
+                                <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-neutral-500">Rol del sistema</label>
                                 <select value={createForm.rol} onChange={e => setCreateForm({ ...createForm, rol: e.target.value as any })} className={inputClass}>
                                     <option value="ESTUDIANTE">Estudiante</option>
                                     <option value="INSTRUCTOR">Instructor</option>
@@ -880,9 +880,9 @@ const AdminStudentsPage = () => {
                                 </div>
                             )}
 
-                            <div className="flex gap-3 pt-2">
+                            <div className="flex gap-3 pt-1">
                                 <button type="button" onClick={() => setShowCreateModal(false)}
-                                    className="flex-1 rounded-xl border border-gray-300 bg-white py-2.5 text-sm font-bold text-neutral-600 hover:bg-gray-50 transition cursor-pointer">
+                                    className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">
                                     Cancelar
                                 </button>
                                 <button type="button" onClick={handleCreateUser}

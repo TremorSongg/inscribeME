@@ -8,7 +8,9 @@ export type LoginResponse = {
     email: string;
     rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN";
     fotoPerfil?: string;
+    telefono?: string;
 };
+
 
 export type RegisterPayload = {
     nombre: string;

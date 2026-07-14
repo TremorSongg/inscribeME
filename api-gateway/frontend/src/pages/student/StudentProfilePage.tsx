@@ -152,7 +152,6 @@ const MiniCalendar = ({ ins, asistencias }: { ins: InscripcionDTO; asistencias: 
     );
 };
 
-/*
 // ── SUBIDA DE FOTO DE PERFIL COMPARTIDA ───────────────────────────────────
 const ProfilePhoto = ({ username }: { username: string }) => {
     const { user, updateUserPhoto } = useAuth();
@@ -191,7 +190,7 @@ const ProfilePhoto = ({ username }: { username: string }) => {
         </div>
     );
 };
-*/
+
 
 
 // ── PÁGINA PRINCIPAL DEL PERFIL ───────────────────────────────────────────
@@ -424,10 +423,33 @@ const StudentProfilePage = () => {
                 </div>
 
                 {/* Grid Estructural del Dashboard del Alumno */}
-                <div className="grid gap-8 items-start">
+                <div className="grid gap-8 lg:grid-cols-[280px_1fr] items-start">
 
-                    {/* ── BARRA LATERAL (SIDEBAR) — oculta temporalmente ──────── */}
-                    {/* <aside className="space-y-5 h-fit">...</aside> */}
+                    {/* ── BARRA LATERAL (SIDEBAR) ─────────────────────────────── */}
+                    <aside className="space-y-5 h-fit">
+                        <div className="rounded-[24px] bg-sky-100 p-6 shadow-[0_2px_12px_rgba(0,0,0,0.02)] border border-neutral-200 text-center flex flex-col items-center">
+                            <ProfilePhoto username={user.username} />
+                            <h2 className="text-lg font-bold text-sky-800 font-display tracking-tight truncate">{user.username}</h2>
+                            <p className="text-xs font-semibold text-sky-600 truncate mt-0.5">{user.email}</p>
+
+                            <span className="mt-3 mx-auto block w-fit rounded-full bg-primary-50 border border-primary-100 px-3.5 py-0.5 text-xs font-bold text-primary-700 tracking-wide">
+                                Estudiante
+                            </span>
+
+                            {user.phone && (
+                                <div className="mt-4 rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3 text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Teléfono</p>
+                                    <p className="text-sm font-bold text-sky-800 mt-0.5">{user.phone}</p>
+                                </div>
+                            )}
+
+                            <div className="mt-3 rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3 text-left">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Cursos inscritos</p>
+                                <p className="text-center text-3xl font-black text-primary-600 mt-0.5 tracking-tight">{loading ? "…" : inscripciones.length}</p>
+                            </div>
+                            <p className="mt-4 text-[10px] font-bold text-sky-600 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
+                        </div>
+                    </aside>
 
                     {/* ── CUERPO CENTRAL DE INFORMACIÓN ───────────────────────── */}
                     <div className="flex-1 min-w-0">

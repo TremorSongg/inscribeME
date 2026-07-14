@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { cursosService, getIcon, type CursoDTO } from "../../services/cursosService";
 import { notificacionesService, type NotificacionDTO } from "../../services/notificacionesService";
@@ -9,7 +9,6 @@ import {
 } from "../../services/inscripcionesService";
 import { usuariosService } from "../../services/authService";
 
-/*
 // ── Foto de perfil compartida ──────────────────────────────────
 const ProfilePhoto = ({ username }: { username: string }) => {
     const { user, updateUserPhoto } = useAuth();
@@ -48,7 +47,6 @@ const ProfilePhoto = ({ username }: { username: string }) => {
         </div>
     );
 };
-*/
 
 
 // ── InstructorProfilePage ──────────────────────────────────────
@@ -306,8 +304,35 @@ const InstructorProfilePage = () => {
                     
                     {/* ── COLUMNA IZQUIERDA: SIDEBAR DEL DOCENTE ─────────────────── */}
                     <aside className="space-y-5">
-                        {/* Perfil rápido tarjeta — oculta temporalmente */}
-                        {/* <div className="rounded-2xl bg-sky-200 ...">...</div> */}
+                        {/* Perfil rápido tarjeta */}
+                        <div className="rounded-2xl bg-sky-200 p-6 shadow-md border border-neutral-200 text-center flex flex-col items-center">
+                            <ProfilePhoto username={user.username} />
+                            <p className="font-bold text-sky-800 text-lg tracking-tight">{user.username}</p>
+                            <p className="text-xs font-semibold text-sky-600 mt-0.5 truncate">{user.email}</p>
+                            <span className="mt-3 mx-auto w-fit rounded-full bg-blue-50 !px-3 !py-0.5 text-xs font-bold text-blue-700 tracking-wide border border-blue-100">
+                                Instructor
+                            </span>
+
+                            {user.phone && (
+                                <div className="mt-4 w-full rounded-2xl border border-sky-100 bg-sky-50/70 p-3 text-left">
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Teléfono</p>
+                                    <p className="text-sm font-bold text-sky-800 mt-0.5">{user.phone}</p>
+                                </div>
+                            )}
+
+                            <p className="mt-4 text-[10px] !py-4 font-bold text-sky-600/60 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
+
+                            {myNotifs.filter(n => !n.leido).length > 0 && (
+                                <div className="mt-4 rounded-xl bg-sky-50/70 border border-sky-100 p-3 text-left">
+                                    <p className="text-xs font-bold text-sky-700 mb-1 flex items-center gap-1">
+                                        <span className="animate-pulse">🔔</span> {myNotifs.filter(n => !n.leido).length} nuevas alertas
+                                    </p>
+                                    {myNotifs.slice(0, 2).map(n => (
+                                        <p key={n.id} className="text-xs font-medium text-sky-600 truncate mt-0.5">· {n.mensaje}</p>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Listado de cursos asignados */}
                         <div className="rounded-2xl bg-white p-5 shadow-md border border-neutral-200 text-left">

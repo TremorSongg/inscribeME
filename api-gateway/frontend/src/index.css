@@ -963,22 +963,29 @@ div:has(> .owl-wrapper):has(> .grid.grid-cols-2) > p:last-of-type {
 }
 
 /* ── Modales (AdminStudentsPage + CourseManagementPage) ─────── */
-/* Contenedor común: rounded-xl bg-white shadow-2xl con p-7 o p-8 */
+/* Quitar padding del wrapper — cada sección (header/body) maneja el suyo */
 .fixed.inset-0.z-50 > div[class*="rounded-xl"],
-.fixed.inset-0.z-50 > div[class*="rounded-xs"] {
-  padding: 2rem !important;
+.fixed.inset-0.z-50 > div[class*="rounded-xs"],
+.fixed.inset-0.z-50 > div[class*="rounded-2xl"] {
+  padding: 0 !important;
 }
 
-/* Header del modal (título + botón cerrar) */
+/* Header: mismos valores que baja-modal */
 .fixed.inset-0.z-50 > div > div:first-child {
-  margin-bottom: 1.5rem !important;
+  padding: 1.75rem 2.5rem !important;
+  margin-bottom: 0 !important;
+}
+
+/* Body directo hijo del card (segundo div) */
+.fixed.inset-0.z-50 > div > div:nth-child(2) {
+  padding: 2.25rem 2.5rem !important;
 }
 
 /* Campos de formulario dentro del modal */
 .fixed.inset-0.z-50 input,
 .fixed.inset-0.z-50 select,
 .fixed.inset-0.z-50 textarea {
-  padding: 0.625rem 0.875rem !important;
+  padding: 0.75rem 1rem !important;
 }
 
 /* Separación entre campos */
