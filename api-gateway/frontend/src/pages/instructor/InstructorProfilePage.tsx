@@ -79,6 +79,40 @@ const InstructorProfilePage = () => {
     const [notifSent, setNotifSent] = useState(false);
     const [sendingNotif, setSendingNotif] = useState(false);
 
+    // ── Modal cambio de contraseña ──
+    const [pwdModal, setPwdModal] = useState(false);
+    const [pwdActual, setPwdActual]     = useState("");
+    const [pwdNueva, setPwdNueva]       = useState("");
+    const [pwdConfirm, setPwdConfirm]   = useState("");
+    const [pwdError, setPwdError]       = useState<string | null>(null);
+    const [pwdOk, setPwdOk]             = useState(false);
+    const [pwdEnviando, setPwdEnviando] = useState(false);
+
+    const abrirPwdModal = () => {
+        setPwdActual(""); setPwdNueva(""); setPwdConfirm("");
+        setPwdError(null); setPwdOk(false);
+        setPwdModal(true);
+    };
+
+    const handleCambiarPassword = async () => {
+        if (!user) return;
+        setPwdError(null);
+        if (!pwdActual) { setPwdError("Ingresa tu contraseña actual."); return; }
+        if (pwdNueva.length < 8) { setPwdError("La nueva contraseña debe tener al menos 8 caracteres."); return; }
+        if (pwdNueva.length > 72) { setPwdError("La contraseña no puede superar los 72 caracteres."); return; }
+        if (pwdNueva !== pwdConfirm) { setPwdError("Las contraseñas no coinciden."); return; }
+        setPwdEnviando(true);
+        try {
+            await import("../../services/authService").then(m => m.authService.login(user.email, pwdActual));
+            await usuariosService.actualizar(user.id, { password: pwdNueva } as any);
+            setPwdOk(true);
+        } catch {
+            setPwdError("La contraseña actual es incorrecta o hubo un error. Inténtalo de nuevo.");
+        } finally {
+            setPwdEnviando(false);
+        }
+    };
+
     // Sincronizar pestaña activa de sessionStorage si se hace click en la campana
     useEffect(() => {
         const storedTab = sessionStorage.getItem("activeProfileTab");
@@ -382,6 +416,13 @@ const InstructorProfilePage = () => {
                                         </p>
                                     </div>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={abrirPwdModal}
+                                    className="mt-5 w-full rounded-xl border border-neutral-200 bg-white px-5 py-3 text-sm font-semibold text-neutral-700 hover:bg-neutral-50 hover:border-neutral-300 transition flex items-center gap-2 cursor-pointer shadow-sm"
+                                >
+                                    🔑 Cambiar contraseña
+                                </button>
                             </div>
                         )}
 
@@ -713,6 +754,71 @@ const InstructorProfilePage = () => {
                     </div>
                 </div>
             </section>
+
+            {/* ── Modal cambio de contraseña ──────────────────────── */}
+            {pwdModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
+                    <div className="baja-modal-card w-full max-w-md rounded-2xl bg-white border border-neutral-100 shadow-2xl overflow-hidden">
+                        <div className="baja-modal-header border-b border-neutral-100 bg-sky-50 flex items-start justify-between gap-4">
+                            <div>
+                                <h2 className="text-xl font-bold text-sky-800 font-display">Cambiar contraseña</h2>
+                                <p className="mt-1 text-sm text-sky-600 font-medium">Actualiza tu contraseña de acceso</p>
+                            </div>
+                            <button type="button" onClick={() => setPwdModal(false)}
+                                className="rounded-lg p-2 text-sky-400 hover:bg-sky-100 hover:text-sky-700 transition cursor-pointer shrink-0">✕</button>
+                        </div>
+
+                        {pwdOk ? (
+                            <div className="baja-modal-success text-center">
+                                <div className="mb-4 text-6xl">🔐</div>
+                                <h3 className="text-xl font-bold text-neutral-900 font-display">Contraseña actualizada</h3>
+                                <p className="mt-3 text-sm text-neutral-600 leading-relaxed max-w-xs mx-auto">
+                                    Tu contraseña fue cambiada correctamente.
+                                </p>
+                                <button type="button" onClick={() => setPwdModal(false)}
+                                    className="mt-8 w-full btn btn-primary py-3.5 font-bold cursor-pointer">Entendido</button>
+                            </div>
+                        ) : (
+                            <div className="baja-modal-body space-y-5">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">Contraseña actual</label>
+                                    <input type="password" value={pwdActual} onChange={e => setPwdActual(e.target.value)}
+                                        placeholder="••••••••"
+                                        className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm text-neutral-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">Nueva contraseña</label>
+                                    <input type="password" value={pwdNueva} onChange={e => setPwdNueva(e.target.value)}
+                                        placeholder="Mínimo 8 caracteres"
+                                        maxLength={72}
+                                        className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm text-neutral-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition" />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 mb-2">Confirmar nueva contraseña</label>
+                                    <input type="password" value={pwdConfirm} onChange={e => setPwdConfirm(e.target.value)}
+                                        placeholder="Repite la nueva contraseña"
+                                        className="w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm text-neutral-800 outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/20 transition" />
+                                </div>
+                                {pwdError && (
+                                    <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-medium text-red-700 flex items-center gap-2">
+                                        <span>⚠️</span><span>{pwdError}</span>
+                                    </div>
+                                )}
+                                <div className="flex gap-4 pt-1">
+                                    <button type="button" onClick={() => setPwdModal(false)}
+                                        className="flex-1 rounded-xl border border-neutral-200 py-3 text-sm font-semibold text-neutral-600 hover:bg-neutral-50 transition cursor-pointer">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" onClick={handleCambiarPassword} disabled={pwdEnviando}
+                                        className="flex-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white py-3 text-sm font-bold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+                                        {pwdEnviando ? "Guardando..." : "Guardar cambios"}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </main>
     );
 };

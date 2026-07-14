@@ -195,7 +195,7 @@ const CourseManagementPage = () => {
                 {/* ── MODAL FORMULARIO DE CURSO ────────────────────────────────── */}
                 {showForm && (
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                        <div className="w-full max-w-2xl rounded-xs bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp">
+                        <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp">
                             <h2 className="mb-6 text-2xl font-black text-neutral-900">
                                 {editingId !== null ? "📝 Editar Curso" : "🚀 Crear Nuevo Curso"}
                             </h2>

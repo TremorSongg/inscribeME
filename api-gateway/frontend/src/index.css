@@ -858,6 +858,39 @@ div:has(> .owl-wrapper):has(> .grid.grid-cols-2) > p:last-of-type {
 }
 
 
+/* ── Modal solicitud de baja (StudentProfilePage) — anula selectores globales ── */
+.baja-modal-card,
+.baja-modal-card > div {
+  padding: 0 !important;
+}
+.baja-modal-card .baja-modal-header {
+  padding: 1.75rem 2.5rem !important;
+  margin-bottom: 0 !important;
+}
+.baja-modal-card .baja-modal-body {
+  padding: 2.25rem 2.5rem !important;
+}
+.baja-modal-card .baja-modal-success {
+  padding: 3rem 2.5rem !important;
+}
+.baja-modal-card input,
+.baja-modal-card select,
+.baja-modal-card textarea {
+  padding: 0.75rem 1rem !important;
+}
+.baja-modal-card .flex.gap-4 {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+.dark .baja-modal-card {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .baja-modal-card .baja-modal-header {
+  background-color: rgba(185,28,28,0.15) !important;
+}
+
 /* ── Modales (AdminStudentsPage + CourseManagementPage) ─────── */
 /* Contenedor común: rounded-xl bg-white shadow-2xl con p-7 o p-8 */
 .fixed.inset-0.z-50 > div[class*="rounded-xl"],
@@ -896,6 +929,93 @@ div:has(> .owl-wrapper):has(> .grid.grid-cols-2) > p:last-of-type {
 .dark .fixed.inset-0.z-50 .flex.gap-3,
 .dark .fixed.inset-0.z-50 .flex.gap-4 {
   border-top-color: rgba(255,255,255,0.07) !important;
+}
+
+/* ── Dark mode: fondo y texto de TODOS los modales overlay ──── */
+.dark .fixed.inset-0.z-50 > div[class*="rounded"] {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: #E2E8F0 !important;
+}
+
+/* Títulos dentro del modal */
+.dark .fixed.inset-0.z-50 h2,
+.dark .fixed.inset-0.z-50 h3 {
+  color: #F1F5F9 !important;
+}
+
+/* Labels y textos secundarios */
+.dark .fixed.inset-0.z-50 label,
+.dark .fixed.inset-0.z-50 p {
+  color: #94A3B8 !important;
+}
+
+/* Inputs / selects / textareas dentro de modales */
+.dark .fixed.inset-0.z-50 input,
+.dark .fixed.inset-0.z-50 select,
+.dark .fixed.inset-0.z-50 textarea {
+  background-color: #0F1117 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #E2E8F0 !important;
+}
+
+/* Divisores internos */
+.dark .fixed.inset-0.z-50 .border-t,
+.dark .fixed.inset-0.z-50 .border-b,
+.dark .fixed.inset-0.z-50 .border-neutral-100,
+.dark .fixed.inset-0.z-50 .border-neutral-200 {
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+/* ── Dark mode: panels de tarjeta (Instructor / Estudiante) ─── */
+/* Cubre rounded-2xl bg-white p-7, rounded-2xl bg-white p-5, etc. */
+.dark .rounded-2xl.bg-white,
+.dark .rounded-xl.bg-white {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Títulos dentro de panels */
+.dark .rounded-2xl.bg-white h2,
+.dark .rounded-2xl.bg-white h3,
+.dark .rounded-xl.bg-white h2,
+.dark .rounded-xl.bg-white h3 {
+  color: #F1F5F9 !important;
+}
+
+/* Textos secundarios dentro de panels */
+.dark .rounded-2xl.bg-white p,
+.dark .rounded-2xl.bg-white span:not([class*="bg-"]):not([class*="text-primary"]):not([class*="text-sky"]):not([class*="text-emerald"]):not([class*="text-red"]):not([class*="text-amber"]):not([class*="text-green"]):not([class*="text-blue"]),
+.dark .rounded-xl.bg-white p {
+  color: #94A3B8 !important;
+}
+
+/* Divisores internos de panels */
+.dark .rounded-2xl.bg-white .border-t,
+.dark .rounded-2xl.bg-white .border-b,
+.dark .rounded-2xl.bg-white .border-neutral-100,
+.dark .rounded-2xl.bg-white .border-neutral-200,
+.dark .rounded-xl.bg-white .border-t,
+.dark .rounded-xl.bg-white .border-neutral-100 {
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Inputs dentro de panels (perfil de instructor/estudiante) */
+.dark .rounded-2xl.bg-white input,
+.dark .rounded-2xl.bg-white select,
+.dark .rounded-2xl.bg-white textarea,
+.dark .rounded-xl.bg-white input,
+.dark .rounded-xl.bg-white select {
+  background-color: #0F1117 !important;
+  border-color: rgba(255,255,255,0.12) !important;
+  color: #E2E8F0 !important;
+}
+
+/* Sub-panels y listas anidadas dentro de panels */
+.dark .rounded-2xl.bg-white .rounded-xl,
+.dark .rounded-2xl.bg-white .rounded-2xl {
+  background-color: rgba(255,255,255,0.04) !important;
+  border-color: rgba(255,255,255,0.07) !important;
 }
 
 /* Modal de detalle de estudiante (max-w-2xl, sin fixed inset-0 directo) */
@@ -1035,6 +1155,61 @@ button.group.rounded-xl.shadow-sm.border.text-left .mt-5.pt-4 {
   margin-top: 1.25rem !important;
   padding-top: 1rem !important;
 }
+
+/* ── Carrito de compras ─────────────────────────────────────── */
+.dark .cart-card {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+
+/* Títulos y textos dentro de cart-card */
+.dark .cart-card h1,
+.dark .cart-card h2,
+.dark .cart-card h3 {
+  color: #F1F5F9 !important;
+}
+.dark .cart-card p,
+.dark .cart-card span:not([class*="text-primary"]):not([class*="text-sky"]):not([class*="text-red"]):not([class*="text-green"]) {
+  color: #94A3B8 !important;
+}
+
+/* Precio del ítem (debe destacar) */
+.dark .cart-card .font-extrabold.text-neutral-900,
+.dark .cart-card .font-semibold.text-neutral-800 {
+  color: #E2E8F0 !important;
+}
+
+/* Ícono de curso en dark */
+.dark .cart-card .bg-primary-50 {
+  background-color: rgba(14,165,233,0.12) !important;
+}
+
+/* Divisores */
+.dark .cart-card .border-t,
+.dark .cart-card .border-b,
+.dark .cart-card .border-neutral-100,
+.dark .cart-card .border-neutral-200 {
+  border-color: rgba(255,255,255,0.07) !important;
+}
+
+/* Zona de total (bg-neutral-50 dentro del panel) */
+.dark .cart-card .bg-neutral-50\/60,
+.dark .cart-card .bg-neutral-50 {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+
+/* Contenedor QR */
+.dark .cart-card .bg-white.shadow-inner {
+  background-color: #ffffff !important;
+}
+
+/* Voucher: aviso naranja en dark */
+.dark .cart-card .border-orange-200 {
+  border-color: rgba(251,146,60,0.3) !important;
+  background-color: rgba(251,146,60,0.08) !important;
+}
+.dark .cart-card .text-orange-800 { color: #FED7AA !important; }
+.dark .cart-card .text-orange-700 { color: #FDBA74 !important; }
 
 /* ── Cards con rounded-3xl (ProductPage) en dark mode ──────── */
 .dark .rounded-3xl.border,

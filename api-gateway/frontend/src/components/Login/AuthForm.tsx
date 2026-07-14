@@ -23,14 +23,14 @@ const AuthForm = () => {
     const [isBlind, setIsBlind] = useState(false);
 
     // ── Validaciones ─────────────────────────────────────────────
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
     const validate = (): FieldError => {
         const errs: FieldError = {};
-        if (!email.includes("@") || email.trim().length < 5) {
-            errs.email = "Ingresa un correo electrónico válido (debe contener @).";
-        }
-        if (password.length < 6) {
+        if (!EMAIL_RE.test(email.trim()))
+            errs.email = "Ingresa un correo electrónico válido (ej: usuario@dominio.cl).";
+        if (password.length < 6)
             errs.password = "La contraseña debe tener al menos 6 caracteres.";
-        }
         return errs;
     };
 
@@ -114,6 +114,7 @@ const AuthForm = () => {
                         onChange={(e) => setEmail(e.target.value)}
                         onBlur={() => handleBlur("email")}
                         placeholder="ejemplo@correo.cl"
+                        maxLength={100}
                         className={`w-full rounded-2xl border px-4 py-3.5 outline-none transition focus:ring-2 ${
                             touched.email && errors.email
                                 ? "input-error focus:ring-red-200"
@@ -142,8 +143,8 @@ const AuthForm = () => {
                             /* CAMBIO CLAVE: Manejadores de foco integrados para gatillar la animación */
                             onFocus={() => setIsBlind(true)}
                             onBlur={() => handleBlur("password")}
-                            
                             placeholder="Mínimo 6 caracteres"
+                            maxLength={72}
                             className={`w-full rounded-2xl border px-4 py-3.5 pr-12 outline-none transition focus:ring-2 ${
                                 touched.password && errors.password
                                     ? "input-error focus:ring-red-200"

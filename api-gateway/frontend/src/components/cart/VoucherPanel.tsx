@@ -53,7 +53,7 @@ const VoucherPanel = ({ items, total, user }: Props) => {
           Código QR del Voucher
         </p>
 
-        <div className="flex h-[160px] w-[160px] items-center justify-center rounded-2xl border border-neutral-200 bg-neutral-50 shadow-inner">
+        <div className="flex h-[160px] w-[160px] items-center justify-center rounded-2xl border border-neutral-200 bg-white shadow-inner">
           {items.length > 0 ? (
             <canvas
               ref={canvasRef}

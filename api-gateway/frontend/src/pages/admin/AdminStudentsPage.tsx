@@ -242,6 +242,128 @@ const StudentDetailPanel = ({
     );
 };
 
+// ── COMPONENTE DETALLE DE UN INSTRUCTOR (MODAL) ──────────────────────────────
+const InstructorDetailPanel = ({
+    instructor,
+    onClose,
+}: {
+    instructor: UsuarioBackend;
+    onClose: () => void;
+}) => {
+    const [cursos, setCursos] = useState<import("../../services/cursosService").CursoDTO[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        import("../../services/cursosService").then(m =>
+            m.cursosService.listar()
+        ).then(todos => {
+            setCursos(todos.filter(c => c.nombreInstructor === instructor.nombre));
+            setLoading(false);
+        }).catch(() => setLoading(false));
+    }, [instructor.nombre]);
+
+    const photo = instructor.fotoPerfil || null;
+    const totalAlumnos = cursos.reduce((acc, c) => acc + (c.cupoTotal - c.cupoDisponible), 0);
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+            <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-xl bg-white shadow-2xl border border-neutral-100 animate-slideUp overflow-hidden">
+
+                {/* Header */}
+                <div className="flex items-center gap-5 px-6 bg-gradient-to-r from-violet-900 to-violet-950 p-6 text-left">
+                    {photo ? (
+                        <img src={photo} alt={instructor.nombre} className="h-16 w-16 rounded-full object-cover border-2 border-white/20 shadow-md" />
+                    ) : (
+                        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-violet-600 text-2xl font-bold text-white border-2 border-white/10 shadow-md">
+                            {instructor.nombre.charAt(0).toUpperCase()}
+                        </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Perfil de Instructor</p>
+                        <h2 className="text-2xl font-black text-white truncate mt-0.5">{instructor.nombre}</h2>
+                        <p className="text-sm text-white/70 truncate mt-0.5">{instructor.email}</p>
+                    </div>
+                    <button type="button" onClick={onClose}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all font-bold text-sm cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                {/* Stats rápidos */}
+                <div className="grid grid-cols-3 divide-x divide-neutral-100 border-b border-neutral-100 bg-[#FAFAFA]">
+                    {[
+                        { label: "Cursos dictados", value: loading ? "…" : cursos.length },
+                        { label: "Total alumnos",   value: loading ? "…" : totalAlumnos },
+                        { label: "Teléfono",        value: instructor.telefono || "—" },
+                    ].map(s => (
+                        <div key={s.label} className="py-4 px-2 text-center">
+                            <p className="text-xl font-bold text-violet-900 tracking-tight">{s.value}</p>
+                            <p className="text-xs font-bold text-violet-400 uppercase tracking-wider mt-0.5">{s.label}</p>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Título sección */}
+                <div className="px-6 pt-5 pb-2 border-b border-neutral-50 bg-white">
+                    <p className="text-sm font-bold text-neutral-700">📚 Cursos asignados</p>
+                </div>
+
+                {/* Lista cursos */}
+                <div className="p-6 min-h-[200px] bg-white text-left">
+                    {loading ? (
+                        <div className="space-y-3">
+                            {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-neutral-100" />)}
+                        </div>
+                    ) : cursos.length === 0 ? (
+                        <div className="rounded-xl bg-neutral-50 py-12 text-center border border-dashed border-neutral-200">
+                            <p className="text-4xl mb-2">📭</p>
+                            <p className="text-sm font-bold text-neutral-900">Este instructor no tiene cursos asignados.</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-3">
+                            {cursos.map((c, i) => {
+                                const ocupados = c.cupoTotal - c.cupoDisponible;
+                                const pct = c.cupoTotal > 0 ? Math.round((ocupados / c.cupoTotal) * 100) : 0;
+                                return (
+                                    <div key={c.id}
+                                        className="rounded-xl border border-neutral-100 bg-white p-4 hover:shadow-md transition-all duration-200 animate-fadeInUp"
+                                        style={{ animationDelay: `${i * 60}ms` }}>
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-xl border border-violet-100">
+                                                📚
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="font-bold text-neutral-900 truncate">{c.nombre}</p>
+                                                <p className="text-xs font-semibold text-violet-500 mt-0.5">
+                                                    📅 {c.fechaInicio ? new Date(c.fechaInicio + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                    {" al "}
+                                                    {c.fechaFin ? new Date(c.fechaFin + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                </p>
+                                                {/* Barra de ocupación */}
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <div className="flex-1 h-1.5 rounded-full bg-neutral-100 overflow-hidden">
+                                                        <div className={`h-1.5 rounded-full transition-all duration-500 ${pct >= 90 ? "bg-red-500" : pct >= 60 ? "bg-amber-500" : "bg-violet-500"}`}
+                                                            style={{ width: `${pct}%` }} />
+                                                    </div>
+                                                    <span className="text-[11px] font-bold text-neutral-500 shrink-0">{ocupados}/{c.cupoTotal} alumnos</span>
+                                                </div>
+                                            </div>
+                                            <span className={`shrink-0 self-start rounded-full px-2.5 py-0.5 text-xs font-bold tracking-wide ${
+                                                c.precio === 0 ? "bg-green-50 text-green-700" : "bg-violet-50 text-violet-700"}`}>
+                                                {c.precio === 0 ? "Gratis" : `$${c.precio.toLocaleString("es-CL")}`}
+                                            </span>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // ── PÁGINA PRINCIPAL DE ESTUDIANTES ───────────────────────────────────────────
 const AdminStudentsPage = () => {
     const { user } = useAuth();
@@ -252,13 +374,14 @@ const AdminStudentsPage = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [selected, setSelected] = useState<UsuarioBackend | null>(null);
+    const [selectedInstructor, setSelectedInstructor] = useState<UsuarioBackend | null>(null);
     const [activeTab, setActiveTab] = useState<"ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" | "TODOS">(
         roleParam === "admin" ? "ADMIN" : roleParam === "instructor" ? "INSTRUCTOR" : roleParam === "all" ? "TODOS" : "ESTUDIANTE"
     );
 
     const [editingUser, setEditingUser] = useState<UsuarioBackend | null>(null);
-    const [editForm, setEditForm] = useState<{ nombre: string; email: string; telefono: string; rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN" }>({
-        nombre: "", email: "", telefono: "", rol: "ESTUDIANTE"
+    const [editForm, setEditForm] = useState<{ nombre: string; email: string; telefono: string; rol: "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN"; nuevaPassword: string }>({
+        nombre: "", email: "", telefono: "", rol: "ESTUDIANTE", nuevaPassword: ""
     });
 
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -272,14 +395,34 @@ const AdminStudentsPage = () => {
             nombre: u.nombre,
             email: u.email,
             telefono: u.telefono || "",
-            rol: u.rol
+            rol: u.rol,
+            nuevaPassword: ""
         });
     };
 
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const PHONE_DIGITS_RE = /^\d{8}$/;
+
     const handleSaveUser = async () => {
         if (!editingUser) return;
+        if (!editForm.nombre.trim()) { alert("El nombre no puede estar vacío."); return; }
+        if (!EMAIL_RE.test(editForm.email.trim())) { alert("Ingresa un correo electrónico válido."); return; }
+        const rawPhone = editForm.telefono.replace(/\D/g, "").replace(/^569/, "").slice(0, 8);
+        if (editForm.telefono.trim() && !PHONE_DIGITS_RE.test(rawPhone)) {
+            alert("El teléfono debe tener exactamente 8 dígitos después del prefijo +569."); return;
+        }
+        if (editForm.nuevaPassword.trim() && editForm.nuevaPassword.trim().length < 8) {
+            alert("La nueva contraseña debe tener al menos 8 caracteres."); return;
+        }
         try {
-            const updated = await usuariosService.actualizar(editingUser.id, editForm);
+            const payload: any = {
+                nombre: editForm.nombre.trim(),
+                email: editForm.email.trim().toLowerCase(),
+                telefono: editForm.telefono.trim() ? `+569${rawPhone}` : "",
+                rol: editForm.rol,
+            };
+            if (editForm.nuevaPassword.trim()) payload.password = editForm.nuevaPassword.trim();
+            const updated = await usuariosService.actualizar(editingUser.id, payload);
             setAllUsers(prev => prev.map(u => u.id === editingUser.id ? updated : u));
             setEditingUser(null);
             alert("Usuario actualizado correctamente.");
@@ -300,12 +443,20 @@ const AdminStudentsPage = () => {
     };
 
     const handleCreateUser = async () => {
-        if (!createForm.nombre || !createForm.email || !createForm.password) {
-            alert("Nombre, Email y Contraseña son obligatorios.");
-            return;
+        if (!createForm.nombre.trim()) { alert("El nombre es obligatorio."); return; }
+        if (!EMAIL_RE.test(createForm.email.trim())) { alert("Ingresa un correo electrónico válido."); return; }
+        if (createForm.password.length < 8) { alert("La contraseña debe tener al menos 8 caracteres."); return; }
+        const rawPhone = createForm.telefono.replace(/\D/g, "").replace(/^569/, "").slice(0, 8);
+        if (createForm.telefono.trim() && !PHONE_DIGITS_RE.test(rawPhone)) {
+            alert("El teléfono debe tener exactamente 8 dígitos después del prefijo +569."); return;
         }
         try {
-            const created = await authService.registrar(createForm);
+            const created = await authService.registrar({
+                ...createForm,
+                nombre: createForm.nombre.trim(),
+                email: createForm.email.trim().toLowerCase(),
+                telefono: createForm.telefono.trim() ? `+569${rawPhone}` : "",
+            });
             setAllUsers(prev => [...prev, created]);
             setShowCreateModal(false);
             setCreateForm({ nombre: "", email: "", telefono: "", password: "", rol: "ESTUDIANTE" });
@@ -467,7 +618,7 @@ const AdminStudentsPage = () => {
                             return (
                                 <button key={s.id} id={`${isStudent ? 'student' : isInstructor ? 'instructor' : 'admin'}-card-${s.id}`}
                                     type="button"
-                                    onClick={() => { if (isStudent) setSelected(s); }}
+                                    onClick={() => { if (isStudent) setSelected(s); else if (isInstructor) setSelectedInstructor(s); }}
                                     className={`group w-full rounded-xl p-6 shadow-sm border text-left transition-all duration-300 animate-fadeInUp flex flex-col justify-between ${
                                         isStudent 
                                             ? "bg-sky-100 border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:border-sky-500/30 cursor-pointer"
@@ -535,7 +686,7 @@ const AdminStudentsPage = () => {
                 )}
             </section>
 
-            {/* Panel detalle modal */}
+            {/* Panel detalle estudiante */}
             {selected && (
                 <StudentDetailPanel
                     student={selected}
@@ -543,6 +694,14 @@ const AdminStudentsPage = () => {
                     onCancelInscripcion={() => {
                         usuariosService.listarTodos().then(setAllUsers).catch(() => {});
                     }}
+                />
+            )}
+
+            {/* Panel detalle instructor */}
+            {selectedInstructor && (
+                <InstructorDetailPanel
+                    instructor={selectedInstructor}
+                    onClose={() => setSelectedInstructor(null)}
                 />
             )}
 
@@ -574,12 +733,21 @@ const AdminStudentsPage = () => {
                             </div>
                             <div>
                                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Teléfono</label>
-                                <input
-                                    type="text"
-                                    value={editForm.telefono}
-                                    onChange={e => setEditForm({ ...editForm, telefono: e.target.value })}
-                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
-                                />
+                                <div className="flex">
+                                    <span className="flex items-center rounded-l-xl border border-r-0 border-gray-300 bg-neutral-100 px-3 text-sm font-bold text-neutral-600 select-none">+569</span>
+                                    <input
+                                        type="tel"
+                                        inputMode="numeric"
+                                        value={editForm.telefono.replace(/^\+?569?/, "")}
+                                        onChange={e => {
+                                            const d = e.target.value.replace(/\D/g, "").slice(0, 8);
+                                            setEditForm({ ...editForm, telefono: d });
+                                        }}
+                                        maxLength={8}
+                                        placeholder="12345678"
+                                        className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Rol del sistema</label>
@@ -592,6 +760,18 @@ const AdminStudentsPage = () => {
                                     <option value="INSTRUCTOR">Instructor</option>
                                     <option value="ADMIN">Administrador</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">
+                                    Nueva contraseña <span className="normal-case font-normal text-neutral-400">(dejar vacío para no cambiar)</span>
+                                </label>
+                                <input
+                                    type="password"
+                                    value={editForm.nuevaPassword}
+                                    onChange={e => setEditForm({ ...editForm, nuevaPassword: e.target.value })}
+                                    placeholder="••••••••"
+                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                />
                             </div>
                         </div>
 
@@ -654,14 +834,22 @@ const AdminStudentsPage = () => {
                                 />
                             </div>
                             <div>
-                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Teléfono</label>
-                                <input
-                                    type="text"
-                                    value={createForm.telefono}
-                                    onChange={e => setCreateForm({ ...createForm, telefono: e.target.value })}
-                                    className="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
-                                    placeholder="+56 9 ..."
-                                />
+                                <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Teléfono <span className="normal-case font-normal text-neutral-400">(opcional)</span></label>
+                                <div className="flex">
+                                    <span className="flex items-center rounded-l-xl border border-r-0 border-gray-300 bg-neutral-100 px-3 text-sm font-bold text-neutral-600 select-none">+569</span>
+                                    <input
+                                        type="tel"
+                                        inputMode="numeric"
+                                        value={createForm.telefono}
+                                        onChange={e => {
+                                            const d = e.target.value.replace(/\D/g, "").slice(0, 8);
+                                            setCreateForm({ ...createForm, telefono: d });
+                                        }}
+                                        maxLength={8}
+                                        placeholder="12345678"
+                                        className="w-full rounded-r-xl border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/30 transition-all"
+                                    />
+                                </div>
                             </div>
                             <div>
                                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Rol del sistema</label>

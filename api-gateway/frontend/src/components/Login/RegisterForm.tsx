@@ -37,17 +37,25 @@ const RegisterForm = () => {
     const [isBlind, setIsBlind] = useState(false);
 
     // ── Validaciones ─────────────────────────────────────────────
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    // Extrae los 8 dígitos que el usuario escribe (sin el prefijo +569 que mostramos fijo)
+    const phoneDigitsOnly = (raw: string) => raw.replace(/\D/g, "").slice(0, 8);
+
     const validate = (data: RegisterFields): FieldErrors => {
         const errs: FieldErrors = {};
         if (data.username.trim().length < 3)
-            errs.username = "El nombre de usuario debe tener al menos 3 caracteres.";
-        if (!data.email.includes("@") || data.email.trim().length < 5)
-            errs.email = "Ingresa un correo electrónico válido (debe contener @).";
-        const phoneDigits = data.phone.replace(/\D/g, "");
-        if (phoneDigits.length < 9)
-            errs.phone = "El teléfono debe tener al menos 9 dígitos.";
-        if (data.password.length < 6)
-            errs.password = "La contraseña debe tener al menos 6 caracteres.";
+            errs.username = "El nombre debe tener al menos 3 caracteres.";
+        if (data.username.trim().length > 80)
+            errs.username = "El nombre no puede superar los 80 caracteres.";
+        if (!EMAIL_RE.test(data.email.trim()))
+            errs.email = "Ingresa un correo electrónico válido (ej: usuario@dominio.cl).";
+        const digits = phoneDigitsOnly(data.phone);
+        if (digits.length !== 8)
+            errs.phone = "El número debe tener exactamente 8 dígitos después del prefijo +569.";
+        if (data.password.length < 8)
+            errs.password = "La contraseña debe tener al menos 8 caracteres.";
+        if (data.password.length > 72)
+            errs.password = "La contraseña no puede superar los 72 caracteres.";
         if (data.confirmPassword !== data.password)
             errs.confirmPassword = "Las contraseñas no coinciden.";
         return errs;
@@ -88,10 +96,10 @@ const RegisterForm = () => {
 
         try {
             await register({
-                nombre: form.username,
-                email: form.email.toLowerCase(),
+                nombre: form.username.trim(),
+                email: form.email.trim().toLowerCase(),
                 password: form.password,
-                telefono: form.phone,
+                telefono: `+569${form.phone}`,
                 rol: form.role,
             });
             const stored = localStorage.getItem("authUser");
@@ -201,15 +209,25 @@ const RegisterForm = () => {
                 {/* Teléfono */}
                 <div className="text-left">
                     <label className="mb-1.5 block text-sm font-semibold text-[#497a96]">Teléfono</label>
-                    <input
-                        id="input-phone-register"
-                        type="tel"
-                        value={form.phone}
-                        onChange={(e) => handleChange("phone", e.target.value)}
-                        onBlur={() => handleBlur("phone")}
-                        placeholder="Mínimo 9 dígitos — ej: 912345678"
-                        className={fieldClass("phone")}
-                    />
+                    <div className="flex">
+                        <span className="flex items-center rounded-l-2xl border border-r-0 border-neutral-300 bg-neutral-100 px-3 text-sm font-bold text-neutral-600 select-none">
+                            +569
+                        </span>
+                        <input
+                            id="input-phone-register"
+                            type="tel"
+                            inputMode="numeric"
+                            value={form.phone}
+                            onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, "").slice(0, 8);
+                                handleChange("phone", digits);
+                            }}
+                            onBlur={() => handleBlur("phone")}
+                            placeholder="12345678"
+                            maxLength={8}
+                            className={`${fieldClass("phone")} rounded-l-none`}
+                        />
+                    </div>
                     {touched.phone && errors.phone && <p className="field-error-msg">⚠ {errors.phone}</p>}
                 </div>
 
@@ -227,7 +245,8 @@ const RegisterForm = () => {
                             onFocus={() => setIsBlind(true)}
                             onBlur={() => handleBlur("password")}
                             
-                            placeholder="Mínimo 6 caracteres"
+                            placeholder="Mínimo 8 caracteres"
+                            maxLength={72}
                             className={`${fieldClass("password")} pr-12`}
                         />
                         <button
