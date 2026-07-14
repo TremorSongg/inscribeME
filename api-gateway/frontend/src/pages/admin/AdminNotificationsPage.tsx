@@ -4,6 +4,9 @@ import { notificacionesService, type NotificacionDTO } from "../../services/noti
 import { usuariosService, type UsuarioBackend } from "../../services/authService";
 
 type SendForm = { target: "all" | "user"; userId: string; message: string };
+type SortKey = "recientes" | "antiguas";
+type FilterEstado = "todas" | "no_leidas" | "leidas";
+type FilterRol = "todos" | "ESTUDIANTE" | "INSTRUCTOR";
 
 const AdminNotificationsPage = () => {
     const { user } = useAuth();
@@ -14,6 +17,12 @@ const AdminNotificationsPage = () => {
     const [sendForm, setSendForm] = useState<SendForm>({ target: "all", userId: "", message: "" });
     const [sendSuccess, setSendSuccess] = useState(false);
     const [sending, setSending] = useState(false);
+
+    // ── Filtros y orden ──
+    const [search, setSearch] = useState("");
+    const [sortKey, setSortKey] = useState<SortKey>("recientes");
+    const [filterEstado, setFilterEstado] = useState<FilterEstado>("todas");
+    const [filterRol, setFilterRol] = useState<FilterRol>("todos");
 
     useEffect(() => {
         if (!user) return;
@@ -68,6 +77,27 @@ const AdminNotificationsPage = () => {
 
     const getUserName = (usuarioId: number) =>
         users.find((u) => u.id === usuarioId)?.nombre ?? `Usuario #${usuarioId}`;
+
+    const getUserRol = (usuarioId: number) =>
+        users.find((u) => u.id === usuarioId)?.rol ?? null;
+
+    const notifsFiltered = notifs
+        .filter(n => {
+            if (filterEstado === "no_leidas" && n.leido) return false;
+            if (filterEstado === "leidas" && !n.leido) return false;
+            if (filterRol !== "todos" && getUserRol(n.usuarioId) !== filterRol) return false;
+            if (search.trim()) {
+                const q = search.toLowerCase();
+                const nombre = getUserName(n.usuarioId).toLowerCase();
+                if (!n.mensaje.toLowerCase().includes(q) && !nombre.includes(q)) return false;
+            }
+            return true;
+        })
+        .sort((a, b) => {
+            const ta = a.fechaCreacion ? new Date(a.fechaCreacion).getTime() : a.id;
+            const tb = b.fechaCreacion ? new Date(b.fechaCreacion).getTime() : b.id;
+            return sortKey === "recientes" ? tb - ta : ta - tb;
+        });
 
     {/* ── TARJETA DE NOTIFICACIÓN FORMATEADA ────────────────────────────────── */}
     const NotifCard = ({ n }: { n: NotificacionDTO }) => (
@@ -189,6 +219,55 @@ const AdminNotificationsPage = () => {
                     </div>
                 )}
 
+                {/* ── BARRA DE FILTROS ────────────────────────────────────────────── */}
+                {!loading && notifs.length > 0 && (
+                    <div className="mb-6 rounded-2xl bg-white border border-neutral-200 shadow-sm p-4 flex flex-wrap gap-3 items-center animate-fadeIn">
+                        {/* Búsqueda */}
+                        <div className="relative flex-1 min-w-[180px]">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 text-sm">🔍</span>
+                            <input
+                                type="text"
+                                placeholder="Buscar por nombre o mensaje…"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                className="w-full rounded-xl border border-neutral-200 bg-neutral-50 pl-8 pr-4 py-2.5 text-sm outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all"
+                            />
+                        </div>
+
+                        {/* Orden */}
+                        <select value={sortKey} onChange={e => setSortKey(e.target.value as SortKey)}
+                            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm font-semibold text-neutral-700 outline-none focus:border-sky-500 cursor-pointer">
+                            <option value="recientes">Más recientes</option>
+                            <option value="antiguas">Más antiguas</option>
+                        </select>
+
+                        {/* Estado */}
+                        <select value={filterEstado} onChange={e => setFilterEstado(e.target.value as FilterEstado)}
+                            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm font-semibold text-neutral-700 outline-none focus:border-sky-500 cursor-pointer">
+                            <option value="todas">Todas</option>
+                            <option value="no_leidas">No leídas</option>
+                            <option value="leidas">Leídas</option>
+                        </select>
+
+                        {/* Rol */}
+                        <select value={filterRol} onChange={e => setFilterRol(e.target.value as FilterRol)}
+                            className="rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-sm font-semibold text-neutral-700 outline-none focus:border-sky-500 cursor-pointer">
+                            <option value="todos">Todos los roles</option>
+                            <option value="ESTUDIANTE">Estudiantes</option>
+                            <option value="INSTRUCTOR">Instructores</option>
+                        </select>
+
+                        {/* Reset */}
+                        {(search || filterEstado !== "todas" || filterRol !== "todos" || sortKey !== "recientes") && (
+                            <button type="button"
+                                onClick={() => { setSearch(""); setFilterEstado("todas"); setFilterRol("todos"); setSortKey("recientes"); }}
+                                className="rounded-xl border border-neutral-300 bg-white px-3 py-2.5 text-xs font-bold text-neutral-600 hover:bg-neutral-50 transition cursor-pointer">
+                                ✕ Limpiar
+                            </button>
+                        )}
+                    </div>
+                )}
+
                 {/* ── LISTADO DE REGISTROS ────────────────────────────────────────── */}
                 {loading ? (
                     <div className="space-y-4">
@@ -202,13 +281,19 @@ const AdminNotificationsPage = () => {
                     </div>
                 ) : (
                     <div className="!py-4 space-y-4 text-left">
-                        {/* Indicador superior formateado */}
                         <p className="text-sm font-bold uppercase tracking-[0.2em] text-sky-800 mb-3">
-                            {notifs.length} registros totales · {unread} pendientes
+                            {notifsFiltered.length} de {notifs.length} registros · {unread} pendientes
                         </p>
-                        <div className="flex flex-col gap-4">
-                            {notifs.map((n) => <NotifCard key={n.id} n={n} />)}
-                        </div>
+                        {notifsFiltered.length === 0 ? (
+                            <div className="rounded-xl bg-white p-10 text-center border border-neutral-200 shadow-sm">
+                                <p className="text-3xl mb-2">🔎</p>
+                                <p className="font-bold text-neutral-700">Sin resultados para los filtros aplicados.</p>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-4">
+                                {notifsFiltered.map((n) => <NotifCard key={n.id} n={n} />)}
+                            </div>
+                        )}
                     </div>
                 )}
             </section>

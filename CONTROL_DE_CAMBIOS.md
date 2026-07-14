@@ -26,6 +26,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Estadísticas Dinámicas y Enlaces de Redes:** Actualizada la `SeccionCupos.tsx` para cargar dinámicamente el número real de cursos, estudiantes e instructores desde las APIs, y configurados los enlaces a redes en `Footer.tsx` (con enlace real al repositorio GitHub y seguridad `target="_blank"`).
 *   **Estadísticas Dinámicas en Landing Page:** Actualizada `HomePage.tsx` para consumir dinámicamente las cantidades reales de cursos y alumnos inscritos en los badges flotantes de presentación. Ajustado el contraste de texto del modal de confirmación en `CourseManagementPage.tsx`.
 *   **Visibilidad Condicional de Registro:** Modificada `SeccionCupos.tsx` para usar el contexto de autenticación (`useAuth`) y ocultar el botón "Crear cuenta gratis" si el usuario ya inició sesión.
+*   **Filtros y Búsqueda en Notificaciones de Admin:** Implementada una barra de filtros dinámica en `AdminNotificationsPage.tsx` que permite a los administradores buscar por nombre o mensaje, ordenar por antigüedad, y filtrar por estado de lectura y rol de usuario.
 
 ---
 
