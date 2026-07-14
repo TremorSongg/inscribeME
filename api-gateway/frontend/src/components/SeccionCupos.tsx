@@ -15,19 +15,26 @@ const SeccionCupos = () => {
             .then(r => {
                 const activos = (r ?? []).filter((c: any) => !c.eliminado);
                 setCursos(activos.length);
-                // Alumnos inscritos = suma de cupos ocupados (no requiere auth)
-                const totalInscritos = activos.reduce(
-                    (acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)),
-                    0
-                );
-                setAlumnos(totalInscritos);
+                if (!isAuthenticated) {
+                    // Sin sesión: estimación por cupos ocupados (endpoint público)
+                    setAlumnos(activos.reduce(
+                        (acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)), 0
+                    ));
+                }
             })
-            .catch(() => { setCursos(null); setAlumnos(null); });
+            .catch(() => setCursos(null));
+
+        // Con sesión: conteo real de estudiantes registrados
+        if (isAuthenticated) {
+            usuariosService.listarTodos()
+                .then(r => setAlumnos((r ?? []).filter((u: any) => u.rol === "ESTUDIANTE").length))
+                .catch(() => setAlumnos(null));
+        }
 
         usuariosService.listarInstructores()
             .then(r => setInstructores((r ?? []).length))
             .catch(() => setInstructores(null));
-    }, []);
+    }, [isAuthenticated]);
 
 
     const fmt = (n: number | null) => n === null ? "…" : String(n);

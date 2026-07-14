@@ -32,7 +32,8 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Estilo de Teléfono en Sidebar de Instructor:** Reestilizado el badge de teléfono del instructor para centrarlo horizontalmente, reducir dimensiones y añadir compatibilidad completa con modo oscuro.
 *   **Validación de Cupo en Creación de Cursos:** Añadida una regla de validación en `CourseManagementPage.tsx` que limita el cupo total de alumnos por curso a un mínimo de 1 y un máximo de 40 alumnos, renderizando la alerta de error correspondiente.
 *   **Gestión de Alumnos Inscritos por Curso:** Agregado un modal de visualización en `CourseManagementPage.tsx` que permite listar los estudiantes inscritos en cada curso (incluyendo la fecha de inscripción y el estado), y la opción de darlos de baja ("dar de baja") liberando el cupo del curso en tiempo real.
-*   **Optimización de Carga Pública de Estadísticas (Sin Auth):** Modificadas `SeccionCupos.tsx` y `HomePage.tsx` para calcular la cantidad de "Alumnos inscritos" sumando los cupos ocupados de los cursos activos en lugar de invocar a `listarTodos()` (que requiere privilegios de administrador), previniendo errores de acceso (HTTP 401/403) para visitantes no autenticados.
+*   **Carga Híbrida de Estadísticas de Alumnos:** Modificadas `SeccionCupos.tsx` y `HomePage.tsx` para usar un enfoque híbrido: conteo exacto de estudiantes registrados en la BD si el usuario está autenticado, y estimación mediante cupos ocupados de cursos activos si el usuario es anónimo, previniendo errores de acceso (HTTP 401/403).
+
 
 ---
 

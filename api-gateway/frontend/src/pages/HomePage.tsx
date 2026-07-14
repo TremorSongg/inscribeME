@@ -4,6 +4,8 @@ import SeccionCupos from "../components/SeccionCupos";
 import Destacados from "../components/Destacados";
 import Testimonios from "../components/Testimonios";
 import { cursosService } from "../services/cursosService";
+import { usuariosService } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 
 // ── Mini floating stat badge ───────────────────────────────────
 const FloatBadge = ({ icon, text, delay }: { icon: string; text: string; delay: string }) => (
@@ -15,6 +17,7 @@ const FloatBadge = ({ icon, text, delay }: { icon: string; text: string; delay: 
 );
 
 const HomePage = () => {
+    const { isAuthenticated } = useAuth();
     const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
     const [cursosCount, setCursosCount] = useState<number | null>(null);
     const [alumnosCount, setAlumnosCount] = useState<number | null>(null);
@@ -32,12 +35,20 @@ const HomePage = () => {
             .then(data => {
                 const activos = (data ?? []).filter((c: any) => !c.eliminado);
                 setCursosCount(activos.length);
-                setAlumnosCount(
-                    activos.reduce((acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)), 0)
-                );
+                if (!isAuthenticated) {
+                    setAlumnosCount(
+                        activos.reduce((acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)), 0)
+                    );
+                }
             })
-            .catch(() => { setCursosCount(null); setAlumnosCount(null); });
-    }, []);
+            .catch(() => setCursosCount(null));
+
+        if (isAuthenticated) {
+            usuariosService.listarTodos()
+                .then(data => setAlumnosCount((data ?? []).filter((u: any) => u.rol === "ESTUDIANTE").length))
+                .catch(() => setAlumnosCount(null));
+        }
+    }, [isAuthenticated]);
 
     return (
         <div className="min-h-screen w-full flex flex-col items-center" style={{ backgroundColor: 'var(--color-bg)' }}>
