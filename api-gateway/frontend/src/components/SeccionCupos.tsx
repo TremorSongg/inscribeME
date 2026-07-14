@@ -12,19 +12,21 @@ const SeccionCupos = () => {
 
     useEffect(() => {
         cursosService.listar()
-            .then(r => setCursos((r ?? []).filter((c: any) => !c.eliminado).length))
-            .catch(() => setCursos(null));
+            .then(r => {
+                const activos = (r ?? []).filter((c: any) => !c.eliminado);
+                setCursos(activos.length);
+                // Alumnos inscritos = suma de cupos ocupados (no requiere auth)
+                const totalInscritos = activos.reduce(
+                    (acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)),
+                    0
+                );
+                setAlumnos(totalInscritos);
+            })
+            .catch(() => { setCursos(null); setAlumnos(null); });
 
         usuariosService.listarInstructores()
             .then(r => setInstructores((r ?? []).length))
             .catch(() => setInstructores(null));
-
-        usuariosService.listarTodos()
-            .then(r => {
-                const estudiantes = (r ?? []).filter((u: any) => u.rol === "ESTUDIANTE").length;
-                setAlumnos(estudiantes);
-            })
-            .catch(() => setAlumnos(null));
     }, []);
 
 

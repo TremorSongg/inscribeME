@@ -4,7 +4,6 @@ import SeccionCupos from "../components/SeccionCupos";
 import Destacados from "../components/Destacados";
 import Testimonios from "../components/Testimonios";
 import { cursosService } from "../services/cursosService";
-import { usuariosService } from "../services/authService";
 
 // ── Mini floating stat badge ───────────────────────────────────
 const FloatBadge = ({ icon, text, delay }: { icon: string; text: string; delay: string }) => (
@@ -30,12 +29,14 @@ const HomePage = () => {
 
     useEffect(() => {
         cursosService.listar()
-            .then(data => setCursosCount((data ?? []).filter((c: any) => !c.eliminado).length))
-            .catch(() => setCursosCount(null));
-
-        usuariosService.listarTodos()
-            .then(data => setAlumnosCount((data ?? []).filter((u: any) => u.rol === "ESTUDIANTE").length))
-            .catch(() => setAlumnosCount(null));
+            .then(data => {
+                const activos = (data ?? []).filter((c: any) => !c.eliminado);
+                setCursosCount(activos.length);
+                setAlumnosCount(
+                    activos.reduce((acc: number, c: any) => acc + Math.max(0, (c.cupoTotal ?? 0) - (c.cupoDisponible ?? 0)), 0)
+                );
+            })
+            .catch(() => { setCursosCount(null); setAlumnosCount(null); });
     }, []);
 
     return (
