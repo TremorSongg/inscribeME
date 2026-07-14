@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { cursosService } from "../services/cursosService";
 import { usuariosService } from "../services/authService";
+import { useAuth } from "../hooks/useAuth";
 
 const SeccionCupos = () => {
+    const { isAuthenticated } = useAuth();
     const [cursos, setCursos] = useState<number | null>(null);
     const [instructores, setInstructores] = useState<number | null>(null);
     const [alumnos, setAlumnos] = useState<number | null>(null);
@@ -76,10 +78,12 @@ const SeccionCupos = () => {
                         className="bg-white text-sky-800 font-bold text-center !px-6 py-5 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all cursor-pointer">
                         Ver cursos disponibles
                     </Link>
-                    <Link to="/registro" id="cupos-btn-registro"
-                        className="bg-transparent border-2 border-white text-white font-bold text-center !px-6 py-5 rounded-full hover:bg-white hover:text-sky-800 transition-all cursor-pointer">
-                        Crear cuenta gratis
-                    </Link>
+                    {!isAuthenticated && (
+                        <Link to="/registro" id="cupos-btn-registro"
+                            className="bg-transparent border-2 border-white text-white font-bold text-center !px-6 py-5 rounded-full hover:bg-white hover:text-sky-800 transition-all cursor-pointer">
+                            Crear cuenta gratis
+                        </Link>
+                    )}
                 </div>
             </div>
         </section>

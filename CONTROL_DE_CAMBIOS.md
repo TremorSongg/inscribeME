@@ -25,6 +25,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Cierre de Modales por Clic Externo:** Configurada la interactividad de modales en `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para permitir su cierre al hacer clic en el fondo oscuro/backdrop, implementando la prevención de propagación de eventos (`e.stopPropagation()`).
 *   **Estadísticas Dinámicas y Enlaces de Redes:** Actualizada la `SeccionCupos.tsx` para cargar dinámicamente el número real de cursos, estudiantes e instructores desde las APIs, y configurados los enlaces a redes en `Footer.tsx` (con enlace real al repositorio GitHub y seguridad `target="_blank"`).
 *   **Estadísticas Dinámicas en Landing Page:** Actualizada `HomePage.tsx` para consumir dinámicamente las cantidades reales de cursos y alumnos inscritos en los badges flotantes de presentación. Ajustado el contraste de texto del modal de confirmación en `CourseManagementPage.tsx`.
+*   **Visibilidad Condicional de Registro:** Modificada `SeccionCupos.tsx` para usar el contexto de autenticación (`useAuth`) y ocultar el botón "Crear cuenta gratis" si el usuario ya inició sesión.
 
 ---
 
