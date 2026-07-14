@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
 import { cursosService, type CursoDTO, type CursoPayload } from "../../services/cursosService";
 import { usuariosService, type UsuarioBackend } from "../../services/authService";
-import { inscripcionesService } from "../../services/inscripcionesService";
+import { inscripcionesService, type AlumnoCursoDTO } from "../../services/inscripcionesService";
 
 type CourseForm = Omit<CursoPayload, "instructorId"> & { instructorId: number | "" };
 
 const EMPTY_FORM: CourseForm = {
     nombre: "", descripcion: "", precio: 0, cupoTotal: 30, cupoDisponible: 30,
     fechaInicio: "", fechaFin: "", nombreInstructor: "", instructorId: "",
+};
+
+// Diferencia en meses exactos entre dos fechas "YYYY-MM-DD"
+const diffMeses = (desde: string, hasta: string): number => {
+    const [ay, am, ad] = desde.split("-").map(Number);
+    const [by, bm, bd] = hasta.split("-").map(Number);
+    return (by - ay) * 12 + (bm - am) + (bd >= ad ? 0 : -1);
 };
 
 const CourseManagementPage = () => {
@@ -30,6 +37,13 @@ const CourseManagementPage = () => {
     const [assignUserId, setAssignUserId] = useState<number | "">("");
     const [assigning, setAssigning] = useState(false);
     const [assignErr, setAssignErr] = useState<string | null>(null);
+
+    // Ver alumnos de un curso
+    const [viewAlumnosCourse, setViewAlumnosCourse] = useState<CursoDTO | null>(null);
+    const [viewAlumnos, setViewAlumnos] = useState<AlumnoCursoDTO[]>([]);
+    const [loadingViewAlumnos, setLoadingViewAlumnos] = useState(false);
+    const [confirmBaja, setConfirmBaja] = useState<AlumnoCursoDTO | null>(null);
+    const [bajandoAlumno, setBajandoAlumno] = useState(false);
 
     useEffect(() => {
         Promise.all([
@@ -59,6 +73,17 @@ const CourseManagementPage = () => {
         if (!form.descripcion.trim()) errs.descripcion = "Requerido";
         if (form.cupoTotal < 1) errs.cupoTotal = "Mínimo 1 alumno";
         if (form.cupoTotal > 40) errs.cupoTotal = "El cupo máximo permitido es 40 alumnos";
+
+        if (form.fechaInicio && form.fechaFin) {
+            if (form.fechaFin <= form.fechaInicio) {
+                errs.fechaFin = "La fecha de término debe ser posterior al inicio";
+            } else {
+                const meses = diffMeses(form.fechaInicio, form.fechaFin);
+                if (meses < 1) errs.fechaFin = "El curso debe durar al menos 1 mes";
+                if (meses > 5) errs.fechaFin = "El curso no puede superar los 5 meses de duración";
+            }
+        }
+
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -143,16 +168,54 @@ const CourseManagementPage = () => {
                 descripcionCurso: assignCourse.descripcion,
                 fechaInicioCurso: assignCourse.fechaInicio,
                 fechaFinCurso: assignCourse.fechaFin,
+                fechaInscripcion: new Date().toISOString().split("T")[0],
                 nombreInstructor: assignCourse.nombreInstructor,
                 estado: "INSCRITO",
             });
             showSuccess(`${student?.nombre ?? "Estudiante"} inscrito en «${assignCourse.nombre}»`);
+            // Refrescar alumnos si el panel de ver alumnos está abierto para el mismo curso
+            if (viewAlumnosCourse?.id === assignCourse.id) {
+                inscripcionesService.listarPorCurso(assignCourse.id)
+                    .then(data => setViewAlumnos(data ?? []))
+                    .catch(() => {});
+            }
             setAssignCourse(null);
             setAssignUserId("");
         } catch (err: any) {
             setAssignErr(err?.response?.data?.message || err?.message || "No se pudo inscribir al estudiante. Intenta de nuevo.");
         } finally {
             setAssigning(false);
+        }
+    };
+
+    const openVerAlumnos = (c: CursoDTO) => {
+        setViewAlumnosCourse(c);
+        setViewAlumnos([]);
+        setConfirmBaja(null);
+        setLoadingViewAlumnos(true);
+        inscripcionesService.listarPorCurso(c.id)
+            .then(data => { setViewAlumnos(data ?? []); setLoadingViewAlumnos(false); })
+            .catch(() => setLoadingViewAlumnos(false));
+    };
+
+    const handleBajaAlumno = async () => {
+        if (!confirmBaja?.inscripcionId) return;
+        setBajandoAlumno(true);
+        try {
+            await inscripcionesService.eliminar(confirmBaja.inscripcionId);
+            setViewAlumnos(prev => prev.filter(a => a.inscripcionId !== confirmBaja.inscripcionId));
+            // Actualizar cupos en la tabla de cursos
+            setCourses(prev => prev.map(c =>
+                c.id === viewAlumnosCourse?.id
+                    ? { ...c, cupoDisponible: c.cupoDisponible + 1 }
+                    : c
+            ));
+            setConfirmBaja(null);
+            showSuccess(`${confirmBaja.nombreUsuario || "Alumno"} dado de baja correctamente.`);
+        } catch {
+            showSuccess("Error al dar de baja. Intenta de nuevo.");
+        } finally {
+            setBajandoAlumno(false);
         }
     };
 
@@ -201,7 +264,6 @@ const CourseManagementPage = () => {
                     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }}>
                         <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp overflow-hidden" onClick={e => e.stopPropagation()}>
 
-                            {/* Header coloreado */}
                             <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Cursos</p>
@@ -215,7 +277,6 @@ const CourseManagementPage = () => {
                                 </button>
                             </div>
 
-                            {/* Body */}
                             <div className="bg-white px-10 py-9">
                                 <div className="grid gap-6 sm:grid-cols-2">
                                     <div className="sm:col-span-2">
@@ -241,11 +302,11 @@ const CourseManagementPage = () => {
                                         {errors.cupoTotal && <p className="field-error-msg">⚠ {errors.cupoTotal}</p>}
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha inicio *</label>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha inicio * <span className="normal-case font-medium text-neutral-400">(duración: 1–5 meses)</span></label>
                                         <input id="form-course-date" type="date" value={form.fechaInicio} onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })} className={fieldClass("fechaInicio")} />
                                         {errors.fechaInicio && <p className="field-error-msg">⚠ {errors.fechaInicio}</p>}
                                     </div>
-                                    <div className="sm:col-span-2">
+                                    <div>
                                         <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha término *</label>
                                         <input id="form-course-end-date" type="date" value={form.fechaFin} onChange={(e) => setForm({ ...form, fechaFin: e.target.value })} className={fieldClass("fechaFin")} />
                                         {errors.fechaFin && <p className="field-error-msg">⚠ {errors.fechaFin}</p>}
@@ -286,11 +347,8 @@ const CourseManagementPage = () => {
                             </div>
                             <div className="px-6 py-6">
                                 <p className="text-sm leading-relaxed text-neutral-700">{deleteError}</p>
-                                <button
-                                    type="button"
-                                    onClick={() => setDeleteError(null)}
-                                    className="mt-6 w-full rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition cursor-pointer shadow-lg shadow-red-600/20"
-                                >
+                                <button type="button" onClick={() => setDeleteError(null)}
+                                    className="mt-6 w-full rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition cursor-pointer shadow-lg shadow-red-600/20">
                                     Entendido
                                 </button>
                             </div>
@@ -369,10 +427,11 @@ const CourseManagementPage = () => {
                                                     </span>
                                                 </td>
                                                 <td className="!px-1 py-5.5">
-                                                    <div className="flex flex-wrap gap-3 justify-center">
-                                                        <button id={`btn-edit-${c.id}`} type="button" onClick={() => handleEdit(c)} className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-2 text-sm font-bold text-sky-700 hover:bg-sky-100 hover:border-sky-300 transition-all cursor-pointer shadow-sm">Editar</button>
-                                                        <button id={`btn-assign-${c.id}`} type="button" onClick={() => { setAssignCourse(c); setAssignUserId(""); setAssignErr(null); }} className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-all cursor-pointer shadow-sm">＋ Alumno</button>
-                                                        <button id={`btn-delete-${c.id}`} type="button" onClick={() => setDeleteConfirm(c.id)} className="rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm">Eliminar</button>
+                                                    <div className="flex flex-wrap gap-2 justify-center">
+                                                        <button id={`btn-edit-${c.id}`} type="button" onClick={() => handleEdit(c)} className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 hover:bg-sky-100 hover:border-sky-300 transition-all cursor-pointer shadow-sm">Editar</button>
+                                                        <button id={`btn-alumnos-${c.id}`} type="button" onClick={() => openVerAlumnos(c)} className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100 hover:border-violet-300 transition-all cursor-pointer shadow-sm">👥 Alumnos</button>
+                                                        <button id={`btn-assign-${c.id}`} type="button" onClick={() => { setAssignCourse(c); setAssignUserId(""); setAssignErr(null); }} className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-all cursor-pointer shadow-sm">＋ Alumno</button>
+                                                        <button id={`btn-delete-${c.id}`} type="button" onClick={() => setDeleteConfirm(c.id)} className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm">Eliminar</button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -380,6 +439,105 @@ const CourseManagementPage = () => {
                                     )}
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── MODAL: VER ALUMNOS DEL CURSO ──────────────────────────────── */}
+                {viewAlumnosCourse && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => { setViewAlumnosCourse(null); setConfirmBaja(null); }}>
+                        <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden max-h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+
+                            {/* Header */}
+                            <div className="bg-gradient-to-r from-violet-800 to-violet-900 px-8 py-6 flex items-start justify-between shrink-0">
+                                <div>
+                                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Alumnos</p>
+                                    <h2 className="mt-1 text-xl font-black text-white">Alumnos inscritos</h2>
+                                    <p className="text-sm text-white/70 mt-0.5 truncate max-w-xs">«{viewAlumnosCourse.nombre}»</p>
+                                </div>
+                                <button type="button" onClick={() => { setViewAlumnosCourse(null); setConfirmBaja(null); }}
+                                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition font-bold text-sm cursor-pointer mt-1">
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* Body con scroll */}
+                            <div className="overflow-y-auto flex-1 px-8 py-6">
+                                {loadingViewAlumnos ? (
+                                    <div className="space-y-3">
+                                        {[1, 2, 3].map(i => <div key={i} className="h-14 animate-pulse rounded-xl bg-neutral-100" />)}
+                                    </div>
+                                ) : viewAlumnos.length === 0 ? (
+                                    <div className="rounded-2xl bg-neutral-50 border border-dashed border-neutral-200 p-10 text-center">
+                                        <p className="text-3xl mb-2">📭</p>
+                                        <p className="text-sm font-bold text-neutral-600">No hay alumnos inscritos en este curso.</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-violet-700 mb-4">
+                                            {viewAlumnos.length} alumno{viewAlumnos.length !== 1 ? "s" : ""} inscrito{viewAlumnos.length !== 1 ? "s" : ""}
+                                        </p>
+                                        <div className="divide-y divide-neutral-100 rounded-2xl border border-neutral-200 overflow-hidden shadow-sm">
+                                            {viewAlumnos.map((a, i) => (
+                                                <div key={a.usuarioId} className="flex items-center gap-3 px-5 py-4 bg-white hover:bg-neutral-50 transition duration-150">
+                                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-xs font-black text-violet-700">
+                                                        {i + 1}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-sm font-bold text-neutral-800 truncate">{a.nombreUsuario || `Alumno #${a.usuarioId}`}</p>
+                                                        <p className="text-xs text-neutral-500 mt-0.5">
+                                                            Inscripción: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
+                                                            {" · "}
+                                                            <span className={`font-bold ${a.estado === "INSCRITO" ? "text-green-600" : "text-neutral-500"}`}>{a.estado}</span>
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setConfirmBaja(a)}
+                                                        className="shrink-0 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100 transition cursor-pointer"
+                                                    >
+                                                        Dar de baja
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            <div className="px-8 py-4 border-t border-neutral-100 bg-neutral-50 shrink-0">
+                                <button type="button" onClick={() => { setViewAlumnosCourse(null); setConfirmBaja(null); }}
+                                    className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition cursor-pointer">
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* ── MODAL: CONFIRMAR BAJA DE ALUMNO ───────────────────────────── */}
+                {confirmBaja && (
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setConfirmBaja(null)}>
+                        <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 text-center animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
+                            <div className="bg-gradient-to-r from-red-700 to-red-800 px-6 py-5 text-white">
+                                <div className="mb-2 text-3xl">⚠️</div>
+                                <h2 className="text-lg font-black">¿Dar de baja?</h2>
+                            </div>
+                            <div className="px-6 py-6">
+                                <p className="text-sm leading-relaxed text-neutral-700">
+                                    Se eliminará la inscripción de <strong>{confirmBaja.nombreUsuario || `Alumno #${confirmBaja.usuarioId}`}</strong> del curso y se liberará el cupo.
+                                </p>
+                                <div className="mt-6 flex gap-3">
+                                    <button type="button" onClick={() => setConfirmBaja(null)}
+                                        className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition cursor-pointer">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" onClick={handleBajaAlumno} disabled={bajandoAlumno}
+                                        className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition disabled:opacity-60 cursor-pointer">
+                                        {bajandoAlumno ? "Procesando…" : "Confirmar baja"}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 )}

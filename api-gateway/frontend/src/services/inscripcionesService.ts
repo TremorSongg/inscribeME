@@ -40,10 +40,11 @@ export type InscripcionPayload = {
     usuarioId: number;
     cursoId: number;
     nombreCurso: string;
-    nombreUsuario?: string;       // nombre desnormalizado del estudiante
+    nombreUsuario?: string;
     descripcionCurso?: string;
     fechaInicioCurso?: string;
     fechaFinCurso?: string;
+    fechaInscripcion?: string;
     nombreInstructor?: string;
     estado: EstadoInscripcion;
 };
