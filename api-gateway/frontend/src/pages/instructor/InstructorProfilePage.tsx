@@ -57,6 +57,7 @@ const InstructorProfilePage = () => {
     const [activeTab, setActiveTab] = useState<"perfil" | "notificaciones" | "alumnos" | "asistencia" | "historial" | "notificacion">("perfil");
     const [loading, setLoading] = useState(true);
     const [myNotifs, setMyNotifs] = useState<NotificacionDTO[]>([]);
+    const [usersMap, setUsersMap] = useState<Record<number, string>>({});
 
     // Alumnos inscritos en el curso seleccionado
     const [alumnos, setAlumnos] = useState<AlumnoCursoDTO[]>([]);
@@ -150,6 +151,14 @@ const InstructorProfilePage = () => {
             })
             .catch(() => setLoading(false));
 
+        usuariosService.listarTodos()
+            .then(data => {
+                const map: Record<number, string> = {};
+                (data ?? []).forEach(u => { map[u.id] = u.nombre; });
+                setUsersMap(map);
+            })
+            .catch(() => {});
+
         fetchInstructorNotifs();
     }, [user]);
 
@@ -235,7 +244,7 @@ const InstructorProfilePage = () => {
         const lista: AsistenciaDTO[] = alumnos.map(a => ({
             cursoId: selectedCourse.id,
             usuarioId: a.usuarioId,
-            nombreUsuario: a.nombreUsuario || `Alumno #${a.usuarioId}`,
+            nombreUsuario: getAlumnoNombre(a),
             nombreCurso: selectedCourse.nombre,
             fecha: attendanceDate,
             presente: !!attendance[a.usuarioId],
@@ -286,6 +295,9 @@ const InstructorProfilePage = () => {
 
     if (!user) return null;
 
+    const getAlumnoNombre = (a: AlumnoCursoDTO) =>
+        a.nombreUsuario?.trim() || usersMap[a.usuarioId] || `Alumno #${a.usuarioId}`;
+
     const presentesCount = Object.values(attendance).filter(Boolean).length;
 
     return (
@@ -320,7 +332,7 @@ const InstructorProfilePage = () => {
                                 </div>
                             )}
 
-                            <p className="mt-4 text-[10px] !py-4 font-bold text-sky-600/60 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
+                            <p className="mt-4 text-[10px] font-bold text-sky-600/60 uppercase tracking-wider">Haz clic en tu foto para cambiarla</p>
 
                             {myNotifs.filter(n => !n.leido).length > 0 && (
                                 <div className="mt-4 rounded-xl bg-sky-50/70 border border-sky-100 p-3 text-left">
@@ -398,8 +410,8 @@ const InstructorProfilePage = () => {
 
                         {/* ── TAB: MI PERFIL ──────────────────────────────────────── */}
                         {activeTab === "perfil" && (
-                            <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-neutral-200 text-left">
-                                <h3 className="mb-6 text-xl !py-4 font-bold text-sky-600 border-b border-neutral-100 pb-3 font-display">Mi Perfil de Instructor</h3>
+                            <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
+                                <h3 className="mb-6 text-xl font-bold text-sky-600 border-b border-neutral-100 pb-4 font-display">Mi Perfil de Instructor</h3>
                                 <div className="grid gap-4 md:grid-cols-2 ">
                                     {[
                                         { label: "Nombre completo", value: user.username },
@@ -415,12 +427,12 @@ const InstructorProfilePage = () => {
                                 </div>
                                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
                                     <div className="rounded-xl bg-blue-50/50 border border-blue-200 p-5 shadow-xs">
-                                        <p className="text-xs !px-4 font-bold uppercase tracking-wider text-blue-700">📚 Cursos Asignados</p>
-                                        <p className="mt-2 !px-4 text-4xl font-black text-blue-900 tracking-tight">{myCourses.length}</p>
+                                        <p className="text-xs font-bold uppercase tracking-wider text-blue-700">📚 Cursos Asignados</p>
+                                        <p className="mt-2 text-4xl font-black text-blue-900 tracking-tight">{myCourses.length}</p>
                                     </div>
                                     <div className="rounded-xl bg-sky-50 border border-sky-200 p-5 shadow-xs">
-                                        <p className="text-xs !px-4 font-bold uppercase tracking-wider text-sky-700">👥 Total Estudiantes</p>
-                                        <p className="mt-2 text-4xl !px-4 font-black text-sky-900 tracking-tight">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-sky-700">👥 Total Estudiantes</p>
+                                        <p className="mt-2 text-4xl font-black text-sky-900 tracking-tight">
                                             {myCourses.reduce((acc, c) => acc + (c.cupoTotal - c.cupoDisponible), 0)}
                                         </p>
                                     </div>
@@ -437,7 +449,7 @@ const InstructorProfilePage = () => {
 
                         {/* ── TAB: BANDEJA DE NOTIFICACIONES ───────────────────────── */}
                         {activeTab === "notificaciones" && (
-                            <div className="animate-fadeIn rounded-2xl !py-4 bg-white p-7 shadow-md border border-neutral-200 text-left">
+                            <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
                                 <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-neutral-100 pb-4">
                                     <div>
                                         <h3 className="text-xl font-bold text-sky-700 font-display">Bandeja de Notificaciones</h3>
@@ -458,7 +470,7 @@ const InstructorProfilePage = () => {
                                         <p className="text-sm font-bold">No tienes alertas institucionales en este momento.</p>
                                     </div>
                                 ) : (
-                                    <div className="space-y-3 !px-2">
+                                    <div className="space-y-3">
                                         {myNotifs.map((n) => (
                                             <div key={n.id} className={`rounded-xl border p-4 transition-all duration-300 ${
                                                 !n.leido ? "border-sky-300 bg-sky-50 shadow-sm" : "border-neutral-200 bg-white"
@@ -471,7 +483,7 @@ const InstructorProfilePage = () => {
                                                                 {!n.leido ? "Nueva" : "Leída"}
                                                             </span>
                                                         </div>
-                                                        <p className="text-sm text-neutral-800 font-medium leading-relaxed !px-4">{n.mensaje}</p>
+                                                        <p className="text-sm text-neutral-800 font-medium leading-relaxed">{n.mensaje}</p>
                                                         {n.fechaCreacion && (
                                                             <p className="mt-2 text-xs font-semibold text-neutral-600">
                                                                 🕒 {new Date(n.fechaCreacion).toLocaleString("es-CL")}
@@ -501,7 +513,7 @@ const InstructorProfilePage = () => {
                             selectedCourse ? (
                                 <div className="space-y-5">
                                     {/* Cabecera del Curso Seleccionado */}
-                                    <div className="rounded-2xl !px-6 bg-sky-600 p-6 text-white shadow-md text-left flex flex-wrap items-center gap-4">
+                                    <div className="rounded-2xl bg-sky-600 px-7 py-6 text-white shadow-md text-left flex flex-wrap items-center gap-4">
                                         <span className="text-4xl shrink-0 shadow-inner p-2 rounded-xl bg-white/5">{getIcon(selectedCourse.nombre)}</span>
                                         <div className="flex-1 min-w-0">
                                             <h2 className="text-2xl font-bold tracking-tight truncate font-display">{selectedCourse.nombre}</h2>
@@ -517,9 +529,9 @@ const InstructorProfilePage = () => {
 
                                     {/* 📥 Sub-tab: Alumnos del curso */}
                                     {activeTab === "alumnos" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-neutral-200 text-left">
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
                                             <div className="mb-6 flex items-center justify-between border-b border-neutral-100 pb-3">
-                                                <h3 className="text-xl !py-4 font-bold text-sky-700 font-display">Alumnos inscritos</h3>
+                                                <h3 className="text-xl font-bold text-sky-700 font-display">Alumnos inscritos</h3>
                                                 <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-bold text-sky-700 tracking-wide border border-sky-100">
                                                     {alumnos.length} estudiantes activos
                                                 </span>
@@ -532,7 +544,7 @@ const InstructorProfilePage = () => {
                                                     <p className="text-sm font-bold">No hay alumnos inscritos en este curso aún.</p>
                                                 </div>
                                             ) : (
-                                                <div className="divide-y divide-gray-100 border !px-2 !py-4 border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
+                                                <div className="divide-y divide-gray-100 border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
                                                     {alumnos.map((a, i) => (
                                                         <div key={a.usuarioId} className="flex items-center gap-3 !px-5 py-4 bg-white hover:bg-neutral-50 transition duration-150">
                                                             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-100 text-xs font-bold text-sky-700 shadow-sm">
@@ -540,7 +552,7 @@ const InstructorProfilePage = () => {
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-bold text-neutral-800 truncate">
-                                                                    {a.nombreUsuario || `Alumno #${a.usuarioId}`}
+                                                                    {getAlumnoNombre(a)}
                                                                 </p>
                                                                 <p className="text-xs font-semibold text-neutral-600 mt-0.5">
                                                                     Inscripción el: {a.fechaInscripcion ? new Date(a.fechaInscripcion + "T00:00:00").toLocaleDateString("es-CL") : "—"}
@@ -561,7 +573,7 @@ const InstructorProfilePage = () => {
 
                                     {/* 📥 Sub-tab: Registro Diario de Asistencia */}
                                     {activeTab === "asistencia" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-neutral-200 text-left">
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
                                             <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-neutral-100 pb-4">
                                                 <h3 className="text-xl font-bold text-neutral-900 font-display">Registro de Asistencia</h3>
                                                 <div className="flex items-center gap-3">
@@ -598,7 +610,7 @@ const InstructorProfilePage = () => {
                                                                             {i + 1}
                                                                         </div>
                                                                         <span className="text-sm font-bold text-neutral-800 truncate">
-                                                                            {a.nombreUsuario || `Alumno #${a.usuarioId}`}
+                                                                            {getAlumnoNombre(a)}
                                                                         </span>
                                                                     </div>
                                                                     <button id={`attendance-btn-${a.usuarioId}`}
@@ -630,8 +642,8 @@ const InstructorProfilePage = () => {
 
                                     {/* 📥 Sub-tab: Historial General de Asistencias */}
                                     {activeTab === "historial" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white !py-4 p-7 shadow-md border border-neutral-200 text-center">
-                                            <h3 className="mb-5 text-xl font-bold text-neutral-900 border-b border-neutral-100 pb-3 font-display">Historial de Asistencia</h3>
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
+                                            <h3 className="mb-5 text-xl font-bold text-neutral-900 border-b border-neutral-100 pb-4 font-display">Historial de Asistencia</h3>
                                             {loadingHistorial ? (
                                                 <div className="space-y-2">{[1, 2, 3].map(i => <div key={i} className="h-10 animate-pulse rounded-xl bg-gray-50" />)}</div>
                                             ) : historial.length === 0 ? (
@@ -640,7 +652,7 @@ const InstructorProfilePage = () => {
                                                     <p className="text-sm font-bold">Aún no hay registros de asistencia guardados para esta actividad académica.</p>
                                                 </div>
                                             ) : (
-                                                <div className="overflow-hidden rounded-lg !py-8 border border-neutral-200 shadow-sm">
+                                                <div className="overflow-hidden rounded-2xl border border-neutral-200 shadow-sm">
                                                     <div className="overflow-x-auto">
                                                         <table className="w-full text-sm">
                                                             <thead>
@@ -678,7 +690,7 @@ const InstructorProfilePage = () => {
 
                                     {/* 📥 Sub-tab: Enviar Reportes o Notificaciones Avanzadas */}
                                     {activeTab === "notificacion" && (
-                                        <div className="animate-fadeIn rounded-2xl bg-white p-7 shadow-md border border-neutral-200 text-left">
+                                        <div className="animate-fadeIn rounded-2xl bg-white p-8 shadow-md border border-neutral-200 text-left">
                                             <h3 className="mb-2 text-xl font-bold text-neutral-900 font-display">
                                                 Emitir Reporte o Notificación
                                             </h3>
@@ -717,7 +729,7 @@ const InstructorProfilePage = () => {
                                                             <option value="">-- Elige un estudiante del listado --</option>
                                                             {alumnos.map(a => (
                                                                 <option key={a.usuarioId} value={a.usuarioId}>
-                                                                    {a.nombreUsuario || `Alumno #${a.usuarioId}`}
+                                                                    {getAlumnoNombre(a)}
                                                                 </option>
                                                             ))}
                                                         </select>

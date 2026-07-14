@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, type ReactNode } from "react";
-import { authService, type RegisterPayload } from "../services/authService";
+import { authService, usuariosService, type RegisterPayload } from "../services/authService";
 
 // ── Tipos ──────────────────────────────────────────────────────
 export type UserRole = "ESTUDIANTE" | "INSTRUCTOR" | "ADMIN";
@@ -52,6 +52,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.removeItem("authUser");
         }
     }, [user]);
+
+    // Refrescar datos del perfil desde el backend al cargar la app (fix: teléfono en caché)
+    useEffect(() => {
+        if (!user || !token) return;
+        usuariosService.obtenerPorId(user.id)
+            .then(data => {
+                setUser(prev => prev ? {
+                    ...prev,
+                    phone: data.telefono ?? "",
+                    username: data.nombre,
+                    email: data.email,
+                    fotoPerfil: data.fotoPerfil ?? prev.fotoPerfil,
+                } : null);
+            })
+            .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         if (token) {
