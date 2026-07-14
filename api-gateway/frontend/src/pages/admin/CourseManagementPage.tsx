@@ -196,8 +196,8 @@ const CourseManagementPage = () => {
 
                 {/* ── MODAL FORMULARIO DE CURSO ────────────────────────────────── */}
                 {showForm && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                        <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp overflow-hidden">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }}>
+                        <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto border border-neutral-100 text-left animate-slideUp overflow-hidden" onClick={e => e.stopPropagation()}>
 
                             {/* Header coloreado */}
                             <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
@@ -275,8 +275,8 @@ const CourseManagementPage = () => {
 
                 {/* ── MODAL: ERROR AL ELIMINAR CURSO ────────────────────────────── */}
                 {deleteError && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-red-100 text-center animate-scaleIn overflow-hidden">
+                    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setDeleteError(null)}>
+                        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-red-100 text-center animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="bg-red-600 px-6 py-5 text-white">
                                 <div className="mb-2 text-3xl">🚫</div>
                                 <h2 className="text-lg font-black">No se puede eliminar el curso</h2>
@@ -297,8 +297,8 @@ const CourseManagementPage = () => {
 
                 {/* ── MODAL: CONFIRMACIÓN DE ELIMINACIÓN ─────────────────────────── */}
                 {deleteConfirm !== null && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                        <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 text-center animate-scaleIn overflow-hidden">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setDeleteConfirm(null)}>
+                        <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 text-center animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="bg-gradient-to-r from-neutral-800 to-neutral-900 px-6 py-5 text-white">
                                 <div className="mb-2 text-3xl">⚠️</div>
                                 <h2 className="text-xl font-black">¿Eliminar curso?</h2>
@@ -383,8 +383,8 @@ const CourseManagementPage = () => {
 
                 {/* ── MODAL: ASIGNAR ALUMNO A CURSO ─────────────────────────────── */}
                 {assignCourse && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setAssignCourse(null)}>
+                        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="bg-gradient-to-r from-emerald-800 to-emerald-900 px-10 py-7 flex items-center justify-between">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Inscripción Manual</p>

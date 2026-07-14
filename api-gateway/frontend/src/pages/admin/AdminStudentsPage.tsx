@@ -12,8 +12,8 @@ const ConfirmModal = ({
     title: string; body: string; confirmLabel?: string; danger?: boolean;
     onConfirm: () => void; onCancel: () => void;
 }) => (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-        <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 overflow-hidden animate-scaleIn">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={onCancel}>
+        <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 overflow-hidden animate-scaleIn" onClick={e => e.stopPropagation()}>
             <div className={`px-6 py-5 text-white text-center ${danger ? "bg-gradient-to-r from-red-700 to-red-800" : "bg-gradient-to-r from-sky-800 to-sky-900"}`}>
                 <div className="mb-2 text-3xl">{danger ? "⚠️" : "❓"}</div>
                 <h2 className="text-lg font-black">{title}</h2>
@@ -37,8 +37,8 @@ const ConfirmModal = ({
 
 // ── MINI MODAL DE ERROR REUTILIZABLE ─────────────────────────────────────────
 const ErrorModal = ({ message, onClose }: { message: string; onClose: () => void }) => (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-red-100 overflow-hidden animate-scaleIn">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={onClose}>
+        <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-red-100 overflow-hidden animate-scaleIn" onClick={e => e.stopPropagation()}>
             <div className="bg-red-600 px-6 py-5 text-white text-center">
                 <div className="mb-2 text-3xl">🚫</div>
                 <h2 className="text-lg font-black">Acción no permitida</h2>
@@ -127,8 +127,8 @@ const StudentDetailPanel = ({
 
     return (
         <>
-            <div className="fixed inset-0 z-50 !py-48 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
-                <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-xl bg-white shadow-2xl border border-neutral-100 animate-slideUp overflow-hidden">
+            <div className="fixed inset-0 z-50 !py-48 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn" onClick={onClose}>
+                <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-xl bg-white shadow-2xl border border-neutral-100 animate-slideUp overflow-hidden" onClick={e => e.stopPropagation()}>
 
                     <div className="flex items-center gap-5 !px-4 bg-gradient-to-r from-sky-900 to-sky-950 p-6 text-left">
                         {photo ? (
@@ -751,8 +751,8 @@ const AdminStudentsPage = () => {
 
             {/* Modal: Editar Usuario */}
             {editingUser && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                    <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setEditingUser(null)}>
+                    <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Usuarios</p>
@@ -824,8 +824,8 @@ const AdminStudentsPage = () => {
 
             {/* Modal: Crear Usuario */}
             {showCreateModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn">
-                    <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm animate-fadeIn" onClick={() => setShowCreateModal(false)}>
+                    <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl border border-neutral-100 text-left animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                         <div className="bg-gradient-to-r from-sky-900 to-sky-950 px-10 py-7 flex items-center justify-between">
                             <div>
                                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Gestión de Usuarios</p>

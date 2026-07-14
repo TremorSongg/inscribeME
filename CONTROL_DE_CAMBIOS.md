@@ -22,6 +22,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Mensajes de Error Descriptivos:** Modificado `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para leer los mensajes de error de la API y mostrarlos directamente al administrador al fallar una eliminación o cancelación.
 *   **Notificaciones Toast y Refinamiento de Modales:** Implementado un sistema de alertas interactivas flotantes (Toast) y estilizado moderno para los formularios de creación de usuarios y asignación manual de alumnos (con gradientes visuales y manejo de excepciones locales).
 *   **Integración de Datos de Perfil (Teléfono y Foto):** Restaurado el diseño de barras laterales en los perfiles de usuario, corrigiendo el contexto de autenticación (`AuthContext.tsx`) para cargar correctamente el teléfono de la base de datos.
+*   **Cierre de Modales por Clic Externo:** Configurada la interactividad de modales en `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para permitir su cierre al hacer clic en el fondo oscuro/backdrop, implementando la prevención de propagación de eventos (`e.stopPropagation()`).
 
 ---
 
