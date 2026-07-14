@@ -20,6 +20,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Alineación de Calendario de Asistencia:** Reestructurado el diseño de `MiniCalendar` en `StudentProfilePage.tsx` para una alineación perfecta en grid y traducción de días en español de dos letras (`Lu`, `Ma`, etc.).
 *   **Estandarización en Modo Oscuro:** Modificaciones exhaustivas de contraste y color para componentes en tema oscuro en `index.css` (dropdowns nativos, dropdown de usuario en navbar, testimonios, badges e insignias).
 *   **Mensajes de Error Descriptivos:** Modificado `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para leer los mensajes de error de la API y mostrarlos directamente al administrador al fallar una eliminación o cancelación.
+*   **Notificaciones Toast y Refinamiento de Modales:** Implementado un sistema de alertas interactivas flotantes (Toast) y estilizado moderno para los formularios de creación de usuarios y asignación manual de alumnos (con gradientes visuales y manejo de excepciones locales).
 
 ---
 
