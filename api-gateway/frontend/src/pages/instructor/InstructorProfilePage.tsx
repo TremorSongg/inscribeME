@@ -326,9 +326,9 @@ const InstructorProfilePage = () => {
                             </span>
 
                             {user.phone && (
-                                <div className="mt-4 w-full rounded-2xl border border-sky-100 bg-sky-50/70 p-3 text-left">
-                                    <p className="text-[10px] font-bold uppercase tracking-wider text-sky-600">Teléfono</p>
-                                    <p className="text-sm font-bold text-sky-800 mt-0.5">{user.phone}</p>
+                                <div className="mt-3 inline-flex flex-col items-center gap-0.5 rounded-xl border border-sky-200/60 bg-sky-50/50 px-4 py-2 dark:border-sky-800/50 dark:bg-sky-900/30">
+                                    <p className="text-[9px] font-bold uppercase tracking-wider text-sky-500 dark:text-sky-400">Teléfono</p>
+                                    <p className="text-sm font-bold text-sky-800 dark:text-sky-200">{user.phone}</p>
                                 </div>
                             )}
 

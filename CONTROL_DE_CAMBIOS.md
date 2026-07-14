@@ -29,6 +29,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Filtros y Búsqueda en Notificaciones de Admin:** Implementada una barra de filtros dinámica en `AdminNotificationsPage.tsx` que permite a los administradores buscar por nombre o mensaje, ordenar por antigüedad, y filtrar por estado de lectura y rol de usuario.
 *   **Sincronización en Tiempo Real del Perfil:** Agregado un efecto en `AuthContext.tsx` para refrescar los datos del usuario logueado desde la API en cada carga inicial de la aplicación, evitando desincronizaciones de localStorage.
 *   **Nombres Reales de Alumnos en Perfil de Instructor:** Modificada la página `InstructorProfilePage.tsx` para cargar el mapa de nombres de estudiantes desde la base de datos y mostrar los nombres reales de los alumnos inscritos en lugar de IDs o marcadores de posición vacíos.
+*   **Estilo de Teléfono en Sidebar de Instructor:** Reestilizado el badge de teléfono del instructor para centrarlo horizontalmente, reducir dimensiones y añadir compatibilidad completa con modo oscuro.
 
 ---
 
