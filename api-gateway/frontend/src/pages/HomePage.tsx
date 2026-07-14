@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import SeccionCupos from "../components/SeccionCupos";
 import Destacados from "../components/Destacados";
 import Testimonios from "../components/Testimonios";
+import { cursosService } from "../services/cursosService";
+import { usuariosService } from "../services/authService";
 
 // ── Mini floating stat badge ───────────────────────────────────
 const FloatBadge = ({ icon, text, delay }: { icon: string; text: string; delay: string }) => (
@@ -15,6 +17,8 @@ const FloatBadge = ({ icon, text, delay }: { icon: string; text: string; delay: 
 
 const HomePage = () => {
     const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
+    const [cursosCount, setCursosCount] = useState<number | null>(null);
+    const [alumnosCount, setAlumnosCount] = useState<number | null>(null);
 
     useEffect(() => {
         const obs = new MutationObserver(() =>
@@ -22,6 +26,16 @@ const HomePage = () => {
         );
         obs.observe(document.documentElement, { attributeFilter: ["class"] });
         return () => obs.disconnect();
+    }, []);
+
+    useEffect(() => {
+        cursosService.listar()
+            .then(data => setCursosCount((data ?? []).filter((c: any) => !c.eliminado).length))
+            .catch(() => setCursosCount(null));
+
+        usuariosService.listarTodos()
+            .then(data => setAlumnosCount((data ?? []).filter((u: any) => u.rol === "ESTUDIANTE").length))
+            .catch(() => setAlumnosCount(null));
     }, []);
 
     return (
@@ -65,10 +79,10 @@ const HomePage = () => {
 
                         {/* Right — floating badges */}
                         <div className="hidden lg:flex flex-col gap-4 lg:transform lg:translate-y-22">
-                            <FloatBadge icon="📚" text="7 cursos disponibles" delay="300ms" />
+                            <FloatBadge icon="📚" text={cursosCount !== null ? `${cursosCount} cursos disponibles` : "Cursos disponibles"} delay="300ms" />
                             <FloatBadge icon="🏅" text="Instructores certificados" delay="420ms" />
                             <FloatBadge icon="📅" text="Horarios flexibles" delay="540ms" />
-                            <FloatBadge icon="👥" text="+50 alumnos inscritos" delay="660ms" />
+                            <FloatBadge icon="👥" text={alumnosCount !== null ? `${alumnosCount} alumnos inscritos` : "Alumnos inscritos"} delay="660ms" />
                             <FloatBadge icon="🎯" text="Seguimiento personalizado" delay="780ms" />
                         </div>
                     </div>

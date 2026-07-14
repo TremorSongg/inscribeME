@@ -301,7 +301,7 @@ const CourseManagementPage = () => {
                         <div className="w-full max-w-sm rounded-2xl bg-white shadow-2xl border border-neutral-100 text-center animate-scaleIn overflow-hidden" onClick={e => e.stopPropagation()}>
                             <div className="bg-gradient-to-r from-neutral-800 to-neutral-900 px-6 py-5 text-white">
                                 <div className="mb-2 text-3xl">⚠️</div>
-                                <h2 className="text-xl font-black">¿Eliminar curso?</h2>
+                                <h2 className="text-xl font-black !text-white">¿Eliminar curso?</h2>
                             </div>
                             <div className="px-6 py-6">
                                 <p className="text-sm leading-relaxed text-neutral-800">Esta acción dará de baja la materia del sistema y no puede deshacerse.</p>
