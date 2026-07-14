@@ -304,9 +304,9 @@ const CourseManagementPage = () => {
                                 <h2 className="text-xl font-black">¿Eliminar curso?</h2>
                             </div>
                             <div className="px-6 py-6">
-                                <p className="text-sm leading-relaxed text-neutral-600">Esta acción dará de baja la materia del sistema y no puede deshacerse.</p>
+                                <p className="text-sm leading-relaxed text-neutral-800">Esta acción dará de baja la materia del sistema y no puede deshacerse.</p>
                                 <div className="mt-6 flex gap-3">
-                                    <button type="button" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-xl border border-neutral-300 py-2.5 text-sm font-bold text-neutral-600 hover:bg-neutral-50 transition cursor-pointer">Cancelar</button>
+                                    <button type="button" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">Cancelar</button>
                                     <button id="btn-confirm-delete" type="button" onClick={() => handleDelete(deleteConfirm)} className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition cursor-pointer">Eliminar de raíz</button>
                                 </div>
                             </div>

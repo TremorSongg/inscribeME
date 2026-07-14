@@ -71,10 +71,10 @@ const Footer = () => {
                             
                             {/* Social icons using Tabler icons */}
                             <div className="flex gap-2 text-xl">
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="LinkedIn"><i className="ti ti-brand-linkedin"></i></a>
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Facebook"><i className="ti ti-brand-facebook"></i></a>
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Instagram"><i className="ti ti-brand-instagram"></i></a>
-                                <a href="#" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="GitHub"><i className="ti ti-brand-github"></i></a>
+                                <a href="https://www.linkedin.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="LinkedIn"><i className="ti ti-brand-linkedin"></i></a>
+                                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Facebook"><i className="ti ti-brand-facebook"></i></a>
+                                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="Instagram"><i className="ti ti-brand-instagram"></i></a>
+                                <a href="https://github.com/TremorSongg/inscribeME" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center w-10 h-10 rounded-xl text-sky-600 hover:bg-sky-100 transition-all duration-300" aria-label="GitHub"><i className="ti ti-brand-github"></i></a>
                             </div>
                         </div>
                     </div>

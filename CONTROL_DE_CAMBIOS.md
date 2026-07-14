@@ -23,6 +23,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Notificaciones Toast y Refinamiento de Modales:** Implementado un sistema de alertas interactivas flotantes (Toast) y estilizado moderno para los formularios de creación de usuarios y asignación manual de alumnos (con gradientes visuales y manejo de excepciones locales).
 *   **Integración de Datos de Perfil (Teléfono y Foto):** Restaurado el diseño de barras laterales en los perfiles de usuario, corrigiendo el contexto de autenticación (`AuthContext.tsx`) para cargar correctamente el teléfono de la base de datos.
 *   **Cierre de Modales por Clic Externo:** Configurada la interactividad de modales en `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para permitir su cierre al hacer clic en el fondo oscuro/backdrop, implementando la prevención de propagación de eventos (`e.stopPropagation()`).
+*   **Estadísticas Dinámicas y Enlaces de Redes:** Actualizada la `SeccionCupos.tsx` para cargar dinámicamente el número real de cursos, estudiantes e instructores desde las APIs, y configurados los enlaces a redes en `Footer.tsx` (con enlace real al repositorio GitHub y seguridad `target="_blank"`).
 
 ---
 
