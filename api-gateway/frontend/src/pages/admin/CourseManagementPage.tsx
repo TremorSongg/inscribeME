@@ -69,6 +69,8 @@ const CourseManagementPage = () => {
         if (!form.nombre.trim()) errs.nombre = "Requerido";
         if (!form.nombreInstructor) errs.nombreInstructor = "Selecciona un instructor";
         if (!form.fechaInicio) errs.fechaInicio = "Requerido";
+        else if (form.fechaInicio < new Date().toISOString().split("T")[0])
+            errs.fechaInicio = "La fecha de inicio no puede ser anterior a hoy";
         if (!form.fechaFin) errs.fechaFin = "Requerido";
         if (!form.descripcion.trim()) errs.descripcion = "Requerido";
         if (form.cupoTotal < 1) errs.cupoTotal = "Mínimo 1 alumno";
@@ -303,7 +305,7 @@ const CourseManagementPage = () => {
                                     </div>
                                     <div>
                                         <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha inicio * <span className="normal-case font-medium text-neutral-400">(duración: 1–5 meses)</span></label>
-                                        <input id="form-course-date" type="date" value={form.fechaInicio} onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })} className={fieldClass("fechaInicio")} />
+                                        <input id="form-course-date" type="date" min={new Date().toISOString().split("T")[0]} value={form.fechaInicio} onChange={(e) => setForm({ ...form, fechaInicio: e.target.value })} className={fieldClass("fechaInicio")} />
                                         {errors.fechaInicio && <p className="field-error-msg">⚠ {errors.fechaInicio}</p>}
                                     </div>
                                     <div>
@@ -325,10 +327,12 @@ const CourseManagementPage = () => {
                                 )}
 
                                 <div className="mt-6 flex justify-end gap-3">
-                                    <button type="button" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }} className="rounded-xl border border-neutral-300 bg-white px-5 py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition-all cursor-pointer">
+                                    <button type="button" onClick={() => { setShowForm(false); setErrors({}); setFormErr(null); }}
+                                        className="rounded-xl border border-neutral-300 bg-white px-5 py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-200 hover:border-neutral-500 hover:scale-[1.03] hover:shadow-md active:scale-95 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-white/20 dark:hover:border-white/50 dark:hover:text-white dark:hover:shadow-lg dark:hover:shadow-white/15 transition-all duration-150 cursor-pointer">
                                         Cancelar
                                     </button>
-                                    <button id="btn-save-course" type="button" onClick={handleSave} disabled={saving} className="rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/10 hover:bg-sky-700 transition-all disabled:opacity-60 cursor-pointer">
+                                    <button id="btn-save-course" type="button" onClick={handleSave} disabled={saving}
+                                        className="rounded-xl bg-sky-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg shadow-sky-600/30 hover:bg-sky-400 hover:shadow-sky-400/50 hover:scale-[1.03] active:scale-95 dark:bg-sky-500 dark:hover:bg-sky-200 dark:hover:text-sky-900 dark:hover:shadow-sky-300/70 transition-all duration-150 disabled:opacity-60 disabled:scale-100 cursor-pointer">
                                         {saving ? "Guardando…" : editingId !== null ? "Actualizar Curso" : "Crear Curso →"}
                                     </button>
                                 </div>
@@ -348,7 +352,7 @@ const CourseManagementPage = () => {
                             <div className="px-6 py-6">
                                 <p className="text-sm leading-relaxed text-neutral-700">{deleteError}</p>
                                 <button type="button" onClick={() => setDeleteError(null)}
-                                    className="mt-6 w-full rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white hover:bg-red-700 transition cursor-pointer shadow-lg shadow-red-600/20">
+                                    className="mt-6 w-full rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/30 hover:bg-red-400 hover:shadow-red-400/50 hover:scale-[1.03] active:scale-95 dark:bg-red-700 dark:hover:bg-red-400 dark:hover:shadow-red-400/70 transition-all duration-150 cursor-pointer">
                                     Entendido
                                 </button>
                             </div>
@@ -367,8 +371,14 @@ const CourseManagementPage = () => {
                             <div className="px-6 py-6">
                                 <p className="text-sm leading-relaxed text-neutral-800">Esta acción dará de baja la materia del sistema y no puede deshacerse.</p>
                                 <div className="mt-6 flex gap-3">
-                                    <button type="button" onClick={() => setDeleteConfirm(null)} className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">Cancelar</button>
-                                    <button id="btn-confirm-delete" type="button" onClick={() => handleDelete(deleteConfirm)} className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition cursor-pointer">Eliminar de raíz</button>
+                                    <button type="button" onClick={() => setDeleteConfirm(null)}
+                                        className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-200 hover:border-neutral-500 hover:scale-[1.03] hover:shadow-md active:scale-95 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-white/20 dark:hover:border-white/50 dark:hover:text-white dark:hover:shadow-lg dark:hover:shadow-white/15 transition-all duration-150 cursor-pointer">
+                                        Cancelar
+                                    </button>
+                                    <button id="btn-confirm-delete" type="button" onClick={() => handleDelete(deleteConfirm)}
+                                        className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/30 hover:bg-red-400 hover:shadow-red-400/50 hover:scale-[1.03] active:scale-95 dark:bg-red-700 dark:hover:bg-red-400 dark:hover:shadow-red-400/70 transition-all duration-150 cursor-pointer">
+                                        Eliminar de raíz
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -428,10 +438,10 @@ const CourseManagementPage = () => {
                                                 </td>
                                                 <td className="!px-1 py-5.5">
                                                     <div className="flex flex-wrap gap-2 justify-center">
-                                                        <button id={`btn-edit-${c.id}`} type="button" onClick={() => handleEdit(c)} className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 hover:bg-sky-100 hover:border-sky-300 transition-all cursor-pointer shadow-sm">Editar</button>
-                                                        <button id={`btn-alumnos-${c.id}`} type="button" onClick={() => openVerAlumnos(c)} className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100 hover:border-violet-300 transition-all cursor-pointer shadow-sm">👥 Alumnos</button>
-                                                        <button id={`btn-assign-${c.id}`} type="button" onClick={() => { setAssignCourse(c); setAssignUserId(""); setAssignErr(null); }} className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300 transition-all cursor-pointer shadow-sm">＋ Alumno</button>
-                                                        <button id={`btn-delete-${c.id}`} type="button" onClick={() => setDeleteConfirm(c.id)} className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 hover:bg-red-100 hover:border-red-300 transition-all cursor-pointer shadow-sm">Eliminar</button>
+                                                        <button id={`btn-edit-${c.id}`} type="button" onClick={() => handleEdit(c)} className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 hover:bg-sky-200 hover:border-sky-400 hover:scale-[1.07] hover:shadow-md active:scale-95 dark:border-sky-700 dark:bg-sky-950/50 dark:text-sky-300 dark:hover:bg-sky-400 dark:hover:border-sky-300 dark:hover:text-white dark:hover:shadow-sky-400/60 transition-all duration-150 cursor-pointer shadow-sm">Editar</button>
+                                                        <button id={`btn-alumnos-${c.id}`} type="button" onClick={() => openVerAlumnos(c)} className="rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-200 hover:border-violet-400 hover:scale-[1.07] hover:shadow-md active:scale-95 dark:border-violet-700 dark:bg-violet-950/50 dark:text-violet-300 dark:hover:bg-violet-400 dark:hover:border-violet-300 dark:hover:text-white dark:hover:shadow-violet-400/60 transition-all duration-150 cursor-pointer shadow-sm">👥 Alumnos</button>
+                                                        <button id={`btn-assign-${c.id}`} type="button" onClick={() => { setAssignCourse(c); setAssignUserId(""); setAssignErr(null); }} className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-200 hover:border-emerald-400 hover:scale-[1.07] hover:shadow-md active:scale-95 dark:border-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 dark:hover:bg-emerald-400 dark:hover:border-emerald-300 dark:hover:text-white dark:hover:shadow-emerald-400/60 transition-all duration-150 cursor-pointer shadow-sm">＋ Alumno</button>
+                                                        <button id={`btn-delete-${c.id}`} type="button" onClick={() => setDeleteConfirm(c.id)} className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 hover:bg-red-200 hover:border-red-400 hover:scale-[1.07] hover:shadow-md active:scale-95 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300 dark:hover:bg-red-500 dark:hover:border-red-400 dark:hover:text-white dark:hover:shadow-red-500/60 transition-all duration-150 cursor-pointer shadow-sm">Eliminar</button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -494,7 +504,7 @@ const CourseManagementPage = () => {
                                                     <button
                                                         type="button"
                                                         onClick={() => setConfirmBaja(a)}
-                                                        className="shrink-0 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-100 transition cursor-pointer"
+                                                        className="shrink-0 rounded-xl border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 hover:bg-red-200 hover:border-red-400 hover:scale-[1.05] hover:shadow-md active:scale-95 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300 dark:hover:bg-red-500 dark:hover:border-red-400 dark:hover:text-white dark:hover:shadow-md dark:hover:shadow-red-500/60 transition-all duration-150 cursor-pointer"
                                                     >
                                                         Dar de baja
                                                     </button>
@@ -505,9 +515,9 @@ const CourseManagementPage = () => {
                                 )}
                             </div>
 
-                            <div className="px-8 py-4 border-t border-neutral-100 bg-neutral-50 shrink-0">
+                            <div className="px-8 py-4 border-t border-neutral-100 bg-neutral-50 dark:bg-neutral-900 dark:border-neutral-800 shrink-0">
                                 <button type="button" onClick={() => { setViewAlumnosCourse(null); setConfirmBaja(null); }}
-                                    className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition cursor-pointer">
+                                    className="w-full rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-200 hover:border-neutral-500 hover:scale-[1.02] hover:shadow-md active:scale-95 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-white/20 dark:hover:border-white/50 dark:hover:text-white dark:hover:shadow-lg dark:hover:shadow-white/15 transition-all duration-150 cursor-pointer">
                                     Cerrar
                                 </button>
                             </div>
@@ -529,11 +539,11 @@ const CourseManagementPage = () => {
                                 </p>
                                 <div className="mt-6 flex gap-3">
                                     <button type="button" onClick={() => setConfirmBaja(null)}
-                                        className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-50 transition cursor-pointer">
+                                        className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-200 hover:border-neutral-500 hover:scale-[1.03] hover:shadow-md active:scale-95 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-white/20 dark:hover:border-white/50 dark:hover:text-white dark:hover:shadow-lg dark:hover:shadow-white/15 transition-all duration-150 cursor-pointer">
                                         Cancelar
                                     </button>
                                     <button type="button" onClick={handleBajaAlumno} disabled={bajandoAlumno}
-                                        className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/20 hover:bg-red-700 transition disabled:opacity-60 cursor-pointer">
+                                        className="flex-1 rounded-xl bg-red-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-600/30 hover:bg-red-400 hover:shadow-red-400/50 hover:scale-[1.03] active:scale-95 dark:bg-red-700 dark:hover:bg-red-400 dark:hover:shadow-red-400/70 transition-all duration-150 disabled:opacity-60 disabled:scale-100 cursor-pointer">
                                         {bajandoAlumno ? "Procesando…" : "Confirmar baja"}
                                     </button>
                                 </div>
@@ -582,9 +592,12 @@ const CourseManagementPage = () => {
                                     </div>
                                 )}
                                 <div className="flex gap-3">
-                                    <button type="button" onClick={() => setAssignCourse(null)} className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-800 hover:bg-neutral-50 transition cursor-pointer">Cancelar</button>
+                                    <button type="button" onClick={() => setAssignCourse(null)}
+                                        className="flex-1 rounded-xl border border-neutral-300 bg-white py-2.5 text-sm font-bold text-neutral-700 hover:bg-neutral-200 hover:border-neutral-500 hover:scale-[1.03] hover:shadow-md active:scale-95 dark:border-neutral-500 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-white/20 dark:hover:border-white/50 dark:hover:text-white dark:hover:shadow-lg dark:hover:shadow-white/15 transition-all duration-150 cursor-pointer">
+                                        Cancelar
+                                    </button>
                                     <button id="btn-confirm-assign" type="button" onClick={handleAssign} disabled={assignUserId === "" || assigning || assignCourse.cupoDisponible === 0}
-                                        className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/10 hover:bg-emerald-700 transition disabled:opacity-60 cursor-pointer">
+                                        className="flex-1 rounded-xl bg-emerald-600 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/30 hover:bg-emerald-400 hover:shadow-emerald-400/50 hover:scale-[1.03] active:scale-95 dark:bg-emerald-700 dark:hover:bg-emerald-300 dark:hover:text-emerald-900 dark:hover:shadow-emerald-300/70 transition-all duration-150 disabled:opacity-60 disabled:scale-100 cursor-pointer">
                                         {assigning ? "Inscribiendo…" : "Confirmar Inscripción"}
                                     </button>
                                 </div>

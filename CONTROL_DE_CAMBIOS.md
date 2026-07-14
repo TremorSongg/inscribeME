@@ -33,6 +33,8 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 *   **Validación de Cupo en Creación de Cursos:** Añadida una regla de validación en `CourseManagementPage.tsx` que limita el cupo total de alumnos por curso a un mínimo de 1 y un máximo de 40 alumnos, renderizando la alerta de error correspondiente.
 *   **Gestión de Alumnos Inscritos por Curso:** Agregado un modal de visualización en `CourseManagementPage.tsx` que permite listar los estudiantes inscritos en cada curso (incluyendo la fecha de inscripción y el estado), y la opción de darlos de baja ("dar de baja") liberando el cupo del curso en tiempo real.
 *   **Carga Híbrida de Estadísticas de Alumnos:** Modificadas `SeccionCupos.tsx` y `HomePage.tsx` para usar un enfoque híbrido: conteo exacto de estudiantes registrados en la BD si el usuario está autenticado, y estimación mediante cupos ocupados de cursos activos si el usuario es anónimo, previniendo errores de acceso (HTTP 401/403).
+*   **Micro-animaciones y Modo Oscuro en Gestión de Cursos:** Implementadas transiciones de escala, sombras y micro-animaciones interactivas (`hover:scale`, `active:scale`, `shadow-md`) en los botones de acción del panel de administración de cursos (`CourseManagementPage.tsx`), añadiendo compatibilidad completa con tema oscuro.
+
 
 
 ---
