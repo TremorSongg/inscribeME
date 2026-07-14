@@ -57,6 +57,8 @@ const CourseManagementPage = () => {
         if (!form.fechaInicio) errs.fechaInicio = "Requerido";
         if (!form.fechaFin) errs.fechaFin = "Requerido";
         if (!form.descripcion.trim()) errs.descripcion = "Requerido";
+        if (form.cupoTotal < 1) errs.cupoTotal = "Mínimo 1 alumno";
+        if (form.cupoTotal > 40) errs.cupoTotal = "El cupo máximo permitido es 40 alumnos";
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -234,8 +236,9 @@ const CourseManagementPage = () => {
                                         <input id="form-course-price" type="number" min={0} value={form.precio} onChange={(e) => setForm({ ...form, precio: parseFloat(e.target.value) || 0 })} className={fieldClass("precio")} placeholder="0 para asignar como Gratis" />
                                     </div>
                                     <div>
-                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Cupo total</label>
-                                        <input id="form-course-slots" type="number" min={1} value={form.cupoTotal} onChange={(e) => setForm({ ...form, cupoTotal: parseInt(e.target.value) || 1, cupoDisponible: parseInt(e.target.value) || 1 })} className={fieldClass("cupoTotal")} />
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Cupo total <span className="normal-case font-medium text-neutral-400">(máx. 40)</span></label>
+                                        <input id="form-course-slots" type="number" min={1} max={40} value={form.cupoTotal} onChange={(e) => setForm({ ...form, cupoTotal: parseInt(e.target.value) || 1, cupoDisponible: parseInt(e.target.value) || 1 })} className={fieldClass("cupoTotal")} />
+                                        {errors.cupoTotal && <p className="field-error-msg">⚠ {errors.cupoTotal}</p>}
                                     </div>
                                     <div>
                                         <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-neutral-600">Fecha inicio *</label>
