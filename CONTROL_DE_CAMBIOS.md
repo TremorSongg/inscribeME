@@ -19,7 +19,7 @@ Esta versión introduce la garantía de integridad relacional mediante proteccio
 #### 🎨 2. Interfaz y Experiencia Visual
 *   **Alineación de Calendario de Asistencia:** Reestructurado el diseño de `MiniCalendar` en `StudentProfilePage.tsx` para una alineación perfecta en grid y traducción de días en español de dos letras (`Lu`, `Ma`, etc.).
 *   **Estandarización en Modo Oscuro:** Modificaciones exhaustivas de contraste y color para componentes en tema oscuro en `index.css` (dropdowns nativos, dropdown de usuario en navbar, testimonios, badges e insignias).
-*   **Mensajes de Error Descriptivos:** Modificado `AdminStudentsPage.tsx` para leer los mensajes de error de la API y mostrarlos directamente al administrador al fallar una eliminación o cancelación.
+*   **Mensajes de Error Descriptivos:** Modificado `AdminStudentsPage.tsx` y `CourseManagementPage.tsx` para leer los mensajes de error de la API y mostrarlos directamente al administrador al fallar una eliminación o cancelación.
 
 ---
 

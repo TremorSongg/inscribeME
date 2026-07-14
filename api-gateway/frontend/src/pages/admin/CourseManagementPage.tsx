@@ -114,11 +114,12 @@ const CourseManagementPage = () => {
         try {
             await cursosService.eliminar(id);
             setCourses((prev) => prev.filter((c) => c.id !== id));
+            setDeleteConfirm(null);
             showSuccess("Curso eliminado.");
-        } catch {
-            showSuccess("Error al eliminar el curso.");
+        } catch (err: any) {
+            const msg = err?.response?.data?.message || err?.response?.data?.error || "Error al eliminar el curso.";
+            alert(msg);
         }
-        setDeleteConfirm(null);
     };
 
     const handleAssign = async () => {
