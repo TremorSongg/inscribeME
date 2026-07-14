@@ -26,8 +26,9 @@ const StudentDetailPanel = ({
             setInscripciones(prev => prev.filter(ins => ins.id !== inscripcionId));
             alert(`El estudiante fue dado de baja de «${nombreCurso}» correctamente.`);
             if (onCancelInscripcion) onCancelInscripcion();
-        } catch {
-            alert("Error al intentar dar de baja.");
+        } catch (err: any) {
+            const msg = err?.response?.data?.message || err?.response?.data?.error || "Error al intentar dar de baja.";
+            alert(msg);
         }
     };
 
@@ -266,7 +267,7 @@ const InstructorDetailPanel = ({
     const totalAlumnos = cursos.reduce((acc, c) => acc + (c.cupoTotal - c.cupoDisponible), 0);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+        <div className="fixed inset-0 z-50 !py-48 flex items-start justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto animate-fadeIn">
             <div className="relative mt-12 mb-12 w-full max-w-2xl rounded-xl bg-white shadow-2xl border border-neutral-100 animate-slideUp overflow-hidden">
 
                 {/* Header */}
@@ -437,8 +438,9 @@ const AdminStudentsPage = () => {
             await usuariosService.eliminar(userId);
             setAllUsers(prev => prev.filter(u => u.id !== userId));
             alert("Usuario eliminado correctamente.");
-        } catch {
-            alert("Error al eliminar el usuario.");
+        } catch (err: any) {
+            const msg = err?.response?.data?.message || err?.response?.data?.error || "Error al eliminar el usuario.";
+            alert(msg);
         }
     };
 

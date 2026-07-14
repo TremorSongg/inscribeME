@@ -33,7 +33,7 @@ const MiniCalendar = ({ ins, asistencias }: { ins: InscripcionDTO; asistencias: 
     const pct       = total > 0 ? Math.round((presentes / total) * 100) : null;
     const ausencias = total - presentes;
 
-    const WEEK = ["L","M","X","J","V","S","D"];
+    const WEEK = ["Lu","Ma","Mi","Ju","Vi","Sá","Do"];
     const monthName = viewDate.toLocaleDateString("es-CL", { month: "long", year: "numeric" });
     const empties = Array.from({ length: firstDay }, (_, i) => `e${i}`);
     const days    = Array.from({ length: daysInMonth }, (_, i) => i + 1);
@@ -101,34 +101,39 @@ const MiniCalendar = ({ ins, asistencias }: { ins: InscripcionDTO; asistencias: 
                 </div>
             </div>
 
-            {/* Días de la semana */}
-            <div className="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-sky-600 mb-1">
-                {WEEK.map(w => <span key={w}>{w}</span>)}
-            </div>
-
-            {/* Días del mes */}
-            <div className="grid grid-cols-7 gap-1">
-                {empties.map(k => <div key={k} />)}
+            {/* Días de la semana + días del mes — mismo grid para alineación perfecta */}
+            <div className="grid grid-cols-7" style={{ gap: "2px" }}>
+                {/* Cabecera */}
+                {WEEK.map(w => (
+                    <div key={w} className="flex items-center justify-center h-7 text-[10px] font-bold text-sky-600">
+                        {w}
+                    </div>
+                ))}
+                {/* Celdas vacías */}
+                {empties.map(k => <div key={k} className="h-8" />)}
+                {/* Días */}
                 {days.map(day => {
                     const key = dateKey(d(day));
                     const attended = attendanceMap.get(key);
                     const hasRecord = attendanceMap.has(key);
                     return (
-                        <div key={day} title={hasRecord ? (attended ? "Presente" : "Ausente") : undefined}
-                            className={`relative flex h-7 w-7 items-center justify-center rounded-full mx-auto text-[11px] font-bold transition-all
-                                ${isStart(day) || isEnd(day)
-                                    ? "bg-sky-700 text-white font-extrabold shadow-sm ring-2 ring-sky-300"
-                                    : hasRecord
-                                        ? attended
-                                            ? "bg-emerald-500 text-white shadow-sm"
-                                            : "bg-red-400 text-white shadow-sm"
-                                        : inRange(day)
-                                            ? "bg-sky-200 text-sky-800"
-                                            : isToday(day)
-                                                ? "ring-2 ring-sky-600 text-sky-800"
-                                                : "text-neutral-600"
-                                }`}>
-                            {day}
+                        <div key={day} className="flex items-center justify-center h-8">
+                            <div title={hasRecord ? (attended ? "Presente" : "Ausente") : undefined}
+                                className={`flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-bold transition-all
+                                    ${isStart(day) || isEnd(day)
+                                        ? "bg-sky-700 text-white font-extrabold shadow-sm ring-2 ring-sky-300"
+                                        : hasRecord
+                                            ? attended
+                                                ? "bg-emerald-500 text-white shadow-sm"
+                                                : "bg-red-400 text-white shadow-sm"
+                                            : inRange(day)
+                                                ? "bg-sky-200 text-sky-800"
+                                                : isToday(day)
+                                                    ? "ring-2 ring-sky-600 text-sky-800"
+                                                    : "text-neutral-600"
+                                    }`}>
+                                {day}
+                            </div>
                         </div>
                     );
                 })}

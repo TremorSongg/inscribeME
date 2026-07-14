@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cursos")
@@ -60,13 +61,25 @@ public class CursoController {
     @Operation(summary = "Eliminar curso")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "204", description = "Eliminado correctamente"),
-        @ApiResponse(responseCode = "404", description = "No encontrado", content = @Content)
+        @ApiResponse(responseCode = "404", description = "No encontrado", content = @Content),
+        @ApiResponse(responseCode = "409", description = "Tiene alumnos inscritos", content = @Content)
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<?> eliminar(
             @Parameter(description = "ID del curso") @PathVariable Long id) {
-        cursoService.eliminar(id);
-        return ResponseEntity.noContent().build();
+        try {
+            cursoService.eliminar(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(
+                Map.of("error", e.getMessage(), "message", e.getMessage()));
+        }
+    }
+
+    @Operation(summary = "Cursos activos de un instructor")
+    @GetMapping("/instructor/{instructorId}")
+    public List<CursoDTO> getByInstructor(@PathVariable Long instructorId) {
+        return cursoService.obtenerPorInstructor(instructorId);
     }
 
     @Operation(summary = "Decrementar cupo de un curso")

@@ -4,6 +4,25 @@ Este documento registra de manera detallada el historial de versiones, modificac
 
 ---
 
+## [v2.2.0] - 2026-07-13
+
+Esta versión introduce la garantía de integridad relacional mediante protecciones de eliminación cruzada entre microservicios, eliminaciones en cascada y mejoras visuales en modo oscuro y alineación del calendario.
+
+### 🚀 Novedades y Mejoras Principales
+
+#### 🛡️ 1. Integridad Relacional y Protecciones de Eliminación Cruzada
+*   **Microservicio de Usuarios:** Se agregaron protecciones en `UsuarioService.java` que bloquean la eliminación de estudiantes si tienen inscripciones activas, o de instructores si tienen cursos asignados, realizando peticiones HTTP síncronas a los respectivos servicios. También implementa eliminación en cascada de carritos y notificaciones.
+*   **Microservicio de Cursos:** Modificado `CursoService.java` para denegar la eliminación de un curso si existen alumnos inscritos.
+*   **Microservicio de Inscripciones:** Modificado `InscripcionService.java` para hacer la eliminación transaccional, remover en cascada los registros de asistencia del estudiante en el curso, y forzar la restauración de cupos en el servicio de cursos.
+*   **Manejo Global de Conflictos (HTTP 409):** Captura de `IllegalStateException` y retorno consistente de código de estado HTTP 409 (Conflict) con explicaciones precisas del motivo del bloqueo.
+
+#### 🎨 2. Interfaz y Experiencia Visual
+*   **Alineación de Calendario de Asistencia:** Reestructurado el diseño de `MiniCalendar` en `StudentProfilePage.tsx` para una alineación perfecta en grid y traducción de días en español de dos letras (`Lu`, `Ma`, etc.).
+*   **Estandarización en Modo Oscuro:** Modificaciones exhaustivas de contraste y color para componentes en tema oscuro en `index.css` (dropdowns nativos, dropdown de usuario en navbar, testimonios, badges e insignias).
+*   **Mensajes de Error Descriptivos:** Modificado `AdminStudentsPage.tsx` para leer los mensajes de error de la API y mostrarlos directamente al administrador al fallar una eliminación o cancelación.
+
+---
+
 ## [v2.1.2] - 2026-07-13
 
 Esta versión introduce ajustes finos de diseño en las interfaces principales del frontend, incluyendo animaciones y la estandarización de componentes de la página de registro e inicio.

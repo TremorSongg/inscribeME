@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface CursoRepository extends JpaRepository<Curso, Long> {
     List<Curso> findByEliminadoFalse();
     Optional<Curso> findByIdAndEliminadoFalse(Long id);
+    List<Curso> findByInstructorIdAndEliminadoFalse(Long instructorId);
 }

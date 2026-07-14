@@ -10,6 +10,7 @@ import com.inscribeme.inscripciones.service.InscripcionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -50,8 +51,22 @@ public class InscripcionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
-        inscripcionService.eliminar(id);
+    public ResponseEntity<?> eliminar(@PathVariable Long id) {
+        try {
+            inscripcionService.eliminar(id);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(
+                java.util.Map.of("error", e.getMessage(), "message", e.getMessage()));
+        }
+    }
+
+    /** Eliminar asistencias de un alumno en un curso específico */
+    @Transactional
+    @DeleteMapping("/asistencia/curso/{cursoId}/usuario/{usuarioId}")
+    public ResponseEntity<Void> eliminarAsistenciasPorCursoYUsuario(
+            @PathVariable Long cursoId, @PathVariable Long usuarioId) {
+        asistenciaRepository.deleteByCursoIdAndUsuarioId(cursoId, usuarioId);
         return ResponseEntity.noContent().build();
     }
 

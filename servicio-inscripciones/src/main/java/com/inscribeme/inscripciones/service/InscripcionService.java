@@ -3,9 +3,11 @@ package com.inscribeme.inscripciones.service;
 import com.inscribeme.inscripciones.dto.AlumnoCursoDTO;
 import com.inscribeme.inscripciones.dto.InscripcionDTO;
 import com.inscribeme.inscripciones.model.Inscripcion;
+import com.inscribeme.inscripciones.repository.AsistenciaRepository;
 import com.inscribeme.inscripciones.repository.InscripcionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.stream.Collectors;
 public class InscripcionService {
 
     private final InscripcionRepository inscripcionRepository;
+    private final AsistenciaRepository asistenciaRepository;
     private final RestTemplate restTemplate;
 
     public List<Inscripcion> obtenerTodas() {
@@ -51,15 +54,24 @@ public class InscripcionService {
         }).orElseThrow(() -> new RuntimeException("Inscripcion no encontrada: " + id));
     }
 
+    @Transactional
     public void eliminar(Long id) {
-        inscripcionRepository.findById(id).ifPresent(i -> {
-            try {
-                restTemplate.put("http://SERVICIO-CURSOS/api/cursos/" + i.getCursoId() + "/incrementar-cupo", null);
-            } catch (Exception e) {
-                // Silently log or ignore to prevent blocking deletion
-            }
-            inscripcionRepository.delete(i);
-        });
+        Inscripcion i = inscripcionRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Inscripción no encontrada con id: " + id));
+
+        // Cascade: remove all attendance records for this student in this course
+        asistenciaRepository.deleteByCursoIdAndUsuarioId(i.getCursoId(), i.getUsuarioId());
+
+        // Restore course quota — fail loudly so the client knows
+        try {
+            restTemplate.put("http://SERVICIO-CURSOS/api/cursos/" + i.getCursoId() + "/incrementar-cupo", null);
+        } catch (Exception e) {
+            throw new IllegalStateException(
+                "No se pudo restaurar el cupo del curso '" + i.getNombreCurso()
+                + "'. Verifique que el servicio de cursos esté activo. Error: " + e.getMessage());
+        }
+
+        inscripcionRepository.delete(i);
     }
 
     public List<InscripcionDTO> obtenerInscripcionesPorUsuario(Long usuarioId) {

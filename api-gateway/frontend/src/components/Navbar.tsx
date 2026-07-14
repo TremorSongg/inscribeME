@@ -184,7 +184,7 @@ const Navbar = () => {
                                     type="button"
                                     onClick={() => setUserMenuOpen(v => !v)}
                                     id="btn-user-menu"
-                                    className="flex items-center gap-3 rounded-full bg-sky-100 px-4 py-2.5 hover:bg-sky-200 transition group cursor-pointer border border-neutral-200/50">
+                                    className="navbar-user-btn flex items-center gap-3 rounded-full bg-sky-100 px-4 py-2.5 hover:bg-sky-200 transition group cursor-pointer border border-neutral-200/50">
                                     <Link
                                         to={user.role === "ESTUDIANTE" ? "/perfil" : user.role === "INSTRUCTOR" ? "/instructor/perfil" : "/admin"}
                                         className="hover:scale-105 transition-transform"
@@ -218,7 +218,7 @@ const Navbar = () => {
 
                                 {/* Dropdown */}
                                 {userMenuOpen && (
-                                    <div className="absolute right-0 top-full mt-2 w-48 rounded-2xl bg-sky-100 shadow-2xl border border-neutral-200 !py-3 animate-fadeInDown z-950">
+                                    <div className="navbar-dropdown absolute right-0 top-full mt-2 w-48 rounded-2xl bg-sky-100 shadow-2xl border border-neutral-200 !py-3 animate-fadeInDown z-950">
                                         <div className="px-4 py-3 border-b border-neutral-100">
                                             <p className="text-center text-xs font-bold text-neutral-900 truncate">{user.username}</p>
                                             <p className="text-center text-xs text-neutral-900 truncate">{user.email}</p>

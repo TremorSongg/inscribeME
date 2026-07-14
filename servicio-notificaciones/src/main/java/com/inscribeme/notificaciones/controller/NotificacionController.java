@@ -75,4 +75,11 @@ public class NotificacionController {
         notificacionService.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(summary = "Eliminar todas las notificaciones de un usuario")
+    @DeleteMapping("/usuario/{usuarioId}")
+    public ResponseEntity<Void> eliminarPorUsuario(@PathVariable Long usuarioId) {
+        notificacionService.eliminarPorUsuario(usuarioId);
+        return ResponseEntity.noContent().build();
+    }
 }

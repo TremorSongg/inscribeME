@@ -71,4 +71,9 @@ public class NotificacionService {
     public void eliminar(Long id) {
         notificacionRepository.deleteById(id);
     }
+
+    @Transactional
+    public void eliminarPorUsuario(Long usuarioId) {
+        notificacionRepository.deleteByUsuarioId(usuarioId);
+    }
 }

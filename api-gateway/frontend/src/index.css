@@ -264,6 +264,62 @@ body {
   font-weight: 700;
 }
 
+/* ── Navbar: botón de usuario y dropdown ───────────────────── */
+.dark .navbar-user-btn {
+  background-color: rgba(255,255,255,0.08) !important;
+  border-color: rgba(255,255,255,0.10) !important;
+}
+.dark .navbar-user-btn:hover {
+  background-color: rgba(255,255,255,0.13) !important;
+}
+.dark .navbar-user-btn .text-neutral-800 {
+  color: #E2E8F0 !important;
+}
+.dark .navbar-user-btn .text-neutral-900 {
+  color: #CBD5E1 !important;
+}
+.dark .navbar-dropdown {
+  background-color: #1E2130 !important;
+  border-color: rgba(255,255,255,0.10) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+}
+.dark .navbar-dropdown .border-b,
+.dark .navbar-dropdown .border-t,
+.dark .navbar-dropdown .border-neutral-100 {
+  border-color: rgba(255,255,255,0.07) !important;
+}
+.dark .navbar-dropdown p {
+  color: #CBD5E1 !important;
+}
+.dark .navbar-dropdown a,
+.dark .navbar-dropdown button:not(.text-red-600) {
+  color: #E2E8F0 !important;
+}
+.dark .navbar-dropdown a:hover {
+  background-color: rgba(255,255,255,0.07) !important;
+}
+.dark .navbar-dropdown button.text-red-600:hover {
+  background-color: rgba(239,68,68,0.12) !important;
+}
+
+/* ── Tab pills dark mode ────────────────────────────────────── */
+.dark .tab-pill-bar {
+  background: rgba(255,255,255,0.05) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .tab-pill {
+  color: #94A3B8 !important;
+}
+.dark .tab-pill:hover {
+  background: rgba(255,255,255,0.07) !important;
+  color: #CBD5E1 !important;
+}
+.dark .tab-pill.active {
+  background: rgba(14,165,233,0.18) !important;
+  color: #7DD3FC !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important;
+}
+
 /* ── Tab pills (role panels) ────────────────────────────────── */
 .tab-pill-bar {
   display: flex;
@@ -501,8 +557,16 @@ body {
   border-color: rgba(255,255,255,0.12) !important;
 }
 
-.dark select option {
-  background-color: #23262F !important;
+/* Dropdown nativo — fondo sólido para que no sea transparente */
+.dark select {
+  background-color: #1E2130 !important;
+  color: #E8EDF5 !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+.dark select option,
+.dark select optgroup {
+  background-color: #1E2130 !important;
   color: #E8EDF5 !important;
 }
 
@@ -511,6 +575,13 @@ body {
 .dark textarea:focus {
   border-color: var(--color-accent) !important;
   box-shadow: 0 0 0 3px rgba(56,189,248,0.18) !important;
+}
+
+/* Refuerzo de alta especificidad para selects dentro de cualquier contenedor */
+.dark * select,
+.dark * select option {
+  background-color: #1E2130 !important;
+  color: #E8EDF5 !important;
 }
 
 /* Scrollbar en tema oscuro */
@@ -1069,6 +1140,133 @@ div.relative.mt-12.rounded-xl.bg-white .p-6 {
   margin-top: 1.5rem !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DARK MODE — Correcciones de contraste globales
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Testimonios ─────────────────────────────────────────────── */
+.dark section[class*="bg-neutral-50"],
+.dark section[class*="bg-neutral"] {
+  background-color: #0F1117 !important;
+}
+.dark section[class*="bg-neutral-50"] h2,
+.dark section[class*="bg-neutral-50"] p {
+  color: #CBD5E1 !important;
+}
+/* Tarjeta individual de testimonio */
+.dark .bg-white.rounded-2xl[class*="border-neutral"],
+.dark .bg-white.rounded-3xl[class*="border-neutral"] {
+  background-color: #1A1D27 !important;
+  border-color: rgba(255,255,255,0.08) !important;
+}
+.dark .bg-white.rounded-2xl[class*="border-neutral"] p,
+.dark .bg-white.rounded-3xl[class*="border-neutral"] p {
+  color: #94A3B8 !important;
+}
+.dark .bg-white.rounded-2xl[class*="border-neutral"] span.font-bold,
+.dark .bg-white.rounded-3xl[class*="border-neutral"] span.font-bold {
+  color: #E2E8F0 !important;
+}
+/* Estrellas inactivas */
+.dark .text-neutral-200 {
+  color: rgba(255,255,255,0.12) !important;
+}
+
+/* ── Badges: categoría de curso + chip "InscribeMe" ─────────── */
+/* bg-primary-100 text-primary-600 — quedan muy brillantes en dark */
+.dark .bg-primary-100 {
+  background-color: rgba(14,165,233,0.18) !important;
+}
+.dark .text-primary-600 {
+  color: #7DD3FC !important;
+}
+.dark .bg-primary-50 {
+  background-color: rgba(14,165,233,0.10) !important;
+}
+.dark .text-primary-700 {
+  color: #7DD3FC !important;
+}
+.dark .border-primary-100 {
+  border-color: rgba(125,211,252,0.18) !important;
+}
+.dark .border-primary-200 {
+  border-color: rgba(125,211,252,0.22) !important;
+}
+
+/* ── Tarjeta sidebar perfil estudiante (bg-sky-100) ─────────── */
+.dark .bg-sky-100 {
+  background-color: rgba(14,165,233,0.12) !important;
+}
+.dark .text-sky-800 {
+  color: #7DD3FC !important;
+}
+.dark .text-sky-600 {
+  color: #38BDF8 !important;
+}
+.dark .border-sky-200 {
+  border-color: rgba(56,189,248,0.18) !important;
+}
+/* Sub-cards neutral-50 dentro de la sidebar */
+.dark .bg-neutral-50\/70,
+.dark [class*="bg-neutral-50"] {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+.dark .border-neutral-100 {
+  border-color: rgba(255,255,255,0.06) !important;
+}
+
+/* ── Info del curso en Mis Cursos (texto sobre fondo claro) ─── */
+/* text-neutral-800 sobre bg-neutral-50 — invisible en dark */
+.dark .text-neutral-800 {
+  color: #E2E8F0 !important;
+}
+.dark .text-neutral-900 {
+  color: #F1F5F9 !important;
+}
+.dark .text-neutral-700 {
+  color: #CBD5E1 !important;
+}
+.dark .text-neutral-600 {
+  color: #94A3B8 !important;
+}
+
+/* ── MiniCalendar — días del mes ────────────────────────────── */
+/* bg-sky-200 text-sky-800 (días en rango sin registro) */
+.dark .bg-sky-200 {
+  background-color: rgba(14,165,233,0.20) !important;
+}
+/* Calendar container */
+.dark .bg-sky-100.border-sky-200 {
+  background-color: #141820 !important;
+  border-color: rgba(56,189,248,0.15) !important;
+}
+/* Días texto por defecto (text-neutral-600) ya cubierto arriba */
+/* ring en "today" */
+.dark .ring-sky-600 {
+  --tw-ring-color: rgba(56,189,248,0.50) !important;
+}
+.dark .ring-sky-300 {
+  --tw-ring-color: rgba(125,211,252,0.40) !important;
+}
+
+/* ── Notificaciones sin leer ─────────────────────────────────── */
+/* Fila de notif no leída: bg-primary-50/50 border-primary-200 */
+.dark .border-primary-200.bg-primary-50\/50,
+.dark [class*="border-primary-200"][class*="bg-primary-50"] {
+  background-color: rgba(56,139,194,0.10) !important;
+  border-color: rgba(125,211,252,0.20) !important;
+}
+/* Dot de no leída: bg-primary-500 ya visible, no necesita cambio */
+/* Fila leída: bg-sky-100 border-sky-200 */
+.dark [class*="bg-sky-100"][class*="border-sky-200"] {
+  background-color: rgba(14,165,233,0.06) !important;
+  border-color: rgba(56,189,248,0.12) !important;
+}
+/* Badge rojo de cantidad (ring-white) — el anillo blanco choca en dark */
+.dark .ring-white {
+  --tw-ring-color: #0F1117 !important;
 }
 
 /* ── ProductPage: botones de categoría ─────────────────────── */

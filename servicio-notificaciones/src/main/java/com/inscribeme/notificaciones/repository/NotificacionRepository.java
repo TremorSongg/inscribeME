@@ -11,4 +11,6 @@ import java.util.List;
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
     List<Notificacion> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
     boolean existsByUsuarioIdAndMensajeAndFechaAfter(Long usuarioId, String mensaje, LocalDateTime fecha);
+
+    void deleteByUsuarioId(Long usuarioId);
 }
